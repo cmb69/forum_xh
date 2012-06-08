@@ -219,18 +219,27 @@ function forum_delete_comment($tid, $cid) {
  * @return void
  */
 function forum_hjs() {
-    global $pth, $hjs, $plugin_cf;
+    global $pth, $hjs, $plugin_cf, $plugin_tx;
     
+    $ptx = $plugin_tx['forum'];
     $dir = $pth['folder']['plugins'].'forum/markitup/';
     $hjs .= tag('link rel="stylesheet" type="text/css" href="'.$dir.'skins/simple/style.css"')."\n"
 	    .tag('link rel="stylesheet" type="text/css" href="'.$dir.'sets/bbcode/style.css"')."\n";
     require_once $pth['folder']['plugins'].'jquery/jquery.inc.php';
     include_jquery();
     include_jqueryplugin('markitup', $dir.'jquery.markitup.js');
-    include_jqueryplugin('markitup-bbcode', $dir.'sets/bbcode/set.js');
-    $hjs .= '<script type="text/javascript">/* <![CDATA[ */'
-	    .'jQuery(function() {jQuery(\'form.forum_comment textarea\').markItUp(Forum.settings)})'
+    $hjs .= '<script type="text/javascript">/* <![CDATA[ */'."\n"
+	    .'Forum = {TX: {';
+    foreach (array('bold', 'italic', 'underline', 'emoticon', 'smile', 'wink', 'happy', 'grin',
+	    'tongue', 'surprised', 'unhappy', 'picture', 'link', 'size', 'big', 'normal', 'small',
+	    'bulleted_list', 'numeric_list', 'list_item', 'quotes', 'code', 'clean', 'preview') as $i => $key) {
+	if ($i > 0) {$hjs .= ', ';}
+	$hjs .= strtoupper($key).': \''.addcslashes($ptx['lbl_'.$key], "\0..\37\\\'").'\'';
+    }
+    $hjs .= '}}'."\n"
+	    .'jQuery(function() {jQuery(\'form.forum_comment textarea\').markItUp(Forum.settings)})'."\n"
 	    .'/* ]]> */</script>'."\n";
+    $hjs .= '<script type="text/javascript" src="'.$dir.'sets/bbcode/set.js"></script>'."\n";
 }
 
 
@@ -362,19 +371,19 @@ function forum_comment_form($tid = NULL) {
     $href = "?$su&amp;forum_actn=post";
     $o = '<form class="forum_comment" action="'.$href.'" method="POST" accept-charset="UTF-8">';
     if (!isset($tid)) {
-	$o .= '<h6 class="forum_heading">New Topic</h6>';
-	$o .= '<div class="forum_title">'.'<label for="forum_title">Title</label>'
+	$o .= '<h6 class="forum_heading">'.$ptx['msg_new_topic'].'</h6>';
+	$o .= '<div class="forum_title">'.'<label for="forum_title">'.$ptx['msg_title'].'</label>'
 		.tag('input type="text" id="forum_title" name="forum_title"').'</div>';
     } else {
-	$o .= '<h6 class="forum_heading">Add a comment</h6>';
+	$o .= '<h6 class="forum_heading">'.$ptx['msg_add_comment'].'</h6>';
 	$o .= tag('input type="hidden" name="forum_topic" value="'.$tid.'"');
     }
     $o .= '<textarea name="forum_comment" cols="80" rows="10">'.'</textarea>'
 	    .'<div class="forum_submit">'
-	    .tag('input type="submit" class="submit" value="'.$ptx['label_submit'].'"').'</div>'
+	    .tag('input type="submit" class="submit" value="'.$ptx['lbl_submit'].'"').'</div>'
 	    .'</form>';
     if (!isset($tid)) {
-	$o .= '<div class="forum_navlink">'.'<a href="?'.$su.'">Back to overview</a>'.'</div>';
+	$o .= '<div class="forum_navlink">'.'<a href="?'.$su.'">'.$ptx['msg_back'].'</a>'.'</div>';
     }
     return $o;
 }
@@ -393,7 +402,7 @@ function forum_posted($rec) {
     $date = date($ptx['format_date'], $rec['time']);
     $time = date($ptx['format_time'], $rec['time']);
     return str_replace(array('{user}', '{date}', '{time}'),
-	    array($rec['user'], $date, $time), $ptx['format_posted']);
+	    array($rec['user'], $date, $time), $ptx['msg_posted']);
 
 }
 
@@ -411,14 +420,14 @@ function forum_view_topics() {
     $topics = forum_read_topics();
     forum_lock(LOCK_UN);
     uasort($topics, create_function('$a, $b', "return \$b['time'] - \$a['time'];"));
-    $o = '<h6 class="forum_heading">'.$ptx['caption_topics'].'</h6>'
+    $o = '<h6 class="forum_heading">'.$ptx['msg_topics'].'</h6>'
 	    .'<ul class="forum_topics">';
     $i = 1;
     foreach ($topics as $tid => $topic) {
 	$href = "?$su&amp;forum_topic=$tid";
-	$comments = sprintf($ptx['comments'.forum_numerus($topic['comments'])], $topic['comments']);
+	$comments = sprintf($ptx['msg_comments'.forum_numerus($topic['comments'])], $topic['comments']);
 	$details = str_replace(array('{comments}', '{posted}'), array($comments, forum_posted($topic)),
-		$ptx['topic_details']);
+		$ptx['msg_topic_details']);
 	$o .= '<li class="forum_'.($i & 1 ? 'odd' : 'even').'">'
 		.'<div class="forum_title"><a href="'.$href.'">'.$topic['title'].'</a></div>'
 		.'<div class="forum_details">'.$details.'</div>'
@@ -428,7 +437,7 @@ function forum_view_topics() {
     $o .= '</ul>';
     if (forum_user() !== FALSE) {
 	$href = "?$su&amp;forum_actn=new";
-	$o .= '<div class="forum_navlink"><a href="'.$href.'">'.$ptx['new_topic'].'</a></div>';
+	$o .= '<div class="forum_navlink"><a href="'.$href.'">'.$ptx['msg_start_topic'].'</a></div>';
     }
     return $o;
 }
@@ -455,13 +464,13 @@ function forum_view_topic($tid) {
     foreach ($topic as $cid => $comments) {
 	$delform = $adm || $comments['user'] == forum_user()
 		? '<form class="forum_delete" action="." method="POST"'
-			.' onsubmit="return confirm(\''.$ptx['confirm_delete'].'\')">'
+			.' onsubmit="return confirm(\''.$ptx['msg_confirm_delete'].'\')">'
 		    .tag('input type="hidden" name="selected" value="'.$su.'"')
 		    .tag('input type="hidden" name="forum_actn" value="delete"')
 		    .tag('input type="hidden" name="forum_topic" value="'.$tid.'"')
 		    .tag('input type="hidden" name="forum_comment" value="'.$cid.'"')
 		    .tag('input type="image" src="'.$pth['folder']['plugins'].'forum/images/delete.png"'
-			.' alt="'.$ptx['label_delete'].'" title="'.$ptx['label_delete'].'"')
+			.' alt="'.$ptx['lbl_delete'].'" title="'.$ptx['lbl_delete'].'"')
 		    .'</form>'
 		: '';
 	$o .= '<li class="forum_'.($i & 1 ? 'odd' : 'even').'">'
@@ -475,7 +484,7 @@ function forum_view_topic($tid) {
     if (forum_user() !== FALSE) {
 	$o .= forum_comment_form($tid);
     }
-    $o .= '<div class="forum_navlink"><a href="'.$href.'">Back to overview</a></div>';
+    $o .= '<div class="forum_navlink"><a href="'.$href.'">'.$ptx['msg_back'].'</a></div>';
     return $o;
 }
 
