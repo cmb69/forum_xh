@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<meta name="content-language" content="de">
+<title>Forum_XH - Manual</title>
+<link rel="stylesheet" type="text/css" href="./stylesheet.css">
+</head>
+
+<body>
+
+<h1>Forum_XH - a CMSimple_XH Plugin</h1>
+<img src="../forum.png" style="display:block; float:left; margin: 0 10px 0 0">
+<p style="text-align:justify">Forum_XH facilitates the embedding of simple forums on a CMSimple_XH site.
+The user management relies on <a href="http://ge-webdesign.de/cmsimpleplugins/?Modifizierte_Plugins/memberpages_XH">Memberpages_XH</a>
+or <a href="http://ge-webdesign.de/cmsimpleplugins/?Modifizierte_Plugins/register_mod_XH">Register_mod_XH</a>.
+Posting requires to be logged in as member, though the forums can be viewed publicly.
+This way no further provisions are necessary to avoid spam,
+and posting doesn't require any additional input such as user name, email address etc.
+Forum_XH features a markup editor allowing basic <a href="http://en.wikipedia.org/wiki/BBCode">BBCode</a> markup.
+All data is stored in flat files which are protected from concurrent access
+by pessimistic locking of the whole forum, so Forum_XH is not suitable for heavily frequented forums.
+Furthermore typical advanced forum features such as user signatures, PM, subscribing to topics etc.
+are not available.</p>
+
+<ul id="nav">
+<li><a href="#notice">Important Notice</a></li>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#settings">Settings</a></li>
+<li><a href="#usage">Usage</a></li>
+<!--<li><a href="#limitations">Limitations</a></li>-->
+<li><a href="#license">License</a></li>
+<li><a href="#credits">Credits</a></li>
+</ul>
+
+<div id="body">
+
+<p><strong>Please do read this documentation
+<em>before</em> you encounter any problems!</strong></p>
+
+<h2><a name="notice">Important Notice</a></h2>
+<p><strong>Forum_XH couldn't be tested so far in various environments.
+It is a so called BETA version. Use with caution!</strong></p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h2><a name="requirements">Requirements</a></h2>
+<p>Forum_XH is a plugin for CMSimple_XH.
+It requires a UTF-8 encoded version and
+<a href="http://www.cmsimple-xh.com/wiki/doku.php/plugins:jquery4cmsimple">jQuery4CMSimple</a>.</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h2><a name="installation">Installation</a></h2>
+<p>The installation is done as with many other CMSimple_XH plugins.
+See the <a href="http://www.cmsimple-xh.com/wiki/doku.php/manuals:users_manual:plugins:installation">
+CMSimple_XH wiki</a> for further details.</p>
+<ol>
+<li><strong>Backup the data on your server.</strong></li>
+<li>Unzip the distribution on your computer.</li>
+<li>Upload the whole directory forum/ to your server into CMSimple_XH's plugins directory.</li>
+<li>Set write permissions to the subdirectories config/, css/, languages/ and the plugin's data folder.</li>
+<li><strong>Switch to "Forum" in the back-end to check if all requirements are fulfilled.</strong></li>
+</ol>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h2><a name="settings">Settings</a></h2>
+<p>The plugin's configuration is done as with many other
+CMSimple_XH plugins in the website's back-end.
+Select "Forum" from "Plugins".</p>
+<p>You can change the default settings of Forum_XH in "Plugin Config".
+Hints for the options will be displayed
+when hovering over the help icon with your mouse.</p>
+<p>Localization is done in "Plugin Language".
+You can translate the character strings to your own language,
+or customize them according to your needs.</p>
+<p>The look of the Forum_XH can be customized in "Plugin Stylesheet".</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h2><a name="usage">Usage</a></h2><!-- TODO -->
+<p>Inserting of a text block on a page is done with the following plugin call:</p>
+<pre>{{{PLUGIN:boilerplate('%NAME%');}}}</pre>
+<p>Replace %NAME% with the name of an already defined text block.
+The easiest way is to copy&paste the plugin call from Boilerplate_XH's administration.</p>
+<p>Note that using boilerplate() in the template is possible, but for performance reasons
+using newsbox() instead might be preferable.</p>
+<p>Note that the boilerplate data files could be accessed directly by calling their URL.
+A .htaccess file to prohibit this is already contained in the default data folder.
+For other servers or for custom data folders you have to take for yourself,
+that those data are protected from non authorized access.</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<!--<h2><a name="limitations">Limitations</a></h2>
+<div class="toplink"><a href="#">back to top</a></div>
+-->
+<h2><a name="license">License</a></h2>
+<p>Forum_XH is licensed under
+<a href="http://www.gnu.org/licenses/gpl.html">GPLv3</a>.</p>
+<p>&copy; 2012 Christoph M. Becker</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h2><a name="credits">Credits</a></h2>
+<p>Forum_XH uses <a href="http://markitup.jaysalvat.com/home/">markitup</a>.
+Many thanks to Jay Salvat for publishing this nice markup editor under GPL.</p>
+<p>The plugin icon is designed by <a href="http://www.dezinerfolio.com/">Dezinerfolio</a>.
+Many thanks for publishing this icon as freeware.</p>
+<p>The emoticons were taken from the <a href="http://led24.de/">LED icon pack</a>.
+Many thanks for publishing these icons under CC BY-SA.</p>
+<p>This plugin uses free applications icons from <a href="http://www.aha-soft.com/">Aha-Soft</a>.
+Many thanks for making these icons freely available.</p>
+<!--<p>Many thanks to the community at the <a href="http://www.cmsimpleforum.com">CMSimple forum</a>-->
+<!--for tips, suggestions and testing.</p>-->
+<p>And last but not least many thanks to <a href="http://www.harteg.dk">Peter Harteg</a>,
+the "father" of CMSimple, and all developers of
+<a href="http://www.cmsimple-xh.com">CMSimple_XH</a>
+without whom this amazing CMS wouldn't exist.</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+</div>
+
+</body>
+
+</html>

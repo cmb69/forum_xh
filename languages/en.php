@@ -52,4 +52,6 @@ $plugin_tx['forum']['syscheck_magic_quotes']="Magic quotes runtime off";
 $plugin_tx['forum']['syscheck_jquery']="<a href=\"http://www.cmsimple-xh.com/wiki/doku.php/plugins:jquery4cmsimple\">jQuery4CMSimple plugin</a> installed";
 $plugin_tx['forum']['syscheck_writable']="Folder '%s' writable";
 
+$plugin_tx['forum']['cf_folder_data']="Path to a folder relative to the CMSimple root directory, where to store the plugin's data. E.g. \"userfiles/forum/\". Leave empty to store in the plugin's data/ folder.";
+
 ?>
