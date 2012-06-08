@@ -1,6 +1,22 @@
 <?php
 
 /**
+ * Front-End of Forum_XH.
+ *
+ * Copyright (c) 2012 Christoph M. Becker (see license.txt)
+ */
+
+
+if (!defined('CMSIMPLE_XH_VERSION')) {
+    header('HTTP/1.0 403 Forbidden');
+    exit;
+}
+
+
+define('FORUM_VERSION', '1beta1');
+
+
+/**
  * Fully qualified absolute URL to CMSimple's index.php.
  */
 define('FORUM_URL', 'http://'.(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 's' : '')
@@ -22,13 +38,14 @@ function forum_data_folder() {
 /**
  * Locks resp. unlocks the forum's database.
  *
+ * @param string $forum  The name of the forum.
  * @param int $op  The locking operation.
  * @return void
  */
-function forum_lock($op) {
+function forum_lock($forum, $op) {
     static $fh = NULL;
     
-    $fn = forum_data_folder().'.lock';
+    $fn = forum_data_folder().$forum.'.lck';
     touch($fn);
     switch ($op) {
 	case LOCK_SH:
@@ -47,10 +64,11 @@ function forum_lock($op) {
 /**
  * Returns the forum's topics.
  *
+ * @param string $forum  The name of the forum.
  * @return array
  */
-function forum_read_topics() {
-    $fn = forum_data_folder().'topics.dat';
+function forum_read_topics($forum) {
+    $fn = forum_data_folder().$forum.'.dat';
     if (is_readable($fn) && ($cnt = file_get_contents($fn))) {
 	$data = unserialize($cnt);
     } else {
@@ -63,11 +81,12 @@ function forum_read_topics() {
 /**
  * Writes the forum's topics.
  *
+ * @param string $forum  The name of the forum.
  * @param array $data
  * @return void
  */
-function forum_write_topics($data) {
-    $fn = forum_data_folder().'topics.dat';
+function forum_write_topics($forum, $data) {
+    $fn = forum_data_folder().$forum.'.dat';
     if (($fh = fopen($fn, 'wb')) === FALSE || fwrite($fh, serialize($data)) === FALSE) {
 	e('cntsave', 'file', $fn);
     }
@@ -78,11 +97,12 @@ function forum_write_topics($data) {
 /**
  * Returns the topic $tid.
  *
+ * @param string $forum  The name of the forum.
  * @param string $tid  The topic ID.
  * @return array
  */
-function forum_read_topic($tid) {
-    $fn = forum_data_folder().$tid.'.dat';
+function forum_read_topic($forum, $tid) {
+    $fn = forum_data_folder().$forum.'_'.$tid.'.dat';
     if (is_readable($fn) && ($cnt = file_get_contents($fn))) {
 	$data = unserialize($cnt);
     } else {
@@ -95,12 +115,13 @@ function forum_read_topic($tid) {
 /**
  * Writes the topic $tid.
  *
+ * @param string $forum  The name of the forum.
  * @param string $tid  The topic ID.
  * @param array $data
  * @return void
  */
-function forum_write_topic($tid, $data) {
-    $fn = forum_data_folder().$tid.'.dat';
+function forum_write_topic($forum, $tid, $data) {
+    $fn = forum_data_folder().$forum.'_'.$tid.'.dat';
     if (($fh = fopen($fn, 'wb')) === FALSE || fwrite($fh, serialize($data)) === FALSE) {
 	e('cntsave', 'file', $fn);
     }
@@ -142,25 +163,26 @@ function forum_user() {
  * Returns the topic ID, if the comment could be posted,
  * FALSE otherwise.
  *
+ * @param string $forum  The name of the forum.
  * @param string $tid  The topic ID (NULL means new topic).
  * @return string  The topic ID.
  */
-function forum_post_comment($tid = NULL) {
+function forum_post_comment($forum, $tid = NULL) {
     if (forum_user() === FALSE) {return FALSE;}
     if (!isset($tid)) {$tid = uniqid();}
     
-    forum_lock(LOCK_EX);
+    forum_lock($forum, LOCK_EX);
     
-    $comments = forum_read_topic($tid);
+    $comments = forum_read_topic($forum, $tid);
     $cid = uniqid();
     $rec = array(
 	    'user' => forum_user(),
 	    'time' => time(),
 	    'comment' => stsl($_POST['forum_comment']));
     $comments[$cid] = $rec;
-    forum_write_topic($tid, $comments);
+    forum_write_topic($forum, $tid, $comments);
     
-    $topics = forum_read_topics();
+    $topics = forum_read_topics($forum);
     $rec = array(
 	    'title' => isset($_POST['forum_title'])
 		    ? stsl($_POST['forum_title']) : $topics[$tid]['title'],
@@ -168,9 +190,9 @@ function forum_post_comment($tid = NULL) {
 	    'user' => $rec['user'],
 	    'time' => $rec['time']);
     $topics[$tid] = $rec;
-    forum_write_topics($topics);
+    forum_write_topics($forum, $topics);
     
-    forum_lock(LOCK_UN);
+    forum_lock($forum, LOCK_UN);
     
     return $tid;
 }
@@ -181,22 +203,23 @@ function forum_post_comment($tid = NULL) {
  * Returns the topic ID, if the topic has further comments,
  * otherwise NULL, or FALSE, if the comment doesn't exist.
  *
+ * @param string $forum  The name of the forum.
  * @param string $tid  The topic ID.
  * @param string $cid  The comment ID.
  * @return string $tid  The topic ID.
  */
-function forum_delete_comment($tid, $cid) {
+function forum_delete_comment($forum, $tid, $cid) {
     global $adm;
     
-    forum_lock(LOCK_EX);
-    $topics = forum_read_topics();
-    $comments = forum_read_topic($tid);
+    forum_lock($forum, LOCK_EX);
+    $topics = forum_read_topics($forum);
+    $comments = forum_read_topic($forum, $tid);
     if (!$adm && forum_user() != $comments[$cid]['user']) {
 	return FALSE;
     }
     unset($comments[$cid]);
     if (count($comments) > 0) {
-	forum_write_topic($tid, $comments);
+	forum_write_topic($forum, $tid, $comments);
 	$rec = end($comments);
 	$topics[$tid]['comments'] = count($comments);
 	$topics[$tid]['user'] = $rec['user'];
@@ -206,8 +229,8 @@ function forum_delete_comment($tid, $cid) {
 	unset($topics[$tid]);
 	$tid = NULL;
     }
-    forum_write_topics($topics);
-    forum_lock(LOCK_UN);
+    forum_write_topics($forum, $topics);
+    forum_lock($forum, LOCK_UN);
     return $tid;
 }
 
@@ -323,18 +346,19 @@ function forum_bbcode_rec($matches) { // TODO: CSRF?
  * @return string
  */
 function forum_bbcode_emoticons($txt) { // TODO: i18n for alt attr.
-    global $pth;
+    global $pth, $plugin_tx;
     //static $search, $replace; // TODO: cache?
 
+    $ptx = $plugin_tx['forum'];
     $dir = $pth['folder']['plugins'].'forum/images/';
     $emoticons = array(
-	    ':)' => tag('img src="'.$dir.'emoticon_smile.png" alt="smile"'),
-	    ';)' => tag('img src="'.$dir.'emoticon_wink.png" alt="wink"'),
-	    ':D' => tag('img src="'.$dir.'emoticon_happy.png" alt="happy"'),
-	    'XD' => tag('img src="'.$dir.'emoticon_grin.png" alt="grin"'),
-	    ':P' => tag('img src="'.$dir.'emoticon_tongue.png" alt="tongue"'),
-	    ':o' => tag('img src="'.$dir.'emoticon_surprised.png" alt="surprised"'),
-	    ':(' => tag('img src="'.$dir.'emoticon_unhappy.png" alt="unhappy"'));
+	    ':)' => tag('img src="'.$dir.'emoticon_smile.png" alt="'.$ptx['lbl_smile'].'"'),
+	    ';)' => tag('img src="'.$dir.'emoticon_wink.png" alt="'.$ptx['lbl_wink'].'"'),
+	    ':D' => tag('img src="'.$dir.'emoticon_happy.png" alt="'.$ptx['lbl_happy'].'"'),
+	    'XD' => tag('img src="'.$dir.'emoticon_grin.png" alt="'.$ptx['lbl_grin'].'"'),
+	    ':P' => tag('img src="'.$dir.'emoticon_tongue.png" alt="'.$ptx['lbl_tongue'].'"'),
+	    ':o' => tag('img src="'.$dir.'emoticon_surprised.png" alt="'.$ptx['lbl_surprised'].'"'),
+	    ':(' => tag('img src="'.$dir.'emoticon_unhappy.png" alt="'.$ptx['lbl_unhappy'].'"'));
     $search = array_keys($emoticons);
     $replace = array_values($emoticons);
     return str_replace($search, $replace, $txt);
@@ -351,7 +375,7 @@ function forum_bbcode($txt) {
     $txt = htmlspecialchars($txt, ENT_NOQUOTES, 'UTF-8');
     $txt = forum_bbcode_rec(array($txt, '', '', $txt));
     $txt = forum_bbcode_emoticons($txt);
-    $txt = preg_replace('/\r\n|\r\|\n/', tag('br'), $txt);
+    $txt = preg_replace('/\r\n|\r|\n/', tag('br'), $txt);
     return $txt;
 }
 
@@ -410,15 +434,16 @@ function forum_posted($rec) {
 /**
  * Returns the topics overview.
  *
+ * @param string $forum  The name of the forum.
  * @return string  The (X)HTML.
  */
-function forum_view_topics() {
+function forum_view_topics($forum) {
     global $su, $plugin_tx;
     
     $ptx = $plugin_tx['forum'];
-    forum_lock(LOCK_SH);
-    $topics = forum_read_topics();
-    forum_lock(LOCK_UN);
+    forum_lock($forum, LOCK_SH);
+    $topics = forum_read_topics($forum);
+    forum_lock($forum, LOCK_UN);
     uasort($topics, create_function('$a, $b', "return \$b['time'] - \$a['time'];"));
     $o = '<h6 class="forum_heading">'.$ptx['msg_topics'].'</h6>'
 	    .'<ul class="forum_topics">';
@@ -446,17 +471,18 @@ function forum_view_topics() {
 /**
  * Returns the topic view.
  *
+ * @param string $forum  The name of the forum.
  * @param string $tid  The topic ID.
  * @return string  The (X)HTML.
  */
-function forum_view_topic($tid) {
+function forum_view_topic($forum, $tid) {
     global $su, $pth, $adm, $plugin_tx;
     
     $ptx = $plugin_tx['forum'];
-    forum_lock(LOCK_SH);
-    $topics = forum_read_topics();
-    $topic = forum_read_topic($tid);
-    forum_lock(LOCK_UN);
+    forum_lock($forum, LOCK_SH);
+    $topics = forum_read_topics($forum);
+    $topic = forum_read_topic($forum, $tid);
+    forum_lock($forum, LOCK_UN);
     $href = "?$su";
     $o = '<h6 class="forum_heading">'.$topics[$tid]['title'].'</h6>'
 	    .'<ul class="forum_topic">';
@@ -493,28 +519,34 @@ function forum_view_topic($tid) {
  * Handles the forum requests.
  *
  * @access public
+ * @param string $forum  The name of the forum.
  * @return mixed
  */
-function forum() {
-    global $su;
+function forum($forum) {
+    global $su, $e, $plugin_tx;
     
+    $ptx = $plugin_tx['forum'];
+    if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
+	$e .= '<li><b>'.$ptx['msg_invalid_name'].'</b>'.tag('br').$forum.'</li>'."\n";
+	return FALSE;
+    }
     $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'view';
     switch ($action) {
 	case 'view':
 	    if (empty($_GET['forum_topic'])) {
-		return forum_view_topics();
+		return forum_view_topics($forum);
 	    } else {
-		return forum_view_topic($_GET['forum_topic']);
+		return forum_view_topic($forum, $_GET['forum_topic']);
 	    }
 	case 'new':
 	    return forum_comment_form();
 	case 'post':
-	    $tid = forum_post_comment($_POST['forum_topic']);
+	    $tid = forum_post_comment($forum, $_POST['forum_topic']);
 	    $params = $tid ? "?$su&forum_topic=$tid" : "?$su";
 	    header('Location: '.FORUM_URL.$params, TRUE, 303);
 	    exit;
 	case 'delete':
-	    $params = forum_delete_comment($_POST['forum_topic'], $_POST['forum_comment'])
+	    $params = forum_delete_comment($forum, $_POST['forum_topic'], $_POST['forum_comment'])
 		    ? "?$su&forum_topic=$_POST[forum_topic]" : "?$su";
 	    header('Location: '.FORUM_URL.$params, TRUE, 303);
 	    exit;
