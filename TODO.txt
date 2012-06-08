@@ -1,0 +1,5 @@
+l10n of markitup
+$name parameter to allow multiple forums (necessary for 2lang)
+add config.php (data_folder)
+add manual (bbcode: no nesting of same elements; only 1 forum per page)
+default.php

@@ -25,3 +25,7 @@ form.forum_comment div.forum_title label {padding-right: 1em}
 form.forum_comment div.forum_title input {width: 30em}
 form.forum_comment textarea {width: 100%; padding: 0}
 form.forum_comment div.forum_submit {text-align: center}
+
+/* back-end */
+img.forum_plugin_icon {display: block; float: left; margin: 0 10px 0 0}
+p.forum_license {clear: both; text-align: justify}
