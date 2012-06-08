@@ -29,9 +29,21 @@ define('FORUM_URL', 'http://'.(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !=
  * @return string
  */
 function forum_data_folder() {
-    global $pth;
-    
-    return $pth['folder']['plugins'].'forum/data/';
+    global $pth, $plugin_cf;
+
+    $pcf = $plugin_cf['forum'];
+    if (empty($pcf['folder_data'])) {
+	$fn = $pth['folder']['plugins'].'forum/data/';
+    } else {
+	$fn = $pth['folder']['base'].$pcf['folder_data'];
+	if ($fn{strlen($fn) - 1} != '/') {$fn .= '/';}
+    }
+    if (file_exists($fn)) {
+	if (!is_dir($fn)) {e('cntopen', 'folder', $fn);}
+    } else {
+	if (!mkdir($fn, 0777, TRUE)) {e('cntsave', 'folder', $fn);}
+    }
+    return $fn;
 }
 
 
@@ -481,7 +493,7 @@ function forum_view_topic($forum, $tid) {
     $ptx = $plugin_tx['forum'];
     forum_lock($forum, LOCK_SH);
     $topics = forum_read_topics($forum);
-    $topic = forum_read_topic($forum, $tid);
+    $topic = forum_read_topic($forum, $tid); // TODO: topic does not exist
     forum_lock($forum, LOCK_UN);
     $href = "?$su";
     $o = '<h6 class="forum_heading">'.$topics[$tid]['title'].'</h6>'
