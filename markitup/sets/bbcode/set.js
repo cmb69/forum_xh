@@ -50,3 +50,16 @@ Forum.settings = {
 		{name:Forum.TX.PREVIEW, className:"preview", call:'preview' }
 	]
 }
+
+Forum.validate = function() {
+	var title = $('#forum_title');
+	if (title.length != 0 && title.val().length == 0) {
+		alert(Forum.TX.TITLE_MISSING);
+		return false;
+	}
+	if ($('textarea[name="forum_comment"]').val().length == 0) {
+		alert(Forum.TX.COMMENT_MISSING);
+		return false;
+	}
+	return true;
+}

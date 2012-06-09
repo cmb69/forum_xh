@@ -173,6 +173,18 @@ function forum_user() {
 
 
 /**
+ * Returns $id, if it's a valid ID, FALSE otherwise.
+ *
+ * @param string $id  The ID to check.
+ * @return string
+ */
+function forum_clean_id($id) {
+    return strlen($id) == 13 && preg_match('/^[a-f0-9]+$/u', $id)
+	    ? $id : FALSE;
+}
+
+
+/**
  * Processes a posted comment.
  * Returns the topic ID, if the comment could be posted,
  * FALSE otherwise.
@@ -182,8 +194,12 @@ function forum_user() {
  * @return string  The topic ID.
  */
 function forum_post_comment($forum, $tid = NULL) {
-    if (forum_user() === FALSE) {return FALSE;}
-    if (!isset($tid)) {$tid = uniqid();}
+    if (!isset($tid) && empty($_POST['forum_title'])
+	    || forum_user() === FALSE || empty($_POST['forum_comment'])) {
+	return FALSE;
+    }
+    $tid = isset($tid) ? forum_clean_id($tid) : uniqid();
+    if ($tid === FALSE ) {return FALSE;}
     
     forum_lock($forum, LOCK_EX);
     
@@ -215,7 +231,7 @@ function forum_post_comment($forum, $tid = NULL) {
 /**
  * Deletes a comment
  * Returns the topic ID, if the topic has further comments,
- * otherwise NULL, or FALSE, if the comment doesn't exist.
+ * otherwise NULL, or FALSE, if the comment couldn't be deleted.
  *
  * @param string $forum  The name of the forum.
  * @param string $tid  The topic ID.
@@ -225,6 +241,7 @@ function forum_post_comment($forum, $tid = NULL) {
 function forum_delete_comment($forum, $tid, $cid) {
     global $adm;
     
+    if ($tid === FALSE || $cid === FALSE) {return FALSE;}
     forum_lock($forum, LOCK_EX);
     $topics = forum_read_topics($forum);
     $comments = forum_read_topic($forum, $tid);
@@ -267,7 +284,7 @@ function forum_hjs() {
     include_jqueryplugin('markitup', $dir.'jquery.markitup.js');
     $hjs .= '<script type="text/javascript">/* <![CDATA[ */'."\n"
 	    .'Forum = {TX: {';
-    foreach (array('bold', 'italic', 'underline', 'emoticon', 'smile', 'wink', 'happy', 'grin',
+    foreach (array('title_missing', 'comment_missing', 'bold', 'italic', 'underline', 'emoticon', 'smile', 'wink', 'happy', 'grin',
 	    'tongue', 'surprised', 'unhappy', 'picture', 'link', 'size', 'big', 'normal', 'small',
 	    'bulleted_list', 'numeric_list', 'list_item', 'quotes', 'code', 'clean', 'preview', 'link_text') as $i => $key) {
 	if ($i > 0) {$hjs .= ', ';}
@@ -286,7 +303,7 @@ function forum_hjs() {
  * @param array $matches
  * @return string  The (X)HTML.
  */
-function forum_bbcode_rec($matches) { // TODO: CSRF?
+function forum_bbcode_rec($matches) {
     static $pattern = '/\[(i|b|u|s|url|img|size|list|quote|code)(=.*?)?](.*?)\[\/\1]/su';
     static $context = array();
 
@@ -359,7 +376,7 @@ function forum_bbcode_rec($matches) { // TODO: CSRF?
  * @param string $txt
  * @return string
  */
-function forum_bbcode_emoticons($txt) { // TODO: i18n for alt attr.
+function forum_bbcode_emoticons($txt) {
     global $pth, $plugin_tx;
     //static $search, $replace; // TODO: cache?
 
@@ -419,7 +436,7 @@ function forum_comment_form($tid = NULL) {
     $ptx = $plugin_tx['forum'];
     forum_hjs();
     $href = "?$su&amp;forum_actn=post";
-    $o = '<form class="forum_comment" action="'.$href.'" method="POST" accept-charset="UTF-8">';
+    $o = '<form class="forum_comment" action="'.$href.'" method="POST" accept-charset="UTF-8" onsubmit="return Forum.validate()">';
     if (!isset($tid)) {
 	$o .= '<h6 class="forum_heading">'.$ptx['msg_new_topic'].'</h6>';
 	$o .= '<div class="forum_title">'.'<label for="forum_title">'.$ptx['msg_title'].'</label>'
@@ -508,10 +525,10 @@ function forum_view_topic($forum, $tid) {
     $ptx = $plugin_tx['forum'];
     forum_lock($forum, LOCK_SH);
     $topics = forum_read_topics($forum);
-    $topic = forum_read_topic($forum, $tid); // TODO: topic does not exist
+    $topic = forum_read_topic($forum, $tid);
     forum_lock($forum, LOCK_UN);
     $href = "?$su";
-    $o = '<h6 class="forum_heading">'.$topics[$tid]['title'].'</h6>'
+    $o = '<h6 class="forum_heading">'.htmlspecialchars($topics[$tid]['title'], ENT_NOQUOTES, 'UTF-8').'</h6>'
 	    .'<ul class="forum_topic">';
     $i = 1;
     foreach ($topic as $cid => $comments) {
@@ -559,10 +576,11 @@ function forum($forum) {
     $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'view';
     switch ($action) {
 	case 'view':
-	    if (empty($_GET['forum_topic'])) {
+	    if (empty($_GET['forum_topic']) || ($tid = forum_clean_id($_GET['forum_topic'])) === FALSE
+		    || !file_exists(forum_data_folder($forum).$tid.'.dat')) {
 		return forum_view_topics($forum);
 	    } else {
-		return forum_view_topic($forum, $_GET['forum_topic']);
+		return forum_view_topic($forum, $tid);
 	    }
 	case 'new':
 	    return forum_comment_form().forum_powered_by();
@@ -572,7 +590,9 @@ function forum($forum) {
 	    header('Location: '.FORUM_URL.$params, TRUE, 303);
 	    exit;
 	case 'delete':
-	    $params = forum_delete_comment($forum, $_POST['forum_topic'], $_POST['forum_comment'])
+	    $tid = forum_clean_id($_POST['forum_topic']);
+	    $cid = forum_clean_id($_POST['forum_comment']);
+	    $params = forum_delete_comment($forum, $tid, $cid)
 		    ? "?$su&forum_topic=$_POST[forum_topic]" : "?$su";
 	    header('Location: '.FORUM_URL.$params, TRUE, 303);
 	    exit;

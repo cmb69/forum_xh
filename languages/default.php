@@ -18,8 +18,6 @@ $plugin_tx['forum']['msg_title']="Title";
 $plugin_tx['forum']['msg_invalid_name']="Invalid forum name (may contain a-z, 0-9 and - only):";
 $plugin_tx['forum']['msg_powered_by']="Powered by <a href=\"http://3-magi.net/?CMSimple_XH/Forum_XH\">Forum_XH</a>";
 
-$plugin_tx['forum']['lbl_title_missing']="Enter a topic title!";
-$plugin_tx['forum']['lbl_comment_missing']="Enter your comment!";
 $plugin_tx['forum']['lbl_submit']="Submit";
 $plugin_tx['forum']['lbl_delete']="Delete Comment";
 $plugin_tx['forum']['lbl_bold']="Bold";

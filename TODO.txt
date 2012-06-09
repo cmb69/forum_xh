@@ -1,5 +1,5 @@
-default.php
-
 search in Forum
 edit comments
 strikethrough for markitup
+move set.js to forum.js
+handle empty title/comment from PHP too
