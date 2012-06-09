@@ -1,5 +1,5 @@
-add manual (bbcode: no nesting of same elements; only 1 forum per page)
 default.php
 
 search in Forum
 edit comments
+strikethrough for markitup

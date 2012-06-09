@@ -313,7 +313,7 @@ function forum_bbcode_rec($matches) { // TODO: CSRF?
 	case 'img':
 	    $url = $matches[3];
 	    if (strpos($url, 'http:') !== 0) {$ok = FALSE; break;}
-	    $start = tag('img src="'.$url.'"'); $end = ''; $inner = '';
+	    $start = tag('img src="'.$url.'" alt=""'); $end = ''; $inner = '';
 	    break;
 	case 'size':
 	    $size = substr($matches[2], 1);
@@ -386,7 +386,7 @@ function forum_bbcode_emoticons($txt) { // TODO: i18n for alt attr.
  * @return string
  */
 function forum_bbcode($txt) {
-    $txt = htmlspecialchars($txt, ENT_NOQUOTES, 'UTF-8');
+    $txt = htmlspecialchars($txt, ENT_QUOTES, 'UTF-8');
     $txt = forum_bbcode_rec(array($txt, '', '', $txt));
     $txt = forum_bbcode_emoticons($txt);
     $txt = preg_replace('/\r\n|\r|\n/', tag('br'), $txt);

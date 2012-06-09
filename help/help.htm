@@ -22,16 +22,17 @@ and posting doesn't require any additional input such as user name, email addres
 Forum_XH features a markup editor allowing basic <a href="http://en.wikipedia.org/wiki/BBCode">BBCode</a> markup.
 All data is stored in flat files which are protected from concurrent access
 by pessimistic locking of the whole forum, so Forum_XH is not suitable for heavily frequented forums.
-Furthermore typical advanced forum features such as user signatures, PM, subscribing to topics etc.
-are neither available nor planned for the future.
-So if you have demands for a full fledged forum solution: use one of these!</p>
+Furthermore typical advanced forum features such as user signatures,
+PM, subscribing to topics etc. are not available.</p>
 
 <ul id="nav">
 <li><a href="#notice">Important Notice</a></li>
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#settings">Settings</a></li>
-<li><a href="#usage">Usage</a></li>
+<li><a href="#usage">Usage</a>
+<ul><li><a href="#usage-bbcode">BBCode</a></li></ul>
+</li>
 <!--<li><a href="#limitations">Limitations</a></li>-->
 <li><a href="#license">License</a></li>
 <li><a href="#credits">Credits</a></li>
@@ -80,16 +81,62 @@ or customize them according to your needs.</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h2><a name="usage">Usage</a></h2><!-- TODO -->
-<p>Inserting of a text block on a page is done with the following plugin call:</p>
-<pre>{{{PLUGIN:boilerplate('%NAME%');}}}</pre>
-<p>Replace %NAME% with the name of an already defined text block.
-The easiest way is to copy&paste the plugin call from Boilerplate_XH's administration.</p>
-<p>Note that using boilerplate() in the template is possible, but for performance reasons
-using newsbox() instead might be preferable.</p>
-<p>Note that the boilerplate data files could be accessed directly by calling their URL.
+<p>Inserting of a forum on a page is done with the following plugin call:</p>
+<pre>{{{PLUGIN:forum('name-of-the-forum');}}}</pre>
+<p>You can have as many forums as you like, but only one per CMSimple page.
+The forums are distinguished by their name, which may contain alphanumeric characters and hyphens only.</p>
+<p>After switching to view mode, you'll see the forum, and if it already contains topics, you can navigate through them.
+Posting new comments requires that you're logged in via
+<a href="http://ge-webdesign.de/cmsimpleplugins/?Modifizierte_Plugins/memberpages_XH">Memberpages_XH</a>
+or <a href="http://ge-webdesign.de/cmsimpleplugins/?Modifizierte_Plugins/register_mod_XH">Register_mod_XH</a>.
+Then you can even delete your own posts (editing them is not yet possible).
+The CMSimple administrator can delete posts from all users,
+but in order to post new comments, he has to log in additionally as member.
+No additional admin functionality is provided in the back-end.</p>
+<p>Note that the forum data files could be accessed directly by calling their URL.
 A .htaccess file to prohibit this is already contained in the default data folder.
-For other servers or for custom data folders you have to take for yourself,
+For other servers or for custom data folders you have to take care for yourself,
 that those data are protected from non authorized access.</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h3><a name="usage-bbcode">BBCode</a></h3>
+To allow users to markup their comments, basic BBCode is available.
+The following elements are supported:
+<table border="1">
+<tr><td>[b]bolded text[/b]</td>
+<td><strong>bolded text</strong></td></tr>
+<tr><td>[i]italicized text[/i]</td>
+<td><em>italicized text</em></td></tr>
+<tr><td>[u]underlined text[/u]</td>
+<td><u>underlined text</u></td></tr>
+<tr><td>[s]strikethrough text[/s]</td>
+<td><s>strikethrough text</s></td></tr>
+<tr><td>[url]http://cmsimple-xh.com/[/url]</td>
+<td><a href="http://cmsimple-xh.com/">http://cmsimple-xh.com</a></td></tr>
+<tr><td>[url=http://cmsimple-xh.com/]CMSimple_XH[/url]</td>
+<td><a href="http://cmsimple-xh.com/">CMSimple_XH</a></td></tr>
+<tr><td>[img]http://cmsimple-xh.com/images/flags/en.gif[/img]</td>
+<td><img src="http://cmsimple-xh.com/images/flags/en.gif" alt=""></td></tr>
+<tr><td>[size=150]large text[/size]</td>
+<td><span style="font-size:150%">large text</span></td></tr>
+<tr><td>[list][*]One [*]Two[/list]</td>
+<td><ul><li>One</li><li>Two</li></ul></td></tr>
+<tr><td>[list=1][*]One [*]Two[/list]</td>
+<td><ol start="1"><li>One</li><li>Two</li></ol></td></tr>
+<tr><td>[quote]quoted text[/quote]</td>
+<td><blockquote>quoted text</blockquote></td></tr>
+<tr><td>[code]monospaced text[/code]</td>
+<td><pre>monospaced text</pre></td></tr>
+</table>
+<p>Note that nesting of the same kind of elements is not allowed (e.g. nested lists are not possible).
+The (X)HTML created by the BBCode converter is always valid and secure (i.e. no script injection is possible).
+If any nesting of BBCode elements results in invalid (X)HTML,
+the offending elements will simply be ignored.</p>
+<p>The usage of the markup editor should be pretty much self explaining.
+Please note that a simple preview is available via the right most button,
+which comes in handy, as the comments can't be edited once posted.
+If JS is not available in the user's browsers, the editor won't work,
+but using BBCode in the textarea is still possible.</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <!--<h2><a name="limitations">Limitations</a></h2>
