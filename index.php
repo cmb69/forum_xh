@@ -26,9 +26,10 @@ define('FORUM_URL', 'http://'.(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !=
 /**
  * Returns the data folder's path.
  *
+ * @param string $forum  The name of the forum.
  * @return string
  */
-function forum_data_folder() {
+function forum_data_folder($forum = NULL) {
     global $pth, $plugin_cf;
 
     $pcf = $plugin_cf['forum'];
@@ -38,6 +39,7 @@ function forum_data_folder() {
 	$fn = $pth['folder']['base'].$pcf['folder_data'];
 	if ($fn{strlen($fn) - 1} != '/') {$fn .= '/';}
     }
+    if (isset($forum)) {$fn .= $forum.'/';}
     if (file_exists($fn)) {
 	if (!is_dir($fn)) {e('cntopen', 'folder', $fn);}
     } else {
@@ -57,7 +59,7 @@ function forum_data_folder() {
 function forum_lock($forum, $op) {
     static $fh = NULL;
     
-    $fn = forum_data_folder().$forum.'.lck';
+    $fn = forum_data_folder($forum).'.lock';
     touch($fn);
     switch ($op) {
 	case LOCK_SH:
@@ -80,7 +82,7 @@ function forum_lock($forum, $op) {
  * @return array
  */
 function forum_read_topics($forum) {
-    $fn = forum_data_folder().$forum.'.dat';
+    $fn = forum_data_folder($forum).'topics.dat';
     if (is_readable($fn) && ($cnt = file_get_contents($fn))) {
 	$data = unserialize($cnt);
     } else {
@@ -98,7 +100,7 @@ function forum_read_topics($forum) {
  * @return void
  */
 function forum_write_topics($forum, $data) {
-    $fn = forum_data_folder().$forum.'.dat';
+    $fn = forum_data_folder($forum).'topics.dat';
     if (($fh = fopen($fn, 'wb')) === FALSE || fwrite($fh, serialize($data)) === FALSE) {
 	e('cntsave', 'file', $fn);
     }
@@ -114,7 +116,7 @@ function forum_write_topics($forum, $data) {
  * @return array
  */
 function forum_read_topic($forum, $tid) {
-    $fn = forum_data_folder().$forum.'_'.$tid.'.dat';
+    $fn = forum_data_folder($forum).$tid.'.dat';
     if (is_readable($fn) && ($cnt = file_get_contents($fn))) {
 	$data = unserialize($cnt);
     } else {
@@ -133,7 +135,7 @@ function forum_read_topic($forum, $tid) {
  * @return void
  */
 function forum_write_topic($forum, $tid, $data) {
-    $fn = forum_data_folder().$forum.'_'.$tid.'.dat';
+    $fn = forum_data_folder($forum).$tid.'.dat';
     if (($fh = fopen($fn, 'wb')) === FALSE || fwrite($fh, serialize($data)) === FALSE) {
 	e('cntsave', 'file', $fn);
     }
@@ -164,7 +166,7 @@ function forum_numerus($count) {
  * @return string
  */
 function forum_user() {
-    if (session_id() == '') {start_session();}
+    if (session_id() == '') {session_start();}
     return isset($_SESSION['Name']) ? $_SESSION['Name'] : (
 	    isset($_SESSION['username']) ? $_SESSION['username'] : FALSE);
 }
@@ -237,7 +239,7 @@ function forum_delete_comment($forum, $tid, $cid) {
 	$topics[$tid]['user'] = $rec['user'];
 	$topics[$tid]['time'] = $rec['time'];
     } else {
-	unlink(forum_data_folder().$tid.'.dat');
+	unlink(forum_data_folder($forum).$tid.'.dat');
 	unset($topics[$tid]);
 	$tid = NULL;
     }
@@ -267,7 +269,7 @@ function forum_hjs() {
 	    .'Forum = {TX: {';
     foreach (array('bold', 'italic', 'underline', 'emoticon', 'smile', 'wink', 'happy', 'grin',
 	    'tongue', 'surprised', 'unhappy', 'picture', 'link', 'size', 'big', 'normal', 'small',
-	    'bulleted_list', 'numeric_list', 'list_item', 'quotes', 'code', 'clean', 'preview') as $i => $key) {
+	    'bulleted_list', 'numeric_list', 'list_item', 'quotes', 'code', 'clean', 'preview', 'link_text') as $i => $key) {
 	if ($i > 0) {$hjs .= ', ';}
 	$hjs .= strtoupper($key).': \''.addcslashes($ptx['lbl_'.$key], "\0..\37\\\'").'\'';
     }
@@ -364,10 +366,10 @@ function forum_bbcode_emoticons($txt) { // TODO: i18n for alt attr.
     $ptx = $plugin_tx['forum'];
     $dir = $pth['folder']['plugins'].'forum/images/';
     $emoticons = array(
+	    ':))' => tag('img src="'.$dir.'emoticon_happy.png" alt="'.$ptx['lbl_happy'].'"'),
 	    ':)' => tag('img src="'.$dir.'emoticon_smile.png" alt="'.$ptx['lbl_smile'].'"'),
 	    ';)' => tag('img src="'.$dir.'emoticon_wink.png" alt="'.$ptx['lbl_wink'].'"'),
-	    ':D' => tag('img src="'.$dir.'emoticon_happy.png" alt="'.$ptx['lbl_happy'].'"'),
-	    'XD' => tag('img src="'.$dir.'emoticon_grin.png" alt="'.$ptx['lbl_grin'].'"'),
+	    ':D' => tag('img src="'.$dir.'emoticon_grin.png" alt="'.$ptx['lbl_grin'].'"'),
 	    ':P' => tag('img src="'.$dir.'emoticon_tongue.png" alt="'.$ptx['lbl_tongue'].'"'),
 	    ':o' => tag('img src="'.$dir.'emoticon_surprised.png" alt="'.$ptx['lbl_surprised'].'"'),
 	    ':(' => tag('img src="'.$dir.'emoticon_unhappy.png" alt="'.$ptx['lbl_unhappy'].'"'));

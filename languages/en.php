@@ -43,6 +43,7 @@ $plugin_tx['forum']['lbl_quotes']="Quotes";
 $plugin_tx['forum']['lbl_code']="Code";
 $plugin_tx['forum']['lbl_clean']="Clean";
 $plugin_tx['forum']['lbl_preview']="Preview";
+$plugin_tx['forum']['lbl_link_text']="Your text to link here...";
 
 $plugin_tx['forum']['syscheck_title']="System check";
 $plugin_tx['forum']['syscheck_phpversion']="PHP version &ge; %s";

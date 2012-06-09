@@ -23,14 +23,14 @@ Forum.settings = {
 		dropMenu:[
 			{name:Forum.TX.SMILE, replaceWith:':)'},
 			{name:Forum.TX.WINK, replaceWith:';)'},
-			{name:Forum.TX.HAPPY, replaceWith:':D'},
-			{name:Forum.TX.GRIN, replaceWith:'XD'},
+			{name:Forum.TX.HAPPY, replaceWith:':))'},
+			{name:Forum.TX.GRIN, replaceWith:':D'},
 			{name:Forum.TX.TONGUE, replaceWith:':P'},
 			{name:Forum.TX.SURPRISED, replaceWith:':o'},
 			{name:Forum.TX.UNHAPPY, replaceWith:':('}
 		]},
 		{name:Forum.TX.PICTURE, key:'P', replaceWith:'[img][![Url]!][/img]'},
-		{name:Forum.TX.LINK, key:'L', openWith:'[url=[![Url]!]]', closeWith:'[/url]', placeHolder:'Your text to link here...'},
+		{name:Forum.TX.LINK, key:'L', openWith:'[url=[![Url]!]]', closeWith:'[/url]', placeHolder:Forum.TX.LINK_TEXT},
 		{separator:'---------------' },
 		{name:Forum.TX.SIZE, key:'S', openWith:'[size=[![Text size]!]]', closeWith:'[/size]',
 		dropMenu :[
