@@ -395,6 +395,18 @@ function forum_bbcode($txt) {
 
 
 /**
+ * Returns the powered by link.
+ *
+ * @return string  The (X)HTML.
+ */
+function forum_powered_by() {
+    global $plugin_tx;
+    
+    return '<div class="forum_powered_by">'.$plugin_tx['forum']['msg_powered_by'].'</div>';
+}
+
+
+/**
  * Returns the comment form.
  *
  * @param string $tid  The topic ID.
@@ -478,6 +490,7 @@ function forum_view_topics($forum) {
 	$href = "?$su&amp;forum_actn=new";
 	$o .= '<div class="forum_navlink"><a href="'.$href.'">'.$ptx['msg_start_topic'].'</a></div>';
     }
+    $o .= forum_powered_by();
     return $o;
 }
 
@@ -521,10 +534,9 @@ function forum_view_topic($forum, $tid) {
 	$i++;
     }
     $o .= '</ul>';
-    if (forum_user() !== FALSE) {
-	$o .= forum_comment_form($tid);
-    }
+    if (forum_user() !== FALSE) {$o .= forum_comment_form($tid);}
     $o .= '<div class="forum_navlink"><a href="'.$href.'">'.$ptx['msg_back'].'</a></div>';
+    $o .= forum_powered_by();
     return $o;
 }
 
@@ -553,7 +565,7 @@ function forum($forum) {
 		return forum_view_topic($forum, $_GET['forum_topic']);
 	    }
 	case 'new':
-	    return forum_comment_form();
+	    return forum_comment_form().forum_powered_by();
 	case 'post':
 	    $tid = forum_post_comment($forum, $_POST['forum_topic']);
 	    $params = $tid ? "?$su&forum_topic=$tid" : "?$su";
