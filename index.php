@@ -13,7 +13,7 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
 }
 
 
-define('FORUM_VERSION', '1beta1');
+define('FORUM_VERSION', '1beta2');
 
 
 /**
