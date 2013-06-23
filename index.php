@@ -418,7 +418,7 @@ function forum_view_topic($forum, $tid) {
 	    .'<ul class="forum_topic">';
     $i = 1;
     include_once $pth['folder']['plugins'] . 'forum/classes/BBCode.php';
-    $bbcode = new BBCode($pth['folder']['plugins'] . 'forum/images/');
+    $bbcode = new Forum_BBCode($pth['folder']['plugins'] . 'forum/images/');
     foreach ($topic as $cid => $comments) {
 	$delform = $adm || $comments['user'] == forum_user()
 		? '<form class="forum_delete" action="." method="POST"'
@@ -493,7 +493,7 @@ function forum($forum) {
  */
 if (isset($_GET['forum_preview'])) {
     include_once $pth['folder']['plugins'] . 'forum/classes/BBCode.php';
-    $temp = new BBCode($pth['folder']['plugins'] . 'forum/images/');
+    $temp = new Forum_BBCode($pth['folder']['plugins'] . 'forum/images/');
 ?>
 <?php if ($cf['xhtml']['endtags'] == 'true'): ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
