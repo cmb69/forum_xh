@@ -70,13 +70,13 @@ class BBCodeTest extends PHPUnit_Framework_TestCase
             array('<>&"\'', '&lt;&gt;&amp;&quot;\''),
             array(
                 ':)) :) ;) :D :P :o :(',
-                '<img src="./emoticon_happy" alt="happy">'
-                . ' <img src="./emoticon_smile" alt="smile">'
-                . ' <img src="./emoticon_wink" alt="wink">'
-                . ' <img src="./emoticon_grin" alt="grin">'
-                . ' <img src="./emoticon_tongue" alt="tongue">'
-                . ' <img src="./emoticon_surprised" alt="surprised">'
-                . ' <img src="./emoticon_unhappy" alt="unhappy">'
+                '<img src="./emoticon_happy.png" alt="happy">'
+                . ' <img src="./emoticon_smile.png" alt="smile">'
+                . ' <img src="./emoticon_wink.png" alt="wink">'
+                . ' <img src="./emoticon_grin.png" alt="grin">'
+                . ' <img src="./emoticon_tongue.png" alt="tongue">'
+                . ' <img src="./emoticon_surprised.png" alt="surprised">'
+                . ' <img src="./emoticon_unhappy.png" alt="unhappy">'
             ),
             array('[i][b]foo[/b][/i]', '<i><b>foo</b></i>'),
             array('[i][b]foo[/i][/b]', '<i>[b]foo</i>[/b]'),
