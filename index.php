@@ -58,7 +58,7 @@ function forum_data_folder($forum = NULL) {
  */
 function forum_lock($forum, $op) {
     static $fh = NULL;
-    
+
     $fn = forum_data_folder($forum).'.lock';
     touch($fn);
     switch ($op) {
@@ -200,9 +200,9 @@ function forum_post_comment($forum, $tid = NULL) {
     }
     $tid = isset($tid) ? forum_clean_id($tid) : uniqid();
     if ($tid === FALSE ) {return FALSE;}
-    
+
     forum_lock($forum, LOCK_EX);
-    
+
     $comments = forum_read_topic($forum, $tid);
     $cid = uniqid();
     $rec = array(
@@ -211,7 +211,7 @@ function forum_post_comment($forum, $tid = NULL) {
 	    'comment' => stsl($_POST['forum_comment']));
     $comments[$cid] = $rec;
     forum_write_topic($forum, $tid, $comments);
-    
+
     $topics = forum_read_topics($forum);
     $rec = array(
 	    'title' => isset($_POST['forum_title'])
@@ -221,9 +221,9 @@ function forum_post_comment($forum, $tid = NULL) {
 	    'time' => $rec['time']);
     $topics[$tid] = $rec;
     forum_write_topics($forum, $topics);
-    
+
     forum_lock($forum, LOCK_UN);
-    
+
     return $tid;
 }
 
@@ -240,7 +240,7 @@ function forum_post_comment($forum, $tid = NULL) {
  */
 function forum_delete_comment($forum, $tid, $cid) {
     global $adm;
-    
+
     if ($tid === FALSE || $cid === FALSE) {return FALSE;}
     forum_lock($forum, LOCK_EX);
     $topics = forum_read_topics($forum);
@@ -274,7 +274,7 @@ function forum_delete_comment($forum, $tid, $cid) {
  */
 function forum_hjs() {
     global $pth, $hjs, $plugin_cf, $plugin_tx;
-    
+
     $ptx = $plugin_tx['forum'];
     $dir = $pth['folder']['plugins'].'forum/markitup/';
     $hjs .= tag('link rel="stylesheet" type="text/css" href="'.$dir.'skins/simple/style.css"')."\n"
@@ -298,127 +298,13 @@ function forum_hjs() {
 
 
 /**
- * Returns the bbcode converted to (X)HTML.
- *
- * @param array $matches
- * @return string  The (X)HTML.
- */
-function forum_bbcode_rec($matches) {
-    static $pattern = '/\[(i|b|u|s|url|img|size|list|quote|code)(=.*?)?](.*?)\[\/\1]/su';
-    static $context = array();
-
-    $inlines = array('i', 'b', 'u', 's', 'url', 'img', 'size');
-    array_push($context, in_array($matches[1], $inlines) ? 'inline' : $matches[1]);
-    $ok = TRUE;
-    $matches[3] = trim($matches[3]);
-    switch ($matches[1]) {
-	case '':
-	    $start = ''; $end = '';
-	    $inner = preg_replace_callback($pattern, 'forum_bbcode_rec', $matches[3]);
-	    break;
-	case 'url':
-	    if (empty($matches[2])) {
-		$url = $matches[3];
-		$inner = $matches[3];
-	    } else {
-		$url = substr($matches[2], 1);
-		$inner = preg_replace_callback($pattern, 'forum_bbcode_rec', $matches[3]);
-	    }
-	    if (strpos($url, 'http:') !== 0) {$ok = FALSE; break;}
-	    $start = '<a href="'.$url.'">'; $end = '</a>';
-	    break;
-	case 'img':
-	    $url = $matches[3];
-	    if (strpos($url, 'http:') !== 0) {$ok = FALSE; break;}
-	    $start = tag('img src="'.$url.'" alt=""'); $end = ''; $inner = '';
-	    break;
-	case 'size':
-	    $size = substr($matches[2], 1);
-	    $inner = preg_replace_callback($pattern, 'forum_bbcode_rec', $matches[3]);
-	    $start = '<span style="font-size: '.$size.'%; line-height: '.$size.'%">'; $end = '</span>';
-	    break;
-	case 'list':
-	    if (in_array('inline', $context)) {$ok = FALSE; break;}
-	    if (empty($matches[2])) {
-		$start = '<ul>'; $end = '</ul>';
-	    } else {
-		$start = '<ol start="'.substr($matches[2], 1).'">'; $end = '</ol>';
-	    }
-	    $items = array_map('trim', explode('[*]', $matches[3]));
-	    if (array_shift($items) != '') {$ok = FALSE; break;}
-	    $inner = implode('', array_map(create_function('$elt',
-		    'return \'<li>\'.preg_replace_callback(\''.$pattern.'\', \'forum_bbcode_rec\', $elt).\'</li>\';'),
-		    $items));
-	    break;
-	case 'quote':
-	    if (in_array('inline', $context)) {$ok = FALSE; break;}
-	    $start = '<blockquote>'; $end = '</blockquote>';
-	    $inner = preg_replace_callback($pattern, 'forum_bbcode_rec', $matches[3]);
-	    break;
-	case 'code':
-	    if (in_array('inline', $context)) {$ok = FALSE; break;}
-	    $start = '<pre>'; $end = '</pre>';
-	    $inner = $matches[3];
-	    break;
-	default:
-	    $start = '<'.$matches[1].'>';
-	    $inner = preg_replace_callback($pattern, 'forum_bbcode_rec', $matches[3]);
-	    $end = '</'.$matches[1].'>';
-    }
-    array_pop($context);
-    return $ok ? $start.$inner.$end : $matches[0];
-}
-
-
-/**
- * Returns $txt with all emoticons replaced with the appropriate <img>s.
- *
- * @param string $txt
- * @return string
- */
-function forum_bbcode_emoticons($txt) {
-    global $pth, $plugin_tx;
-    //static $search, $replace; // TODO: cache?
-
-    $ptx = $plugin_tx['forum'];
-    $dir = $pth['folder']['plugins'].'forum/images/';
-    $emoticons = array(
-	    ':))' => tag('img src="'.$dir.'emoticon_happy.png" alt="'.$ptx['lbl_happy'].'"'),
-	    ':)' => tag('img src="'.$dir.'emoticon_smile.png" alt="'.$ptx['lbl_smile'].'"'),
-	    ';)' => tag('img src="'.$dir.'emoticon_wink.png" alt="'.$ptx['lbl_wink'].'"'),
-	    ':D' => tag('img src="'.$dir.'emoticon_grin.png" alt="'.$ptx['lbl_grin'].'"'),
-	    ':P' => tag('img src="'.$dir.'emoticon_tongue.png" alt="'.$ptx['lbl_tongue'].'"'),
-	    ':o' => tag('img src="'.$dir.'emoticon_surprised.png" alt="'.$ptx['lbl_surprised'].'"'),
-	    ':(' => tag('img src="'.$dir.'emoticon_unhappy.png" alt="'.$ptx['lbl_unhappy'].'"'));
-    $search = array_keys($emoticons);
-    $replace = array_values($emoticons);
-    return str_replace($search, $replace, $txt);
-}
-
-
-/**
- * Returns $txt with all bbcode converted to (X)HTML.
- *
- * @param string $txt
- * @return string
- */
-function forum_bbcode($txt) {
-    $txt = htmlspecialchars($txt, ENT_QUOTES, 'UTF-8');
-    $txt = forum_bbcode_rec(array($txt, '', '', $txt));
-    $txt = forum_bbcode_emoticons($txt);
-    $txt = preg_replace('/\r\n|\r|\n/', tag('br'), $txt);
-    return $txt;
-}
-
-
-/**
  * Returns the powered by link.
  *
  * @return string  The (X)HTML.
  */
 function forum_powered_by() {
     global $plugin_tx;
-    
+
     return '<div class="forum_powered_by">'.$plugin_tx['forum']['msg_powered_by'].'</div>';
 }
 
@@ -428,10 +314,10 @@ function forum_powered_by() {
  *
  * @param string $tid  The topic ID.
  * @return string  The (X)HTML.
- */ 
+ */
 function forum_comment_form($tid = NULL) {
     global $su, $plugin_tx;
-    
+
     if (forum_user() === FALSE) {return FALSE;}
     $ptx = $plugin_tx['forum'];
     forum_hjs();
@@ -464,7 +350,7 @@ function forum_comment_form($tid = NULL) {
  */
 function forum_posted($rec) {
     global $plugin_tx;
-    
+
     $ptx = $plugin_tx['forum'];
     $date = date($ptx['format_date'], $rec['time']);
     $time = date($ptx['format_time'], $rec['time']);
@@ -482,7 +368,7 @@ function forum_posted($rec) {
  */
 function forum_view_topics($forum) {
     global $su, $plugin_tx;
-    
+
     $ptx = $plugin_tx['forum'];
     forum_lock($forum, LOCK_SH);
     $topics = forum_read_topics($forum);
@@ -521,7 +407,7 @@ function forum_view_topics($forum) {
  */
 function forum_view_topic($forum, $tid) {
     global $su, $pth, $adm, $plugin_tx;
-    
+
     $ptx = $plugin_tx['forum'];
     forum_lock($forum, LOCK_SH);
     $topics = forum_read_topics($forum);
@@ -531,6 +417,8 @@ function forum_view_topic($forum, $tid) {
     $o = '<h6 class="forum_heading">'.htmlspecialchars($topics[$tid]['title'], ENT_NOQUOTES, 'UTF-8').'</h6>'
 	    .'<ul class="forum_topic">';
     $i = 1;
+    include_once $pth['folder']['plugins'] . 'forum/classes/BBCode.php';
+    $bbcode = new BBCode($pth['folder']['plugins'] . 'forum/images/');
     foreach ($topic as $cid => $comments) {
 	$delform = $adm || $comments['user'] == forum_user()
 		? '<form class="forum_delete" action="." method="POST"'
@@ -546,7 +434,7 @@ function forum_view_topic($forum, $tid) {
 	$o .= '<li class="forum_'.($i & 1 ? 'odd' : 'even').'">'
 		.$delform
 		.'<div class="forum_details">'.forum_posted($comments).'</div>'
-		.'<div class="forum_comment">'.forum_bbcode($comments['comment']).'</div>'
+		.'<div class="forum_comment">'.$bbcode->toHtml($comments['comment']).'</div>'
 		.'</li>';
 	$i++;
     }
@@ -567,7 +455,7 @@ function forum_view_topic($forum, $tid) {
  */
 function forum($forum) {
     global $su, $e, $plugin_tx;
-    
+
     $ptx = $plugin_tx['forum'];
     if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
 	$e .= '<li><b>'.$ptx['msg_invalid_name'].'</b>'.tag('br').$forum.'</li>'."\n";
@@ -604,7 +492,8 @@ function forum($forum) {
  * Return the comment preview.
  */
 if (isset($_GET['forum_preview'])) {
-
+    include_once $pth['folder']['plugins'] . 'forum/classes/BBCode.php';
+    $temp = new BBCode($pth['folder']['plugins'] . 'forum/images/');
 ?>
 <?php if ($cf['xhtml']['endtags'] == 'true'): ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -618,7 +507,7 @@ if (isset($_GET['forum_preview'])) {
 <?php echo tag('link rel="stylesheet" href="'.$pth['folder']['plugins'].'forum/css/stylesheet.css" type="text/css"') ?>
 </head>
 <body>
-<?php echo forum_bbcode(stsl($_POST['data'])) ?>
+<?php echo $temp->toHtml(stsl($_POST['data'])) ?>
 </body>
 </html>
 <?php
