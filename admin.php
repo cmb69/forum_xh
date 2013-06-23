@@ -45,7 +45,7 @@ function forum_version() {
  * @return string  The (X)HTML.
  */
 function forum_system_check() { // RELEASE-TODO
-    global $pth, $tx, $plugin_tx;
+    global $pth, $tx, $plugin_tx, $_Forum_Contents;
 
     define('FORUM_PHP_VERSION', '4.3.0');
     $ptx = $plugin_tx['forum'];
@@ -71,7 +71,7 @@ function forum_system_check() { // RELEASE-TODO
     foreach (array('config/', 'css/', 'languages/') as $folder) {
 	$folders[] = $pth['folder']['plugins'].'forum/'.$folder;
     }
-    $folders[] = forum_data_folder();
+    $folders[] = $_Forum_Contents->dataFolder();
     foreach ($folders as $folder) {
 	$o .= (is_writable($folder) ? $ok : $warn)
 		.'&nbsp;&nbsp;'.sprintf($ptx['syscheck_writable'], $folder).tag('br')."\n";

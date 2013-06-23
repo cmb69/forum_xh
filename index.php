@@ -23,125 +23,11 @@ define('FORUM_URL', 'http://'.(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !=
 	.$_SERVER['SERVER_NAME'].preg_replace('/index.php$/', '', $_SERVER['PHP_SELF']));
 
 
-/**
- * Returns the data folder's path.
- *
- * @param string $forum  The name of the forum.
- * @return string
- */
-function forum_data_folder($forum = NULL) {
-    global $pth, $plugin_cf;
-
-    $pcf = $plugin_cf['forum'];
-    if (empty($pcf['folder_data'])) {
-	$fn = $pth['folder']['plugins'].'forum/data/';
-    } else {
-	$fn = $pth['folder']['base'].$pcf['folder_data'];
-	if ($fn{strlen($fn) - 1} != '/') {$fn .= '/';}
-    }
-    if (isset($forum)) {$fn .= $forum.'/';}
-    if (file_exists($fn)) {
-	if (!is_dir($fn)) {e('cntopen', 'folder', $fn);}
-    } else {
-	if (!mkdir($fn, 0777, TRUE)) {e('cntsave', 'folder', $fn);}
-    }
-    return $fn;
-}
-
-
-/**
- * Locks resp. unlocks the forum's database.
- *
- * @param string $forum  The name of the forum.
- * @param int $op  The locking operation.
- * @return void
- */
-function forum_lock($forum, $op) {
-    static $fh = NULL;
-
-    $fn = forum_data_folder($forum).'.lock';
-    touch($fn);
-    switch ($op) {
-	case LOCK_SH:
-	case LOCK_EX:
-	    $fh = fopen($fn, 'r+b');
-	    flock($fh, $op);
-	    break;
-	case LOCK_UN:
-	    flock($fh, $op);
-	    fclose($fh);
-	    break;
-    }
-}
-
-
-/**
- * Returns the forum's topics.
- *
- * @param string $forum  The name of the forum.
- * @return array
- */
-function forum_read_topics($forum) {
-    $fn = forum_data_folder($forum).'topics.dat';
-    if (is_readable($fn) && ($cnt = file_get_contents($fn))) {
-	$data = unserialize($cnt);
-    } else {
-	$data = array();
-    }
-    return $data;
-}
-
-
-/**
- * Writes the forum's topics.
- *
- * @param string $forum  The name of the forum.
- * @param array $data
- * @return void
- */
-function forum_write_topics($forum, $data) {
-    $fn = forum_data_folder($forum).'topics.dat';
-    if (($fh = fopen($fn, 'wb')) === FALSE || fwrite($fh, serialize($data)) === FALSE) {
-	e('cntsave', 'file', $fn);
-    }
-    if ($fh !== FALSE) {fclose($fh);}
-}
-
-
-/**
- * Returns the topic $tid.
- *
- * @param string $forum  The name of the forum.
- * @param string $tid  The topic ID.
- * @return array
- */
-function forum_read_topic($forum, $tid) {
-    $fn = forum_data_folder($forum).$tid.'.dat';
-    if (is_readable($fn) && ($cnt = file_get_contents($fn))) {
-	$data = unserialize($cnt);
-    } else {
-	$data = array();
-    }
-    return $data;
-}
-
-
-/**
- * Writes the topic $tid.
- *
- * @param string $forum  The name of the forum.
- * @param string $tid  The topic ID.
- * @param array $data
- * @return void
- */
-function forum_write_topic($forum, $tid, $data) {
-    $fn = forum_data_folder($forum).$tid.'.dat';
-    if (($fh = fopen($fn, 'wb')) === FALSE || fwrite($fh, serialize($data)) === FALSE) {
-	e('cntsave', 'file', $fn);
-    }
-    if ($fh !== FALSE) {fclose($fh);}
-}
-
+require_once $pth['folder']['plugin_classes'] . 'Contents.php';
+$_Forum_Contents = new Forum_Contents(
+    $pth['folder']['base'], $plugin_cf['forum']['folder_data'],
+    $pth['folder']['plugins'] . 'forum/data/'
+);
 
 /**
  * Returns the numerus suffix for the language keys.
@@ -194,6 +80,8 @@ function forum_clean_id($id) {
  * @return string  The topic ID.
  */
 function forum_post_comment($forum, $tid = NULL) {
+    global $_Forum_Contents;
+
     if (!isset($tid) && empty($_POST['forum_title'])
 	    || forum_user() === FALSE || empty($_POST['forum_comment'])) {
 	return FALSE;
@@ -201,18 +89,18 @@ function forum_post_comment($forum, $tid = NULL) {
     $tid = isset($tid) ? forum_clean_id($tid) : uniqid();
     if ($tid === FALSE ) {return FALSE;}
 
-    forum_lock($forum, LOCK_EX);
+    $_Forum_Contents->lock($forum, LOCK_EX);
 
-    $comments = forum_read_topic($forum, $tid);
+    $comments = $_Forum_Contents->getTopic($forum, $tid);
     $cid = uniqid();
     $rec = array(
 	    'user' => forum_user(),
 	    'time' => time(),
 	    'comment' => stsl($_POST['forum_comment']));
     $comments[$cid] = $rec;
-    forum_write_topic($forum, $tid, $comments);
+    $_Forum_Contents->setTopic($forum, $tid, $comments);
 
-    $topics = forum_read_topics($forum);
+    $topics = $_Forum_Contents->getTopics($forum);
     $rec = array(
 	    'title' => isset($_POST['forum_title'])
 		    ? stsl($_POST['forum_title']) : $topics[$tid]['title'],
@@ -220,9 +108,9 @@ function forum_post_comment($forum, $tid = NULL) {
 	    'user' => $rec['user'],
 	    'time' => $rec['time']);
     $topics[$tid] = $rec;
-    forum_write_topics($forum, $topics);
+    $_Forum_Contents->setTopics($forum, $topics);
 
-    forum_lock($forum, LOCK_UN);
+    $_Forum_Contents->lock($forum, LOCK_UN);
 
     return $tid;
 }
@@ -239,29 +127,29 @@ function forum_post_comment($forum, $tid = NULL) {
  * @return string $tid  The topic ID.
  */
 function forum_delete_comment($forum, $tid, $cid) {
-    global $adm;
+    global $adm, $_Forum_Contents;
 
     if ($tid === FALSE || $cid === FALSE) {return FALSE;}
-    forum_lock($forum, LOCK_EX);
-    $topics = forum_read_topics($forum);
-    $comments = forum_read_topic($forum, $tid);
+    $_Forum_Contents->lock($forum, LOCK_EX);
+    $topics = $_Forum_Contents->getTopics($forum);
+    $comments = $_Forum_Contents->getTopic($forum, $tid);
     if (!$adm && forum_user() != $comments[$cid]['user']) {
 	return FALSE;
     }
     unset($comments[$cid]);
     if (count($comments) > 0) {
-	forum_write_topic($forum, $tid, $comments);
+	$_Forum_Contents->setTopic($forum, $tid, $comments);
 	$rec = end($comments);
 	$topics[$tid]['comments'] = count($comments);
 	$topics[$tid]['user'] = $rec['user'];
 	$topics[$tid]['time'] = $rec['time'];
     } else {
-	unlink(forum_data_folder($forum).$tid.'.dat');
+	unlink($_Forum_Contents->dataFolder($forum).$tid.'.dat');
 	unset($topics[$tid]);
 	$tid = NULL;
     }
-    forum_write_topics($forum, $topics);
-    forum_lock($forum, LOCK_UN);
+    $_Forum_Contents->setTopics($forum, $topics);
+    $_Forum_Contents->lock($forum, LOCK_UN);
     return $tid;
 }
 
@@ -367,12 +255,12 @@ function forum_posted($rec) {
  * @return string  The (X)HTML.
  */
 function forum_view_topics($forum) {
-    global $su, $plugin_tx;
+    global $su, $plugin_tx, $_Forum_Contents;
 
     $ptx = $plugin_tx['forum'];
-    forum_lock($forum, LOCK_SH);
-    $topics = forum_read_topics($forum);
-    forum_lock($forum, LOCK_UN);
+    $_Forum_Contents->lock($forum, LOCK_SH);
+    $topics = $_Forum_Contents->getTopics($forum);
+    $_Forum_Contents->lock($forum, LOCK_UN);
     uasort($topics, create_function('$a, $b', "return \$b['time'] - \$a['time'];"));
     $o = '<h6 class="forum_heading">'.$ptx['msg_topics'].'</h6>'
 	    .'<ul class="forum_topics">';
@@ -406,13 +294,13 @@ function forum_view_topics($forum) {
  * @return string  The (X)HTML.
  */
 function forum_view_topic($forum, $tid) {
-    global $su, $pth, $adm, $plugin_tx;
+    global $su, $pth, $adm, $plugin_tx, $_Forum_Contents;
 
     $ptx = $plugin_tx['forum'];
-    forum_lock($forum, LOCK_SH);
-    $topics = forum_read_topics($forum);
-    $topic = forum_read_topic($forum, $tid);
-    forum_lock($forum, LOCK_UN);
+    $_Forum_Contents->lock($forum, LOCK_SH);
+    $topics = $_Forum_Contents->getTopics($forum);
+    $topic = $_Forum_Contents->getTopic($forum, $tid);
+    $_Forum_Contents->lock($forum, LOCK_UN);
     $href = "?$su";
     $o = '<h6 class="forum_heading">'.htmlspecialchars($topics[$tid]['title'], ENT_NOQUOTES, 'UTF-8').'</h6>'
 	    .'<ul class="forum_topic">';
@@ -454,7 +342,7 @@ function forum_view_topic($forum, $tid) {
  * @return mixed
  */
 function forum($forum) {
-    global $su, $e, $plugin_tx;
+    global $su, $e, $plugin_tx, $_Forum_Contents;
 
     $ptx = $plugin_tx['forum'];
     if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
@@ -465,7 +353,7 @@ function forum($forum) {
     switch ($action) {
 	case 'view':
 	    if (empty($_GET['forum_topic']) || ($tid = forum_clean_id($_GET['forum_topic'])) === FALSE
-		    || !file_exists(forum_data_folder($forum).$tid.'.dat')) {
+		    || !file_exists($_Forum_Contents->dataFolder($forum).$tid.'.dat')) {
 		return forum_view_topics($forum);
 	    } else {
 		return forum_view_topic($forum, $tid);
