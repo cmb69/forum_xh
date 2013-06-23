@@ -204,7 +204,7 @@ class Forum_BBCode
         $emoticons = array(':))', ':)', ';)', ':D', ':P', ':o', ':(');
         $images = array();
         foreach ($emotions as $emotion) {
-            $src = $this->emoticonDir . 'emoticon_' . $emotion;
+            $src = $this->emoticonDir . 'emoticon_' . $emotion . '.png';
             $alt = $ptx['lbl_' . $emotion];
             $images[] = tag('img src="' . $src . '" alt="' . $alt . '"');
         }
