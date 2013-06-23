@@ -186,6 +186,19 @@ class Forum_Contents
         }
     }
 
+    /**
+     * Returns <var>$id</var>, if it's a valid ID, <var>false</var> otherwise.
+     *
+     * @param string $id An ID to check.
+     *
+     * @return string
+     */
+    function cleanId($id)
+    {
+        return preg_match('/^[a-f0-9]{13}+$/u', $id)
+                ? $id : false;
+    }
+
 }
 
 ?>

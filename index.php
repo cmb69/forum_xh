@@ -59,18 +59,6 @@ function forum_user() {
 
 
 /**
- * Returns $id, if it's a valid ID, FALSE otherwise.
- *
- * @param string $id  The ID to check.
- * @return string
- */
-function forum_clean_id($id) {
-    return strlen($id) == 13 && preg_match('/^[a-f0-9]+$/u', $id)
-	    ? $id : FALSE;
-}
-
-
-/**
  * Processes a posted comment.
  * Returns the topic ID, if the comment could be posted,
  * FALSE otherwise.
@@ -86,7 +74,7 @@ function forum_post_comment($forum, $tid = NULL) {
 	    || forum_user() === FALSE || empty($_POST['forum_comment'])) {
 	return FALSE;
     }
-    $tid = isset($tid) ? forum_clean_id($tid) : uniqid();
+    $tid = isset($tid) ? $_Forum_Contents->cleanId($tid) : uniqid();
     if ($tid === FALSE ) {return FALSE;}
 
     $_Forum_Contents->lock($forum, LOCK_EX);
@@ -352,7 +340,7 @@ function forum($forum) {
     $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'view';
     switch ($action) {
 	case 'view':
-	    if (empty($_GET['forum_topic']) || ($tid = forum_clean_id($_GET['forum_topic'])) === FALSE
+	    if (empty($_GET['forum_topic']) || ($tid = $_Forum_Contents->cleanId($_GET['forum_topic'])) === FALSE
 		    || !file_exists($_Forum_Contents->dataFolder($forum).$tid.'.dat')) {
 		return forum_view_topics($forum);
 	    } else {
@@ -366,8 +354,8 @@ function forum($forum) {
 	    header('Location: '.FORUM_URL.$params, TRUE, 303);
 	    exit;
 	case 'delete':
-	    $tid = forum_clean_id($_POST['forum_topic']);
-	    $cid = forum_clean_id($_POST['forum_comment']);
+	    $tid = $_Forum_Contents->cleanId($_POST['forum_topic']);
+	    $cid = $_Forum_Contents->cleanId($_POST['forum_comment']);
 	    $params = forum_delete_comment($forum, $tid, $cid)
 		    ? "?$su&forum_topic=$_POST[forum_topic]" : "?$su";
 	    header('Location: '.FORUM_URL.$params, TRUE, 303);
