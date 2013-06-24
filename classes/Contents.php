@@ -212,6 +212,23 @@ class Forum_Contents
     }
 
     /**
+     * Returns a numeric array with topic title and topic details.
+     *
+     * @param string $forum A forum name.
+     * @param string $tid   A topic ID.
+     *
+     * @return array
+     */
+    function getTopicWithTitle($forum, $tid)
+    {
+        $this->lock($forum, LOCK_SH);
+        $topics = $this->getTopics($forum);
+        $topic = $this->getTopic($forum, $tid);
+        $this->lock($forum, LOCK_UN);
+        return array($topics[$tid]['title'], $topic);
+    }
+
+    /**
      * Creates a comment.
      *
      * @param string $forum   A forum name.

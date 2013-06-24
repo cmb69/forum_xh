@@ -264,16 +264,13 @@ function forum_view_topic($forum, $tid) {
     global $su, $pth, $adm, $plugin_tx, $_Forum_Contents;
 
     $ptx = $plugin_tx['forum'];
-    $_Forum_Contents->lock($forum, LOCK_SH);
-    $topics = $_Forum_Contents->getTopics($forum);
-    $topic = $_Forum_Contents->getTopic($forum, $tid);
-    $_Forum_Contents->lock($forum, LOCK_UN);
+    list($title, $topic) = $_Forum_Contents->getTopicWithTitle($forum, $tid);
     $href = "?$su";
     $i = 1;
     include_once $pth['folder']['plugins'] . 'forum/classes/BBCode.php';
     $bbcode = new Forum_BBCode($pth['folder']['plugins'] . 'forum/images/');
     $label = array(
-	'title' => htmlspecialchars($topics[$tid]['title'], ENT_NOQUOTES, 'UTF-8'),
+	'title' => htmlspecialchars($title, ENT_NOQUOTES, 'UTF-8'),
 	'delete' => $ptx['lbl_delete'],
 	'confirmDelete' => $ptx['msg_confirm_delete'],
 	'back' => $ptx['msg_back']
