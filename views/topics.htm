@@ -1,0 +1,18 @@
+<!-- Forum_XH: Topics -->
+<h6 class="forum_heading"><?php echo $label['heading'];?></h6>
+<ul class="forum_topics">
+<?php foreach ($topics as $topic):?>
+    <li class="<?php echo $topic['class'];?>">
+	<div class="forum_title">
+            <a href="<?php echo $topic['href'];?>"><?php echo $topic['title'];?></a>
+        </div>
+	<div class="forum_details"><?php echo $topic['details'];?></div>
+    </li>
+<?php endforeach;?>
+</ul>
+<?php if ($is_user):?>
+<div class="forum_navlink">
+    <a href="<?php echo $href;?>"><?php echo $label['start_topic'];?></a>
+</div>
+<?php endif;?>
+<?php echo $poweredBy;?>

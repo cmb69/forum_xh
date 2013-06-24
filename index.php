@@ -230,27 +230,30 @@ function forum_view_topics($forum) {
     $topics = $_Forum_Contents->getTopics($forum);
     $_Forum_Contents->lock($forum, LOCK_UN);
     uasort($topics, create_function('$a, $b', "return \$b['time'] - \$a['time'];"));
-    $o = '<h6 class="forum_heading">'.$ptx['msg_topics'].'</h6>'
-	    .'<ul class="forum_topics">';
+
+    $label = array(
+	'heading' => $ptx['msg_topics'],
+	'start_topic' => $ptx['msg_start_topic']
+    );
     $i = 1;
-    foreach ($topics as $tid => $topic) {
-	$href = "?$su&amp;forum_topic=$tid";
-	$comments = sprintf($ptx['msg_comments'.forum_numerus($topic['comments'])], $topic['comments']);
-	$details = str_replace(array('{comments}', '{posted}'), array($comments, forum_posted($topic)),
-		$ptx['msg_topic_details']);
-	$o .= '<li class="forum_'.($i & 1 ? 'odd' : 'even').'">'
-		.'<div class="forum_title"><a href="'.$href.'">'.$topic['title'].'</a></div>'
-		.'<div class="forum_details">'.$details.'</div>'
-		.'</li>';
+    foreach ($topics as $tid => &$topic) {
+	$topic['href'] = "?$su&amp;forum_topic=$tid";
+	$comments = sprintf(
+	    $ptx['msg_comments' . forum_numerus($topic['comments'])],
+	    $topic['comments']
+	);
+	$topic['details'] = str_replace(
+	    array('{comments}', '{posted}'), array($comments, forum_posted($topic)),
+	    $ptx['msg_topic_details']
+	);
+	$topic['class'] = 'forum_' . ($i & 1 ? 'odd' : 'even');
 	$i++;
     }
-    $o .= '</ul>';
-    if (forum_user() !== FALSE) {
-	$href = "?$su&amp;forum_actn=new";
-	$o .= '<div class="forum_navlink"><a href="'.$href.'">'.$ptx['msg_start_topic'].'</a></div>';
-    }
-    $o .= forum_powered_by();
-    return $o;
+    $is_user = forum_user() !== false;
+    $href = "?$su&amp;forum_actn=new";
+    $poweredBy = forum_powered_by();
+    $bag = compact('label', 'topics', 'href', 'is_user', 'poweredBy');
+    return Forum_render('topics', $bag);
 }
 
 
@@ -337,6 +340,34 @@ function forum($forum) {
 	    forum_delete_comment($forum, $tid, $cid);
 	    break;
     }
+}
+
+/**
+ * Returns an instantiated view template.
+ *
+ * @param string $_template A template name.
+ * @param array  $_bag      Variables for the template.
+ *
+ * @global array The paths of system files and folders.
+ * @global array The configuration of the core.
+ *
+ * @return string (X)HTML
+ */
+function Forum_render($_template, $_bag)
+{
+    global $pth, $cf;
+
+    $_xhtml = $cf['xhtml']['endtags'] == 'true';
+    $_template = $pth['folder']['plugins'] . 'forum/views/' . $_template . '.htm';
+    unset($cf, $pth);
+    extract($_bag);
+    ob_start();
+    include $_template;
+    $view = ob_get_clean();
+    if (!$_xhtml) {
+	$view = str_replace(' />', '>', $view);
+    }
+    return $view;
 }
 
 
