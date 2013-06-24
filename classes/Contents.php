@@ -193,7 +193,7 @@ class Forum_Contents
      *
      * @return void
      */
-    function createComment($forum, $tid, $title = null, $cid, $comment)
+    function createComment($forum, $tid, $title, $cid, $comment)
     {
         $this->lock($forum, LOCK_EX);
 
