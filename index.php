@@ -358,31 +358,25 @@ function Forum_render($_template, $_bag)
     return $view;
 }
 
+function Forum_commentPreview()
+{
+    global $pth;
+
+    include_once $pth['folder']['plugins'] . 'forum/classes/BBCode.php';
+    $bbcode = new Forum_BBCode($pth['folder']['plugins'] . 'forum/images/');
+    $comment = $bbcode->toHtml(stsl($_POST['data']));
+    $templateStylesheet = $pth['file']['stylesheet'];
+    $forumStylesheet = $pth['folder']['plugins'] . 'forum/css/stylesheet.css';
+    $bag = compact('comment', 'templateStylesheet', 'forumStylesheet');
+    return Forum_render('preview', $bag);
+}
+
 
 /**
  * Return the comment preview.
  */
 if (isset($_GET['forum_preview'])) {
-    include_once $pth['folder']['plugins'] . 'forum/classes/BBCode.php';
-    $temp = new Forum_BBCode($pth['folder']['plugins'] . 'forum/images/');
-?>
-<?php if ($cf['xhtml']['endtags'] == 'true'): ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<?php else: ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<?php endif ?>
-<head>
-<?php echo tag('link rel="stylesheet" href="'.$pth['file']['stylesheet'].'" type="text/css"') ?>
-<?php echo tag('link rel="stylesheet" href="'.$pth['folder']['plugins'].'forum/css/stylesheet.css" type="text/css"') ?>
-</head>
-<body>
-<?php echo $temp->toHtml(stsl($_POST['data'])) ?>
-</body>
-</html>
-<?php
-
+    echo Forum_commentPreview();
     exit;
 }
 
