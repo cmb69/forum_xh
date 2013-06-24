@@ -171,30 +171,28 @@ function forum_powered_by() {
  * @param string $tid  The topic ID.
  * @return string  The (X)HTML.
  */
-function forum_comment_form($tid = NULL) {
+function forum_comment_form($tid = null)
+{
     global $su, $plugin_tx;
 
-    if (forum_user() === FALSE) {return FALSE;}
+    if (forum_user() === false) {
+	return false;
+    }
     $ptx = $plugin_tx['forum'];
     forum_hjs();
-    $href = "?$su&amp;forum_actn=post";
-    $o = '<form class="forum_comment" action="'.$href.'" method="POST" accept-charset="UTF-8" onsubmit="return Forum.validate()">';
-    if (!isset($tid)) {
-	$o .= '<h6 class="forum_heading">'.$ptx['msg_new_topic'].'</h6>';
-	$o .= '<div class="forum_title">'.'<label for="forum_title">'.$ptx['msg_title'].'</label>'
-		.tag('input type="text" id="forum_title" name="forum_title"').'</div>';
-    } else {
-	$o .= '<h6 class="forum_heading">'.$ptx['msg_add_comment'].'</h6>';
-	$o .= tag('input type="hidden" name="forum_topic" value="'.$tid.'"');
-    }
-    $o .= '<textarea name="forum_comment" cols="80" rows="10">'.'</textarea>'
-	    .'<div class="forum_submit">'
-	    .tag('input type="submit" class="submit" value="'.$ptx['lbl_submit'].'"').'</div>'
-	    .'</form>';
-    if (!isset($tid)) {
-	$o .= '<div class="forum_navlink">'.'<a href="?'.$su.'">'.$ptx['msg_back'].'</a>'.'</div>';
-    }
-    return $o;
+
+    $newTopic = !isset($tid);
+    $labels = array(
+	'heading' => $newTopic ? $ptx['msg_new_topic'] : $ptx['msg_add_comment'],
+	'title' => $ptx['msg_title'],
+	'submit' => $ptx['lbl_submit'],
+	'back' => $ptx['msg_back']
+    );
+    $action = '?' . $su . '&amp;forum_actn=post';
+    $overviewUrl = '?' . $su;
+
+    $bag = compact('newTopic', 'labels', 'tid', 'action', 'overviewUrl');
+    return Forum_render('form', $bag);
 }
 
 
