@@ -66,7 +66,7 @@ function forum_user() {
  *
  * @param string $forum A forum name.
  * @param string $tid   A topic ID (<var>null</var> means new topic).
- * 
+ *
  * @return string
  */
 function forum_post_comment($forum, $tid = null)
@@ -107,15 +107,18 @@ function forum_post_comment($forum, $tid = null)
  * @param string $forum A forum name.
  * @param string $tid  	A topic ID.
  * @param string $cid   A comment ID.
- *
- * @return string
  */
 function forum_delete_comment($forum, $tid, $cid)
 {
-    global $adm, $_Forum_Contents;
+    global $adm, $su, $_Forum_Contents;
 
+    $tid = $_Forum_Contents->cleanId($_POST['forum_topic']);
+    $cid = $_Forum_Contents->cleanId($_POST['forum_comment']);
     $user = $adm ? true : forum_user();
-    return $_Forum_Contents->deleteComment($forum, $tid, $cid, $user);
+    $queryString = $_Forum_Contents->deleteComment($forum, $tid, $cid, $user)
+	? '?' . $su . '&forum_topic=' . $tid : '?' . $su;
+    header('Location: ' . FORUM_URL . $queryString, true, 303);
+    exit;
 }
 
 
@@ -331,12 +334,8 @@ function forum($forum) {
 	    header('Location: '.FORUM_URL.$params, TRUE, 303);
 	    exit;
 	case 'delete':
-	    $tid = $_Forum_Contents->cleanId($_POST['forum_topic']);
-	    $cid = $_Forum_Contents->cleanId($_POST['forum_comment']);
-	    $params = forum_delete_comment($forum, $tid, $cid)
-		    ? "?$su&forum_topic=$_POST[forum_topic]" : "?$su";
-	    header('Location: '.FORUM_URL.$params, TRUE, 303);
-	    exit;
+	    forum_delete_comment($forum, $tid, $cid);
+	    break;
     }
 }
 
