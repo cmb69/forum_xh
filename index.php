@@ -269,35 +269,30 @@ function forum_view_topic($forum, $tid) {
     $topic = $_Forum_Contents->getTopic($forum, $tid);
     $_Forum_Contents->lock($forum, LOCK_UN);
     $href = "?$su";
-    $o = '<h6 class="forum_heading">'.htmlspecialchars($topics[$tid]['title'], ENT_NOQUOTES, 'UTF-8').'</h6>'
-	    .'<ul class="forum_topic">';
     $i = 1;
     include_once $pth['folder']['plugins'] . 'forum/classes/BBCode.php';
     $bbcode = new Forum_BBCode($pth['folder']['plugins'] . 'forum/images/');
-    foreach ($topic as $cid => $comments) {
-	$delform = $adm || $comments['user'] == forum_user()
-		? '<form class="forum_delete" action="." method="POST"'
-			.' onsubmit="return confirm(\''.$ptx['msg_confirm_delete'].'\')">'
-		    .tag('input type="hidden" name="selected" value="'.$su.'"')
-		    .tag('input type="hidden" name="forum_actn" value="delete"')
-		    .tag('input type="hidden" name="forum_topic" value="'.$tid.'"')
-		    .tag('input type="hidden" name="forum_comment" value="'.$cid.'"')
-		    .tag('input type="image" src="'.$pth['folder']['plugins'].'forum/images/delete.png"'
-			.' alt="'.$ptx['lbl_delete'].'" title="'.$ptx['lbl_delete'].'"')
-		    .'</form>'
-		: '';
-	$o .= '<li class="forum_'.($i & 1 ? 'odd' : 'even').'">'
-		.$delform
-		.'<div class="forum_details">'.forum_posted($comments).'</div>'
-		.'<div class="forum_comment">'.$bbcode->toHtml($comments['comment']).'</div>'
-		.'</li>';
+    $label = array(
+	'title' => htmlspecialchars($topics[$tid]['title'], ENT_NOQUOTES, 'UTF-8'),
+	'delete' => $ptx['lbl_delete'],
+	'confirmDelete' => $ptx['msg_confirm_delete'],
+	'back' => $ptx['msg_back']
+    );
+    $deleteImg = $pth['folder']['plugins'].'forum/images/delete.png';
+    foreach ($topic as $cid => &$comment) {
+	$mayDelete = $adm || $comment['user'] == forum_user();
+	$comment['mayDelete'] = $mayDelete;
+	$comment['class'] = 'forum_' . ($i & 1 ? 'odd' : 'even');
+	$comment['comment'] = $bbcode->toHtml($comment['comment']);
+	$comment['details'] = forum_posted($comment);
 	$i++;
     }
-    $o .= '</ul>';
-    if (forum_user() !== FALSE) {$o .= forum_comment_form($tid);}
-    $o .= '<div class="forum_navlink"><a href="'.$href.'">'.$ptx['msg_back'].'</a></div>';
-    $o .= forum_powered_by();
-    return $o;
+    $isUser = forum_user() !== false;
+    $commentForm = forum_comment_form($tid);
+    $poweredBy = forum_powered_by();
+
+    $bag = compact('label', 'tid', 'topic', 'su', 'deleteImg', 'href', 'poweredBy', 'isUser', 'commentForm');
+    return Forum_render('topic', $bag);
 }
 
 
