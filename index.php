@@ -60,45 +60,38 @@ function forum_user() {
 
 /**
  * Processes a posted comment.
- * Returns the topic ID, if the comment could be posted,
- * FALSE otherwise.
  *
- * @param string $forum  The name of the forum.
- * @param string $tid  The topic ID (NULL means new topic).
- * @return string  The topic ID.
+ * Returns the topic ID, if the comment could be posted,
+ * <var>false</var> otherwise.
+ *
+ * @param string $forum A forum name.
+ * @param string $tid   A topic ID (<var>null</var> means new topic).
+ * 
+ * @return string
  */
-function forum_post_comment($forum, $tid = NULL) {
+function forum_post_comment($forum, $tid = null)
+{
     global $_Forum_Contents;
 
     if (!isset($tid) && empty($_POST['forum_title'])
-	    || forum_user() === FALSE || empty($_POST['forum_comment'])) {
-	return FALSE;
+	|| forum_user() === false || empty($_POST['forum_comment'])
+    ) {
+	return false;
     }
-    $tid = isset($tid) ? $_Forum_Contents->cleanId($tid) : uniqid();
-    if ($tid === FALSE ) {return FALSE;}
+    $tid = isset($tid)
+	? $_Forum_Contents->cleanId($tid)
+	: $_Forum_Contents->getId();
+    if ($tid === false) {
+	return false;
+    }
 
-    $_Forum_Contents->lock($forum, LOCK_EX);
-
-    $comments = $_Forum_Contents->getTopic($forum, $tid);
-    $cid = uniqid();
-    $rec = array(
+    $cid = $_Forum_Contents->getId();
+    $comment = array(
 	    'user' => forum_user(),
 	    'time' => time(),
 	    'comment' => stsl($_POST['forum_comment']));
-    $comments[$cid] = $rec;
-    $_Forum_Contents->setTopic($forum, $tid, $comments);
-
-    $topics = $_Forum_Contents->getTopics($forum);
-    $rec = array(
-	    'title' => isset($_POST['forum_title'])
-		    ? stsl($_POST['forum_title']) : $topics[$tid]['title'],
-	    'comments' => count($comments),
-	    'user' => $rec['user'],
-	    'time' => $rec['time']);
-    $topics[$tid] = $rec;
-    $_Forum_Contents->setTopics($forum, $topics);
-
-    $_Forum_Contents->lock($forum, LOCK_UN);
+    $title = isset($_POST['forum_title']) ? stsl($_POST['forum_title']) : null;
+    $_Forum_Contents->createComment($forum, $tid, $title, $cid, $comment);
 
     return $tid;
 }
@@ -106,39 +99,23 @@ function forum_post_comment($forum, $tid = NULL) {
 
 /**
  * Deletes a comment
- * Returns the topic ID, if the topic has further comments,
- * otherwise NULL, or FALSE, if the comment couldn't be deleted.
  *
- * @param string $forum  The name of the forum.
- * @param string $tid  The topic ID.
- * @param string $cid  The comment ID.
- * @return string $tid  The topic ID.
+ * Returns the topic ID, if the topic has further comments,
+ * otherwise <var>null</var>,
+ * or <var>false</var>, if the comment couldn't be deleted.
+ *
+ * @param string $forum A forum name.
+ * @param string $tid  	A topic ID.
+ * @param string $cid   A comment ID.
+ *
+ * @return string
  */
-function forum_delete_comment($forum, $tid, $cid) {
+function forum_delete_comment($forum, $tid, $cid)
+{
     global $adm, $_Forum_Contents;
 
-    if ($tid === FALSE || $cid === FALSE) {return FALSE;}
-    $_Forum_Contents->lock($forum, LOCK_EX);
-    $topics = $_Forum_Contents->getTopics($forum);
-    $comments = $_Forum_Contents->getTopic($forum, $tid);
-    if (!$adm && forum_user() != $comments[$cid]['user']) {
-	return FALSE;
-    }
-    unset($comments[$cid]);
-    if (count($comments) > 0) {
-	$_Forum_Contents->setTopic($forum, $tid, $comments);
-	$rec = end($comments);
-	$topics[$tid]['comments'] = count($comments);
-	$topics[$tid]['user'] = $rec['user'];
-	$topics[$tid]['time'] = $rec['time'];
-    } else {
-	unlink($_Forum_Contents->dataFolder($forum).$tid.'.dat');
-	unset($topics[$tid]);
-	$tid = NULL;
-    }
-    $_Forum_Contents->setTopics($forum, $topics);
-    $_Forum_Contents->lock($forum, LOCK_UN);
-    return $tid;
+    $user = $adm ? true : forum_user();
+    return $_Forum_Contents->deleteComment($forum, $tid, $cid, $user);
 }
 
 

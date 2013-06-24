@@ -160,6 +160,16 @@ class Forum_Contents
     }
 
     /**
+     * Returns a new ID.
+     *
+     * @return string
+     */
+    function getId()
+    {
+        return uniqid();
+    }
+
+    /**
      * Returns <var>$id</var>, if it's a valid ID, <var>false</var> otherwise.
      *
      * @param string $id An ID to check.
@@ -172,6 +182,79 @@ class Forum_Contents
                 ? $id : false;
     }
 
+    /**
+     * Creates a comment.
+     *
+     * @param string $forum   A forum name.
+     * @param string $tid     A thread ID.
+     * @param string $title   A title of the comment.
+     * @param string $cid     A comment ID.
+     * @param array  $comment A comment record.
+     *
+     * @return void
+     */
+    function createComment($forum, $tid, $title = null, $cid, $comment)
+    {
+        $this->lock($forum, LOCK_EX);
+
+        $comments = $this->getTopic($forum, $tid);
+        $comments[$cid] = $comment;
+        $this->setTopic($forum, $tid, $comments);
+
+        $topics = $this->getTopics($forum);
+        $topics[$tid] = array(
+            'title' => isset($title) ? $title : $topics[$tid]['title'],
+            'comments' => count($comments),
+            'user' => $comment['user'],
+            'time' => $comment['time']);
+        $this->setTopics($forum, $topics);
+
+        $this->lock($forum, LOCK_UN);
+    }
+
+    /**
+     * Deletes a comment
+     *
+     * Returns the topic ID, if the topic has further comments,
+     * otherwise <var>null</var>,
+     * or <var>false</var>, if the comment couldn't be deleted.
+     *
+     * @param string $forum The name of a forum.
+     * @param string $tid   A topic ID.
+     * @param string $cid   A comment ID.
+     * @param string $user  The user who triggers the delete.
+     *
+     * @return string
+     */
+    function deleteComment($forum, $tid, $cid, $user)
+    {
+        global $adm;
+
+        if (!$tid || !$cid) {
+            return false;
+        }
+        $this->lock($forum, LOCK_EX);
+        $topics = $this->getTopics($forum);
+        $comments = $this->getTopic($forum, $tid);
+        if (!($user === true || $user == $comments[$cid]['user'])) {
+            return false;
+        }
+        unset($comments[$cid]);
+        if (count($comments) > 0) {
+            $this->setTopic($forum, $tid, $comments);
+            $comment = array_pop($comments);
+            $topics[$tid]['comments'] = count($comments);
+            $topics[$tid]['user'] = $comment['user'];
+            $topics[$tid]['time'] = $comment['time'];
+        } else {
+            unlink($this->dataFolder($forum) . $tid . '.dat');
+            unset($topics[$tid]);
+            $tid = null;
+        }
+        $this->setTopics($forum, $topics);
+        $this->lock($forum, LOCK_UN);
+        return $tid;
+    }
 }
 
 ?>
