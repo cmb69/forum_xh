@@ -12,71 +12,75 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
     exit;
 }
 
-
 /**
- * Returns the plugin version information view.
+ * Returns the system checks.
  *
- * @return string  The (X)HTML.
- */
-function forum_version() {
-    global $pth;
-
-    return '<h1><a href="http://3-magi.net/?CMSimple_XH/Forum_XH">Forum_XH</a></h1>'."\n"
-	    .tag('img src="'.$pth['folder']['plugins'].'forum/forum.png" class="forum_plugin_icon"')
-	    .'<p>Version: '.FORUM_VERSION.'</p>'."\n"
-	    .'<p>Copyright &copy; 2012 <a href="http://3-magi.net">Christoph M. Becker</a></p>'."\n"
-	    .'<p class="forum_license">This program is free software: you can redistribute it and/or modify'
-	    .' it under the terms of the GNU General Public License as published by'
-	    .' the Free Software Foundation, either version 3 of the License, or'
-	    .' (at your option) any later version.</p>'."\n"
-	    .'<p class="forum_license">This program is distributed in the hope that it will be useful,'
-	    .' but WITHOUT ANY WARRANTY; without even the implied warranty of'
-	    .' MERCHAN&shy;TABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the'
-	    .' GNU General Public License for more details.</p>'."\n"
-	    .'<p class="forum_license">You should have received a copy of the GNU General Public License'
-	    .' along with this program.  If not, see'
-	    .' <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>'."\n";
-}
-
-
-/**
- * Returns the requirements information view.
+ * @return array
  *
- * @return string  The (X)HTML.
+ * @global array  The paths of system files and folders.
+ * @global array  The localization of the core.
+ * @global array  The localization of the plugins.
+ * @global object The contents object.
  */
-function forum_system_check() { // RELEASE-TODO
+function Forum_systemChecks()
+{
     global $pth, $tx, $plugin_tx, $_Forum_Contents;
 
-    define('FORUM_PHP_VERSION', '4.3.0');
     $ptx = $plugin_tx['forum'];
-    $imgdir = $pth['folder']['plugins'].'forum/images/';
-    $ok = tag('img src="'.$imgdir.'ok.png" alt="ok"');
-    $warn = tag('img src="'.$imgdir.'warn.png" alt="warning"');
-    $fail = tag('img src="'.$imgdir.'fail.png" alt="failure"');
-    $o = '<h4>'.$ptx['syscheck_title'].'</h4>'
-	    .(version_compare(PHP_VERSION, FORUM_PHP_VERSION) >= 0 ? $ok : $fail)
-	    .'&nbsp;&nbsp;'.sprintf($ptx['syscheck_phpversion'], FORUM_PHP_VERSION)
-	    .tag('br')."\n";
+    $phpVersion = '4.3.0';
+    $checks = array();
+    $checks[sprintf($ptx['syscheck_phpversion'], $phpVersion)] =
+	version_compare(PHP_VERSION, $phpVersion) >= 0 ? 'ok' : 'fail';
     foreach (array('date', 'pcre', 'session') as $ext) {
-	$o .= (extension_loaded($ext) ? $ok : $fail)
-		.'&nbsp;&nbsp;'.sprintf($ptx['syscheck_extension'], $ext).tag('br')."\n";
+	$checks[sprintf($ptx['syscheck_extension'], $ext)] =
+	    extension_loaded($ext) ? 'ok' : 'fail';
     }
-    $o .= (!get_magic_quotes_runtime() ? $ok : $fail)
-	    .'&nbsp;&nbsp;'.$ptx['syscheck_magic_quotes'].tag('br').tag('br')."\n";
-    $o .= (strtoupper($tx['meta']['codepage']) == 'UTF-8' ? $ok : $fail)
-	    .'&nbsp;&nbsp;'.$ptx['syscheck_encoding'].tag('br')."\n";
-    $o .= (file_exists($pth['folder']['plugins'].'jquery/jquery.inc.php') ? $ok : $fail)
-	    .'&nbsp;&nbsp;'.$ptx['syscheck_jquery'].tag('br').tag('br')."\n";
+    $checks[$ptx['syscheck_magic_quotes']] =
+	!get_magic_quotes_runtime() ? 'ok' : 'fail';
+    $checks[$ptx['syscheck_encoding']] =
+	strtoupper($tx['meta']['codepage']) == 'UTF-8' ? 'ok' : 'warn';
+    $check = file_exists($pth['folder']['plugins'] . 'jquery/jquery.inc.php');
+    $checks[$ptx['syscheck_jquery']] = $check ? 'ok' : 'fail';
     $folders = array();
     foreach (array('config/', 'css/', 'languages/') as $folder) {
-	$folders[] = $pth['folder']['plugins'].'forum/'.$folder;
+	$folders[] = $pth['folder']['plugins'] . 'forum/' . $folder;
     }
     $folders[] = $_Forum_Contents->dataFolder();
     foreach ($folders as $folder) {
-	$o .= (is_writable($folder) ? $ok : $warn)
-		.'&nbsp;&nbsp;'.sprintf($ptx['syscheck_writable'], $folder).tag('br')."\n";
+	$checks[sprintf($ptx['syscheck_writable'], $folder)] =
+	    is_writable($folder) ? 'ok' : 'warn';
     }
-    return $o;
+    return $checks;
+}
+
+/**
+ * Returns the plugin information view.
+ *
+ * @return string (X)HTML
+ *
+ * @global array The paths of system files and folders.
+ * @global array The localization of the plugins.
+ */
+function Forum_infoView()
+{
+    global $pth, $plugin_tx;
+
+    $ptx = $plugin_tx['forum'];
+    $labels = array(
+	'syscheck' => $ptx['syscheck_title'],
+	'about' => $ptx['about']
+    );
+    $icon = $pth['folder']['plugins'] . 'forum/forum.png';
+    $checks = Forum_systemChecks();
+    $version = FORUM_VERSION;
+    $images = array();
+    foreach (array('ok', 'warn', 'fail') as $state) {
+	$images[$state] = $pth['folder']['plugins']
+	    . 'forum/images/' . $state . '.png';
+    }
+    $bag = compact('labels', 'checks', 'icon', 'version', 'images');
+    return Forum_render('info', $bag);
+
 }
 
 
@@ -88,7 +92,7 @@ if (isset($forum) && $forum == 'true') {
     $o .= print_plugin_admin('off');
     switch ($admin) {
 	case '':
-	    $o .= forum_version().tag('hr').forum_system_check();
+	    $o .= Forum_infoView();
 	    break;
 	default:
 	    $o .= plugin_admin_common($action, $admin, $plugin);
