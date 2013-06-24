@@ -226,11 +226,7 @@ function forum_view_topics($forum) {
     global $su, $plugin_tx, $_Forum_Contents;
 
     $ptx = $plugin_tx['forum'];
-    $_Forum_Contents->lock($forum, LOCK_SH);
-    $topics = $_Forum_Contents->getTopics($forum);
-    $_Forum_Contents->lock($forum, LOCK_UN);
-    uasort($topics, create_function('$a, $b', "return \$b['time'] - \$a['time'];"));
-
+    $topics = $_Forum_Contents->getSortedTopics($forum);
     $label = array(
 	'heading' => $ptx['msg_topics'],
 	'start_topic' => $ptx['msg_start_topic']

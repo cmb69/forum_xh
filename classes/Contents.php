@@ -183,6 +183,35 @@ class Forum_Contents
     }
 
     /**
+     * Returns the result of comparing two topic times.
+     *
+     * @param array $a A topic.
+     * @param array $b Another topic.
+     *
+     * @return int
+     */
+    function compareTopicTime($a, $b)
+    {
+        return $b['time'] - $a['time'];
+    }
+
+    /**
+     * Returns a chronologically ordered array of topics.
+     *
+     * @param string $forum A forum name.
+     *
+     * @return array
+     */
+    function getSortedTopics($forum)
+    {
+        $this->lock($forum, LOCK_SH);
+        $topics = $this->getTopics($forum);
+        $this->lock($forum, LOCK_UN);
+        uasort($topics, array($this, 'compareTopicTime'));
+        return $topics;
+    }
+
+    /**
      * Creates a comment.
      *
      * @param string $forum   A forum name.
