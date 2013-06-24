@@ -24,10 +24,10 @@ define('FORUM_URL', 'http://'.(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !=
 
 
 require_once $pth['folder']['plugin_classes'] . 'Contents.php';
-$_Forum_Contents = new Forum_Contents(
-    $pth['folder']['base'], $plugin_cf['forum']['folder_data'],
-    $pth['folder']['plugins'] . 'forum/data/'
-);
+$temp = $plugin_cf['forum']['folder_data'] == ''
+    ? $pth['folder']['base'] . $plugin_cf['forum']['folder_data']
+    : $pth['folder']['plugins'] . 'forum/data/';
+$_Forum_Contents = new Forum_Contents($temp);
 
 /**
  * Returns the numerus suffix for the language keys.

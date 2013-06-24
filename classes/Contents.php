@@ -3,26 +3,11 @@
 class Forum_Contents
 {
     /**
-     * The path of the base folder of the CMSimple installation.
-     *
-     * @var string
-     */
-    protected $baseFolder;
-
-    /**
-     * The path of the configured data folder.
+     * The path of the data folder.
      *
      * @var string
      */
     protected $dataFolder;
-
-    /**
-     * The path of the default data folder, which will be used
-     * if the configured data folder is empty.
-     *
-     * @var string
-     */
-    protected $defaultDataFolder;
 
     /**
      * An associative array from forum names to their lock handles.
@@ -34,22 +19,14 @@ class Forum_Contents
     /**
      * Constructs an instance.
      *
-     * @param string $baseFolder        The path of the base folder of the
-     *                                  CMSimple installation.
-     * @param string $dataFolder        The path of the configured data folder.
-     * @param string $defaultDataFolder The path of the default data folder.
+     * @param string $dataFolder The path of the data folder.
      */
-    public function __construct($baseFolder, $dataFolder, $defaultDataFolder)
+    public function __construct($dataFolder)
     {
-        $this->baseFolder = $baseFolder;
         if (substr($dataFolder, -1)) {
             $dataFolder .= '/';
         }
         $this->dataFolder = $dataFolder;
-        if (substr($defaultDataFolder, -1)) {
-            $defaultDataFolder .= '/';
-        }
-        $this->defaultDataFolder = $defaultDataFolder;
     }
 
     /**
@@ -62,11 +39,7 @@ class Forum_Contents
      */
     function dataFolder($forum = null)
     {
-        if ($this->dataFolder == '') {
-            $filename = $this->defaultDataFolder;
-        } else {
-            $filename = $this->baseFolder . $this->dataFolder;
-        }
+        $filename = $this->dataFolder;
         if (isset($forum)) {
             $filename .= $forum . '/';
         }
