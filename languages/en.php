@@ -6,6 +6,7 @@ $plugin_tx['forum']['format_time']="H:i:s";
 $plugin_tx['forum']['msg_start_topic']="Start a new topic";
 $plugin_tx['forum']['msg_back']="Back to overview";
 $plugin_tx['forum']['msg_add_comment']="Add your comment";
+$plugin_tx['forum']['msg_edit_comment']="Edit your comment";
 $plugin_tx['forum']['msg_new_topic']="New Topic";
 $plugin_tx['forum']['msg_topics']="Topics";
 $plugin_tx['forum']['msg_posted']="by <strong>{user}</strong> on {date} at {time}";
@@ -21,6 +22,7 @@ $plugin_tx['forum']['msg_powered_by']="Powered by <a href=\"http://3-magi.net/?C
 $plugin_tx['forum']['lbl_title_missing']="Enter a topic title!";
 $plugin_tx['forum']['lbl_comment_missing']="Enter your comment!";
 $plugin_tx['forum']['lbl_submit']="Submit";
+$plugin_tx['forum']['lbl_edit']="Edit Comment";
 $plugin_tx['forum']['lbl_delete']="Delete Comment";
 $plugin_tx['forum']['lbl_bold']="Bold";
 $plugin_tx['forum']['lbl_italic']="Italic";

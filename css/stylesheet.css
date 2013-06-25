@@ -19,7 +19,9 @@ ul.forum_topics div.forum_title {font-weight: bold; margin: 0.5em 0}
 ul.forum_topic {list-style: none; margin: 0; padding: 0; width: 100%}
 ul.forum_topic > li {margin: 0 0 0.5em 0; padding: 0 0 0.5em 0; border-bottom: 1px solid #888}
 div.forum_comment {margin-top: 0.5em}
-form.forum_delete {float: right}
+a.forum_edit {float: right}
+a.forum_edit img {border: none}
+form.forum_delete {float: right; margin-left: 0.5em}
 
 /* comment form */
 form.forum_comment {margin: 1em 0}

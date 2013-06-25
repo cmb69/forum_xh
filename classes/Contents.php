@@ -258,6 +258,22 @@ class Forum_Contents
         $this->lock($forum, LOCK_UN);
     }
 
+    function updateComment($forum, $tid, $cid, $comment, $user)
+    {
+        $this->lock($forum, LOCK_EX);
+
+        $comments = $this->getTopic($forum, $tid);
+        if ($comment['user'] != $comments[$cid]['user']) {
+            $this->lock($forum, LOCK_UN);
+            return; // TODO throw exception
+        }
+        $comment['time'] = $comments[$cid]['time'];
+        $comments[$cid] = $comment;
+        $this->setTopic($forum, $tid, $comments);
+
+        $this->lock($forum, LOCK_UN);
+    }
+
     /**
      * Deletes a comment
      *

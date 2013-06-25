@@ -13,6 +13,10 @@
 	    <input type="image" src="<?php echo $deleteImg;?>"
                    alt="<?php echo $label['delete'];?>" title="<?php echo $label['delete'];?>" />
 	</form>
+	<a class="forum_edit" href="<?php echo $comment['editUrl'];?>">
+	    <img src="<?php echo $editImg;?>" alt="<?php echo $label['edit'];?>"
+		 title="<?php echo $label['edit'];?>" />
+	</a>
 <?php endif;?>
         <div class="forum_details"><?php echo $comment['details'];?></div>
 	<div class="forum_comment"><?php echo $comment['comment'];?></div>

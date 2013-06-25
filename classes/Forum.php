@@ -92,10 +92,10 @@ class Forum
      *
      * @return string
      */
-    function postComment($forum, $tid = null)
+    function postComment($forum, $tid = null, $cid = null)
     {
         if (!isset($tid) && empty($_POST['forum_title'])
-            || $this->user() === false || empty($_POST['forum_comment'])
+            || $this->user() === false || empty($_POST['forum_text'])
         ) {
             return false;
         }
@@ -106,13 +106,17 @@ class Forum
             return false;
         }
 
-        $cid = $this->contents->getId();
         $comment = array(
                 'user' => $this->user(),
                 'time' => time(),
-                'comment' => stsl($_POST['forum_comment']));
-        $title = isset($_POST['forum_title']) ? stsl($_POST['forum_title']) : null;
-        $this->contents->createComment($forum, $tid, $title, $cid, $comment);
+                'comment' => stsl($_POST['forum_text']));
+        if (!isset($cid)) {
+            $cid = $this->contents->getId();
+            $title = isset($_POST['forum_title']) ? stsl($_POST['forum_title']) : null;
+            $this->contents->createComment($forum, $tid, $title, $cid, $comment);
+        } else {
+            $this->contents->updateComment($forum, $tid, $cid, $comment);
+        }
 
         return $tid;
     }
@@ -193,7 +197,7 @@ class Forum
      * @param string $tid  The topic ID.
      * @return string  The (X)HTML.
      */
-    function commentForm($tid = null)
+    function commentForm($tid = null, $cid = null)
     {
         global $su, $plugin_tx;
 
@@ -205,15 +209,25 @@ class Forum
 
         $newTopic = !isset($tid);
         $labels = array(
-            'heading' => $newTopic ? $ptx['msg_new_topic'] : $ptx['msg_add_comment'],
+            'heading' => $newTopic
+                ? $ptx['msg_new_topic']
+                : (isset($cid) ? $ptx['msg_edit_comment'] : $ptx['msg_add_comment']),
             'title' => $ptx['msg_title'],
             'submit' => $ptx['lbl_submit'],
             'back' => $ptx['msg_back']
         );
+        $comment = '';
+        if (isset($cid)) {
+            $topics = $this->contents->getTopic('test', $tid);
+            if ($topics[$cid]['user'] == $this->user()) {
+                $comment = $topics[$cid]['comment'];
+            }
+            //$newTopic = true; // FIXME: hack to force overview link to be shown
+        }
         $action = '?' . $su . '&amp;forum_actn=post';
         $overviewUrl = '?' . $su;
 
-        $bag = compact('newTopic', 'labels', 'tid', 'action', 'overviewUrl');
+        $bag = compact('newTopic', 'labels', 'tid', 'cid', 'action', 'overviewUrl', 'comment');
         return $this->render('form', $bag);
     }
 
@@ -280,32 +294,40 @@ class Forum
      */
     function viewTopic($forum, $tid)
     {
-        global $su, $pth, $adm, $plugin_tx;
+        global $sn, $su, $pth, $adm, $plugin_tx;
 
         $ptx = $plugin_tx['forum'];
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
         $href = "?$su";
+        $editUrl = $sn . '?' . $su . '&forum_actn=edit&forum_topic=' . $tid
+            . '&forum_comment=';
         $i = 1;
         $label = array(
             'title' => htmlspecialchars($title, ENT_NOQUOTES, 'UTF-8'),
+            'edit' => $ptx['lbl_edit'],
             'delete' => $ptx['lbl_delete'],
             'confirmDelete' => $ptx['msg_confirm_delete'],
             'back' => $ptx['msg_back']
         );
-        $deleteImg = $pth['folder']['plugins'].'forum/images/delete.png';
+        $deleteImg = $pth['folder']['plugins'] . 'forum/images/delete.png';
+        $editImg = $pth['folder']['plugins'] . 'forum/images/edit.png';
         foreach ($topic as $cid => &$comment) {
             $mayDelete = $adm || $comment['user'] == $this->user();
             $comment['mayDelete'] = $mayDelete;
             $comment['class'] = 'forum_' . ($i & 1 ? 'odd' : 'even');
             $comment['comment'] = $this->getBbcode()->toHtml($comment['comment']);
             $comment['details'] = $this->posted($comment);
+            $comment['editUrl'] = $editUrl . $cid;
             $i++;
         }
         $isUser = $this->user() !== false;
         $commentForm = $this->commentForm($tid);
         $poweredBy = $this->poweredBy();
 
-        $bag = compact('label', 'tid', 'topic', 'su', 'deleteImg', 'href', 'poweredBy', 'isUser', 'commentForm');
+        $bag = compact(
+            'label', 'tid', 'topic', 'su', 'deleteImg', 'editImg', 'href', 'poweredBy',
+            'isUser', 'commentForm'
+        );
         return $this->render('topic', $bag);
     }
 
@@ -337,10 +359,22 @@ class Forum
             case 'new':
                 return $this->commentForm() . $this->poweredBy();
             case 'post':
-                $tid = $this->postComment($forum, $_POST['forum_topic']);
+                if (!empty($_POST['forum_comment'])) {
+                    $tid = $this->postComment($forum, $_POST['forum_topic'], $_POST['forum_comment']);
+                } else {
+                    $tid = $this->postComment($forum, $_POST['forum_topic']);
+                }
                 $params = $tid ? "?$su&forum_topic=$tid" : "?$su";
                 header('Location: '.FORUM_URL.$params, TRUE, 303);
                 exit;
+            case 'edit':
+                $tid = $this->contents->cleanId($_GET['forum_topic']);
+                $cid = $this->contents->cleanId($_GET['forum_comment']);
+                if ($tid && $cid) {
+                    return $this->commentForm($tid, $cid) . $this->poweredBy();
+                } else {
+                    return ''; // should display error
+                }
             case 'delete':
                 $this->deleteComment($forum, $tid, $cid);
                 break;

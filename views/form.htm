@@ -9,8 +9,9 @@
 <?php else:?>
     <h6 class="forum_heading"><?php echo $labels['heading'];?></h6>
     <input type="hidden" name="forum_topic" value="<?php echo $tid;?>" />
+    <input type="hidden" name="forum_comment" value="<?php echo $cid;?>" />
 <?php endif;?>
-    <textarea name="forum_comment" cols="80" rows="10"></textarea>
+    <textarea name="forum_text" cols="80" rows="10"><?php echo $comment;?></textarea>
     <div class="forum_submit">
         <input type="submit" class="submit" value="<?php echo $labels['submit'];?>" />
     </div>

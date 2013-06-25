@@ -57,7 +57,7 @@ Forum.validate = function() {
 		alert(Forum.TX.TITLE_MISSING);
 		return false;
 	}
-	if ($('textarea[name="forum_comment"]').val().length == 0) {
+	if ($('textarea[name="forum_text"]').val().length == 0) {
 		alert(Forum.TX.COMMENT_MISSING);
 		return false;
 	}
