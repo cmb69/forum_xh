@@ -12,6 +12,13 @@ class Forum
     var $contents;
 
     /**
+     * The BBCode to HTML converter.
+     *
+     * @var object
+     */
+    var $bbcode;
+
+    /**
      * Constructs an instance.
      */
     function __construct()
@@ -22,6 +29,23 @@ class Forum
             ? $pth['folder']['base'] . $plugin_cf['forum']['folder_data']
             : $pth['folder']['plugins'] . 'forum/data/';
         $this->contents = new Forum_Contents($folder);
+    }
+
+    /**
+     * Returns the BBCode to HTML converter. Creates the object, if necessary.
+     *
+     * @return object     *
+     */
+    function getBbcode()
+    {
+        global $pth;
+
+        if (!isset($this->bbcode)) {
+            include_once $pth['folder']['plugins'] . 'forum/classes/BBCode.php';
+            $emoticonFolder = $pth['folder']['plugins'] . 'forum/images/';
+            $this->bbcode = new Forum_BBCode($emoticonFolder);
+        }
+        return $this->bbcode;
     }
 
     /**
@@ -262,8 +286,6 @@ class Forum
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
         $href = "?$su";
         $i = 1;
-        include_once $pth['folder']['plugins'] . 'forum/classes/BBCode.php';
-        $bbcode = new Forum_BBCode($pth['folder']['plugins'] . 'forum/images/');
         $label = array(
             'title' => htmlspecialchars($title, ENT_NOQUOTES, 'UTF-8'),
             'delete' => $ptx['lbl_delete'],
@@ -275,7 +297,7 @@ class Forum
             $mayDelete = $adm || $comment['user'] == $this->user();
             $comment['mayDelete'] = $mayDelete;
             $comment['class'] = 'forum_' . ($i & 1 ? 'odd' : 'even');
-            $comment['comment'] = $bbcode->toHtml($comment['comment']);
+            $comment['comment'] = $this->getBbcode()->toHtml($comment['comment']);
             $comment['details'] = $this->posted($comment);
             $i++;
         }
@@ -357,9 +379,7 @@ class Forum
     {
         global $pth;
 
-        include_once $pth['folder']['plugins'] . 'forum/classes/BBCode.php';
-        $bbcode = new Forum_BBCode($pth['folder']['plugins'] . 'forum/images/');
-        $comment = $bbcode->toHtml(stsl($_POST['data']));
+        $comment = $this->getBbcode()->toHtml(stsl($_POST['data']));
         $templateStylesheet = $pth['file']['stylesheet'];
         $forumStylesheet = $pth['folder']['plugins'] . 'forum/css/stylesheet.css';
         $bag = compact('comment', 'templateStylesheet', 'forumStylesheet');
@@ -437,3 +457,5 @@ class Forum
 
 
 }
+
+?>
