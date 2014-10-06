@@ -1,4 +1,3 @@
-* lift requirements (XH 1.6; PHP 5+)
 * metaconfig.php
 * use autoloading
 * fix FORUM_URL
@@ -7,6 +6,7 @@
 * translate manual to German
 * update markitup
 * credit Ele in manual for suggestions etc.
+* remove powered-by link
 
 * search in Forum
 * edit comments

@@ -14,12 +14,20 @@
  * @link      http://3-magi.net/?CMSimple_XH/Forum_XH
  */
 
-/**
- *Prevent direct access.
+/*
+ * Prevent direct access and usage from unsupported CMSimple_XH versions.
  */
-if (!defined('CMSIMPLE_XH_VERSION')) {
-    header('HTTP/1.0 403 Forbidden');
-    exit;
+if (!defined('CMSIMPLE_XH_VERSION')
+    || strpos(CMSIMPLE_XH_VERSION, 'CMSimple_XH') !== 0
+    || version_compare(CMSIMPLE_XH_VERSION, 'CMSimple_XH 1.6', 'lt')
+) {
+    header('HTTP/1.1 403 Forbidden');
+    header('Content-Type: text/plain; charset=UTF-8');
+    die(<<<EOT
+Forum_XH detected an unsupported CMSimple_XH version.
+Uninstall Forum_XH or upgrade to a supported CMSimple_XH version!
+EOT
+    );
 }
 
 /*

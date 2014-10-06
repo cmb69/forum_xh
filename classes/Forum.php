@@ -532,7 +532,7 @@ class Forum
         global $pth, $tx, $plugin_tx;
 
         $ptx = $plugin_tx['forum'];
-        $phpVersion = '4.3.0';
+        $phpVersion = '5.0.0';
         $checks = array();
         $checks[sprintf($ptx['syscheck_phpversion'], $phpVersion)]
             = version_compare(PHP_VERSION, $phpVersion) >= 0 ? 'ok' : 'fail';
