@@ -14,6 +14,9 @@
  * @link      http://3-magi.net/?CMSimple_XH/Forum_XH
  */
 
+/**
+ * The contents.
+ */
 require_once $pth['folder']['plugin_classes'] . 'Contents.php';
 
 /**
