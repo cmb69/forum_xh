@@ -1,4 +1,5 @@
 * lift requirements (XH 1.6; PHP 5+)
+* bump copyright year
 * metaconfig.php
 * use autoloading
 * fix FORUM_URL
@@ -6,6 +7,7 @@
 * update data/.htaccess for Apache 2.4
 * translate manual to German
 * update markitup
+* credit Ele in manual for suggestions etc.
 
 * search in Forum
 * edit comments

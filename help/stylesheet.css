@@ -43,3 +43,7 @@ h1 {line-height: 1.5em}
 .toplink {
     text-align: right;
 }
+
+.bordered, .bordered td {
+    border: 1px solid gray;
+}
