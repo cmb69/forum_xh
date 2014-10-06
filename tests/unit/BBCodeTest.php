@@ -1,16 +1,58 @@
 <?php
 
-require_once '../classes/BBCode.php';
+/**
+ * Testing the BBCode.
+ *
+ * PHP version 5
+ *
+ * @category  Testing
+ * @package   Forum
+ * @author    Christoph M. Becker <cmbecker69@gmx.de>
+ * @copyright 2013-2014 Christoph M. Becker <http://3-magi.net/>
+ * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @version   SVN: $Id$
+ * @link      http://3-magi.net/?CMSimple_XH/Forum_XH
+ */
 
+require_once './classes/BBCode.php';
+
+/**
+ * A test dummy.
+ *
+ * @param string $s A string.
+ *
+ * @return string (X)HTML.
+ */
 function tag($s)
 {
     return '<' . $s . '>';
 }
 
+/**
+ * Testing the BBCode.
+ *
+ * @category Testing
+ * @package  Forum
+ * @author   Christoph M. Becker <cmbecker69@gmx.de>
+ * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @link     http://3-magi.net/?CMSimple_XH/Forum_XH
+ */
 class BBCodeTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * The test subject.
+     *
+     * @var object
+     */
     protected $bbcode;
 
+    /**
+     * Sets up the test fixture.
+     *
+     * @return void
+     *
+     * @global array The localization of the plugin.
+     */
     public function setUp()
     {
         global $plugin_tx;
@@ -27,6 +69,27 @@ class BBCodeTest extends PHPUnit_Framework_TestCase
         $this->bbcode = new Forum_BBCode('./');
     }
 
+    /**
+     * Tests the toHtml() conversion.
+     *
+     * @param string $text     A text.
+     * @param string $expected An expected result.
+     *
+     * @return void
+     *
+     * @dataProvider dataForToHtml
+     */
+    public function testToHtml($text, $expected)
+    {
+        $actual = $this->bbcode->toHtml($text);
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * Supplies data for testToHtml().
+     *
+     * @return array
+     */
     public function dataForToHtml()
     {
         return array(
@@ -93,15 +156,6 @@ class BBCodeTest extends PHPUnit_Framework_TestCase
             ),
             array('[list]foo[*][/list]', '[list]foo[*][/list]')
         );
-    }
-
-    /**
-     * @dataProvider dataForToHtml
-     */
-    public function testToHtml($text, $expected)
-    {
-        $actual = $this->bbcode->toHtml($text);
-        $this->assertEquals($expected, $actual);
     }
 }
 
