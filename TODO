@@ -1,0 +1,28 @@
+* lift requirements (XH 1.6; PHP 5+)
+* metaconfig.php
+
+* search in Forum
+* edit comments
+* strikethrough for markitup
+* move set.js to forum.js
+* handle empty title/comment from PHP too
+
+* phpBB emoticons
+* textarea braucht {display:block}
+* PRG pattern: report errors!, even on redirect
+* fix bug: inside [code] no <br> (reported by Lubomyr/Advertising Expert)
+* add syntax highlighting-possibility (suggested by Lubomyr/Advertising Expert)
+* add i18n of day and month names (suggested by Lubomyr)
+* [url=http://] (suggested by Lubomyr)
+* fix FORUM_URL (see http://cmsimpleforum.com/viewtopic.php?f=29&t=4730)
+* Benachrichtigung (e-mail?, feed?)
+* feineres Berechtigungssystem
+  (<http://www.cmsimpleforum.com/viewtopic.php?f=16&t=5066&p=30335#p30335>)
+* hinweis, dass user eingeloggt sein muss, um zu posten (inspired by Old)
+* paginierung
+* accept https:// for images and links
+* kompletten Thread loeschen (Erklaeren, dass alle Posts geloescht werden
+  muessen!!!, oder aber entsprechende Moeglichkeit einbauen???) (insp. by Per)
+* set max-width: 100% for [img]
+* separate Berechtigung fuer Thread anlegen und antworten (-> Blog) (sugg. by
+  Bjoern)
