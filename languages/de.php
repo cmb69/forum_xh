@@ -3,27 +3,25 @@
 $plugin_tx['forum']['format_date']="F j, Y";
 $plugin_tx['forum']['format_time']="H:i:s";
 
-$plugin_tx['forum']['msg_start_topic']="Start a new topic";
-$plugin_tx['forum']['msg_back']="Back to overview";
-$plugin_tx['forum']['msg_add_comment']="Add your comment";
-$plugin_tx['forum']['msg_edit_comment']="Edit your comment";
-$plugin_tx['forum']['msg_new_topic']="New Topic";
-$plugin_tx['forum']['msg_topics']="Topics";
-$plugin_tx['forum']['msg_posted']="by <strong>{user}</strong> on {date} at {time}";
-$plugin_tx['forum']['msg_topic_details']="{comments} (most recent {posted})";
-$plugin_tx['forum']['msg_comments_singular']="%d comment";
-$plugin_tx['forum']['msg_comments_plural_2-4']="%d comments";
-$plugin_tx['forum']['msg_comments_plural_5']="%d comments";
-$plugin_tx['forum']['msg_confirm_delete']="This comment will be deleted!";
-$plugin_tx['forum']['msg_title']="Title";
+$plugin_tx['forum']['msg_start_topic']="Neues Thema erstellen";
+$plugin_tx['forum']['msg_back']="zur Übersicht";
+$plugin_tx['forum']['msg_add_comment']="Dein Eintrag";
+$plugin_tx['forum']['msg_new_topic']="Überschrift";
+$plugin_tx['forum']['msg_topics']="Themenübersicht";
+$plugin_tx['forum']['msg_posted']="von <strong>{user}</strong> am {date} am {time}";
+$plugin_tx['forum']['msg_topic_details']="{comments} (letzter Eintrag {posted})";
+$plugin_tx['forum']['msg_comments_singular']="%d Eintrag";
+$plugin_tx['forum']['msg_comments_plural_2-4']="%d Einträge";
+$plugin_tx['forum']['msg_comments_plural_5']="%d Einträge";
+$plugin_tx['forum']['msg_confirm_delete']="Dieser Eintrag wird gelöscht!";
+$plugin_tx['forum']['msg_title']="Titel";
 $plugin_tx['forum']['msg_invalid_name']="Invalid forum name (may contain a-z, 0-9 and - only):";
 $plugin_tx['forum']['msg_powered_by']="Powered by <a href=\"http://3-magi.net/?CMSimple_XH/Forum_XH\">Forum_XH</a>";
 
-$plugin_tx['forum']['lbl_title_missing']="Enter a topic title!";
-$plugin_tx['forum']['lbl_comment_missing']="Enter your comment!";
-$plugin_tx['forum']['lbl_submit']="Submit";
-$plugin_tx['forum']['lbl_edit']="Edit Comment";
-$plugin_tx['forum']['lbl_delete']="Delete Comment";
+$plugin_tx['forum']['lbl_title_missing']="Bitte einen Titel eingeben!";
+$plugin_tx['forum']['lbl_comment_missing']="Bitte einen Eintrag vornehmen!";
+$plugin_tx['forum']['lbl_submit']="Sichern";
+$plugin_tx['forum']['lbl_delete']="Eintrag löschen";
 $plugin_tx['forum']['lbl_bold']="Bold";
 $plugin_tx['forum']['lbl_italic']="Italic";
 $plugin_tx['forum']['lbl_underline']="Underline";
@@ -47,7 +45,7 @@ $plugin_tx['forum']['lbl_list_item']="List Item";
 $plugin_tx['forum']['lbl_quotes']="Quotes";
 $plugin_tx['forum']['lbl_code']="Code";
 $plugin_tx['forum']['lbl_clean']="Clean";
-$plugin_tx['forum']['lbl_preview']="Preview";
+$plugin_tx['forum']['lbl_preview']="Vorschau";
 $plugin_tx['forum']['lbl_link_text']="Your text to link here...";
 
 $plugin_tx['forum']['syscheck_title']="System check";
@@ -58,9 +56,8 @@ $plugin_tx['forum']['syscheck_magic_quotes']="Magic quotes runtime off";
 $plugin_tx['forum']['syscheck_jquery']="<a href=\"http://www.cmsimple-xh.com/wiki/doku.php/plugins:jquery4cmsimple\">jQuery4CMSimple plugin</a> installed";
 $plugin_tx['forum']['syscheck_writable']="Folder '%s' writable";
 
-$plugin_tx['forum']['about']="About Forum_XH";
-
 $plugin_tx['forum']['cf_folder_data']="Path to a folder relative to the CMSimple root directory, where to store the plugin's data. E.g. \"userfiles/forum/\". Leave empty to store in the plugin's data/ folder.";
+
 $plugin_tx['forum']['cf_format_date']="For possible formatting options see http://php.net/manual/en/function.date.php.";
 $plugin_tx['forum']['cf_format_time']="For possible formatting options see http://php.net/manual/en/function.date.php.";
 
