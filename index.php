@@ -25,7 +25,7 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
 /**
  * The plugin version.
  */
-define('FORUM_VERSION', '1beta2');
+define('FORUM_VERSION', '@FORUM_VERSION@');
 
 /**
  * Fully qualified absolute URL to CMSimple's index.php.

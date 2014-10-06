@@ -2,6 +2,10 @@
 * metaconfig.php
 * use autoloading
 * fix FORUM_URL
+* check _ele suggestions
+* update data/.htaccess for Apache 2.4
+* translate manual to German
+* update markitup
 
 * search in Forum
 * edit comments
