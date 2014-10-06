@@ -1,7 +1,30 @@
 <?php
 
+/**
+ * The forums.
+ *
+ * PHP version 5
+ *
+ * @category  CMSimple_XH
+ * @package   Forum
+ * @author    Christoph M. Becker <cmbecker69@gmx.de>
+ * @copyright 2012-2014 Christoph M. Becker <http://3-magi.net>
+ * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @version   SVN: $Id$
+ * @link      http://3-magi.net/?CMSimple_XH/Forum_XH
+ */
+
 require_once $pth['folder']['plugin_classes'] . 'Contents.php';
 
+/**
+ * The forums.
+ *
+ * @category CMSimple_XH
+ * @package  Forum
+ * @author   Christoph M. Becker <cmbecker69@gmx.de>
+ * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @link     http://3-magi.net/?CMSimple_XH/Forum_XH
+ */
 class Forum
 {
     /**
@@ -34,7 +57,9 @@ class Forum
     /**
      * Returns the BBCode to HTML converter. Creates the object, if necessary.
      *
-     * @return object     *
+     * @return object
+     *
+     * @global array The paths of system files and folders.
      */
     function getBbcode()
     {
@@ -89,6 +114,7 @@ class Forum
      *
      * @param string $forum A forum name.
      * @param string $tid   A topic ID (<var>null</var> means new topic).
+     * @param string $cid   A comment ID.
      *
      * @return string
      */
@@ -112,7 +138,8 @@ class Forum
                 'comment' => stsl($_POST['forum_text']));
         if (!isset($cid)) {
             $cid = $this->contents->getId();
-            $title = isset($_POST['forum_title']) ? stsl($_POST['forum_title']) : null;
+            $title = isset($_POST['forum_title'])
+                ? stsl($_POST['forum_title']) : null;
             $this->contents->createComment($forum, $tid, $title, $cid, $comment);
         } else {
             $this->contents->updateComment($forum, $tid, $cid, $comment);
@@ -129,8 +156,13 @@ class Forum
      * or <var>false</var>, if the comment couldn't be deleted.
      *
      * @param string $forum A forum name.
-     * @param string $tid  	A topic ID.
+     * @param string $tid   A topic ID.
      * @param string $cid   A comment ID.
+     *
+     * @return void
+     *
+     * @global bool   Whether we're logged in as administrator.
+     * @global string The URL of the current page.
      */
     function deleteComment($forum, $tid, $cid)
     {
@@ -146,10 +178,13 @@ class Forum
     }
 
     /**
-     * Includes js and css to the <head>.
+     * Includes JS and CSS to the <head>.
      *
-     * @global string $hjs
      * @return void
+     *
+     * @global array  The paths of system files and folders.
+     * @global string The (X)HTML of the head element.
+     * @global array  The localization of the plugins.
      */
     function hjs()
     {
@@ -158,30 +193,48 @@ class Forum
         $ptx = $plugin_tx['forum'];
         $dir = $pth['folder']['plugins'].'forum/markitup/';
         $hjs .= tag(
-            'link rel="stylesheet" type="text/css" href="'.$dir.'skins/simple/style.css"'
+            'link rel="stylesheet" type="text/css" href="' . $dir
+            . 'skins/simple/style.css"'
         ) . "\n"
-            . tag('link rel="stylesheet" type="text/css" href="'.$dir.'sets/bbcode/style.css"')."\n";
-        include_once $pth['folder']['plugins'].'jquery/jquery.inc.php';
+            . tag(
+                'link rel="stylesheet" type="text/css" href="' . $dir
+                . 'sets/bbcode/style.css"'
+            ) . "\n";
+        include_once $pth['folder']['plugins'] . 'jquery/jquery.inc.php';
         include_jQuery();
-        include_jQueryPlugin('markitup', $dir.'jquery.markitup.js');
-        $hjs .= '<script type="text/javascript">/* <![CDATA[ */'."\n"
-                .'Forum = {TX: {';
-        foreach (array('title_missing', 'comment_missing', 'bold', 'italic', 'underline', 'emoticon', 'smile', 'wink', 'happy', 'grin',
-                'tongue', 'surprised', 'unhappy', 'picture', 'link', 'size', 'big', 'normal', 'small',
-                'bulleted_list', 'numeric_list', 'list_item', 'quotes', 'code', 'clean', 'preview', 'link_text') as $i => $key) {
-            if ($i > 0) {$hjs .= ', ';}
-            $hjs .= strtoupper($key).': \''.addcslashes($ptx['lbl_'.$key], "\0..\37\\\'").'\'';
+        include_jQueryPlugin('markitup', $dir . 'jquery.markitup.js');
+        $hjs .= '<script type="text/javascript">/* <![CDATA[ */' . "\n"
+            . 'Forum = {TX: {';
+        $texts = array(
+            'title_missing', 'comment_missing', 'bold', 'italic', 'underline',
+            'emoticon', 'smile', 'wink', 'happy', 'grin', 'tongue', 'surprised',
+            'unhappy', 'picture', 'link', 'size', 'big', 'normal', 'small',
+            'bulleted_list', 'numeric_list', 'list_item', 'quotes', 'code',
+            'clean', 'preview', 'link_text'
+        );
+        foreach ($texts as $i => $key) {
+            if ($i > 0) {
+                $hjs .= ', ';
+            }
+            $hjs .= strtoupper($key) . ': \''
+                . addcslashes(
+                    $ptx['lbl_'.$key], "\0..\37\\\'"
+                ) . '\'';
         }
-        $hjs .= '}}'."\n"
-                .'jQuery(function() {jQuery(\'form.forum_comment textarea\').markItUp(Forum.settings)})'."\n"
-                .'/* ]]> */</script>'."\n";
-        $hjs .= '<script type="text/javascript" src="'.$dir.'sets/bbcode/set.js"></script>'."\n";
+        $hjs .= '}}' . "\n"
+            . 'jQuery(function() {jQuery(\'form.forum_comment textarea\')'
+            . '.markItUp(Forum.settings)})' . "\n"
+            . '/* ]]> */</script>' . "\n";
+        $hjs .= '<script type="text/javascript" src="' . $dir
+            . 'sets/bbcode/set.js"></script>' . "\n";
     }
 
     /**
      * Returns the powered by link.
      *
-     * @return string (X)HTML
+     * @return string (X)HTML.
+     *
+     * @global array The localization of the plugin.
      */
     function poweredBy()
     {
@@ -194,8 +247,13 @@ class Forum
     /**
      * Returns the comment form.
      *
-     * @param string $tid  The topic ID.
+     * @param string $tid A topic ID.
+     * @param string $cid A comment ID.
+     *
      * @return string  The (X)HTML.
+     *
+     * @global string The URL of the requested page.
+     * @global array  The localization of the plugins.
      */
     function commentForm($tid = null, $cid = null)
     {
@@ -227,15 +285,20 @@ class Forum
         $action = '?' . $su . '&amp;forum_actn=post';
         $overviewUrl = '?' . $su;
 
-        $bag = compact('newTopic', 'labels', 'tid', 'cid', 'action', 'overviewUrl', 'comment');
+        $bag = compact(
+            'newTopic', 'labels', 'tid', 'cid', 'action', 'overviewUrl', 'comment'
+        );
         return $this->render('form', $bag);
     }
 
     /**
      * Returns the posted by/on/at view.
      *
-     * @param array $rec  The topic or comment record.
-     * @return string  The (X)HTML.
+     * @param array $rec A topic or comment record.
+     *
+     * @return string The (X)HTML.
+     *
+     * @global array The localization of the plugins.
      */
     function posted($rec)
     {
@@ -244,15 +307,21 @@ class Forum
         $ptx = $plugin_tx['forum'];
         $date = date($ptx['format_date'], $rec['time']);
         $time = date($ptx['format_time'], $rec['time']);
-        return str_replace(array('{user}', '{date}', '{time}'),
-            array($rec['user'], $date, $time), $ptx['msg_posted']);
+        return str_replace(
+            array('{user}', '{date}', '{time}'),
+            array($rec['user'], $date, $time), $ptx['msg_posted']
+        );
     }
 
     /**
      * Returns the topics overview.
      *
-     * @param string $forum  The name of the forum.
-     * @return string  The (X)HTML.
+     * @param string $forum A forum name.
+     *
+     * @return string The (X)HTML.
+     *
+     * @global string The URL of the requested page.
+     * @global array  The localization of the plugins.
      */
     function viewTopics($forum)
     {
@@ -272,7 +341,8 @@ class Forum
                 $topic['comments']
             );
             $topic['details'] = str_replace(
-                array('{comments}', '{posted}'), array($comments, $this->posted($topic)),
+                array('{comments}', '{posted}'),
+                array($comments, $this->posted($topic)),
                 $ptx['msg_topic_details']
             );
             $topic['class'] = 'forum_' . ($i & 1 ? 'odd' : 'even');
@@ -288,9 +358,16 @@ class Forum
     /**
      * Returns the topic view.
      *
-     * @param string $forum  The name of the forum.
-     * @param string $tid  The topic ID.
+     * @param string $forum A forum name.
+     * @param string $tid   A topic ID.
+     *
      * @return string  The (X)HTML.
+     *
+     * @global string The script name.
+     * @global string The requested page URL.
+     * @global array  The paths of system files and folders.
+     * @global bool   Whether we're logged in as administrator.
+     * @global array  The localization of the plugins.
      */
     function viewTopic($forum, $tid)
     {
@@ -325,8 +402,8 @@ class Forum
         $poweredBy = $this->poweredBy();
 
         $bag = compact(
-            'label', 'tid', 'topic', 'su', 'deleteImg', 'editImg', 'href', 'poweredBy',
-            'isUser', 'commentForm'
+            'label', 'tid', 'topic', 'su', 'deleteImg', 'editImg', 'href',
+            'poweredBy', 'isUser', 'commentForm'
         );
         return $this->render('topic', $bag);
     }
@@ -334,9 +411,13 @@ class Forum
     /**
      * Handles the forum requests.
      *
-     * @access public
-     * @param string $forum  The name of the forum.
+     * @param string $forum A forum name.
+     *
      * @return mixed
+     *
+     * @global string The requested page URL.
+     * @global string The (X)HTML of the error messages.
+     * @global array  The localization of the plugins.
      */
     function main($forum)
     {
@@ -344,40 +425,46 @@ class Forum
 
         $ptx = $plugin_tx['forum'];
         if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
-            $e .= '<li><b>'.$ptx['msg_invalid_name'].'</b>'.tag('br').$forum.'</li>'."\n";
-            return FALSE;
+            $e .= '<li><b>' . $ptx['msg_invalid_name'] . '</b>' . tag('br')
+                . $forum . '</li>' . "\n";
+            return false;
         }
-        $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'view';
+        $action = isset($_REQUEST['forum_actn'])
+            ? $_REQUEST['forum_actn'] : 'view';
         switch ($action) {
-            case 'view':
-                if (empty($_GET['forum_topic']) || ($tid = $this->contents->cleanId($_GET['forum_topic'])) === FALSE
-                        || !file_exists($this->contents->dataFolder($forum).$tid.'.dat')) {
-                    return $this->viewTopics($forum);
-                } else {
-                    return $this->viewTopic($forum, $tid);
-                }
-            case 'new':
-                return $this->commentForm() . $this->poweredBy();
-            case 'post':
-                if (!empty($_POST['forum_comment'])) {
-                    $tid = $this->postComment($forum, $_POST['forum_topic'], $_POST['forum_comment']);
-                } else {
-                    $tid = $this->postComment($forum, $_POST['forum_topic']);
-                }
-                $params = $tid ? "?$su&forum_topic=$tid" : "?$su";
-                header('Location: '.FORUM_URL.$params, TRUE, 303);
-                exit;
-            case 'edit':
-                $tid = $this->contents->cleanId($_GET['forum_topic']);
-                $cid = $this->contents->cleanId($_GET['forum_comment']);
-                if ($tid && $cid) {
-                    return $this->commentForm($tid, $cid) . $this->poweredBy();
-                } else {
-                    return ''; // should display error
-                }
-            case 'delete':
-                $this->deleteComment($forum, $tid, $cid);
-                break;
+        case 'view':
+            if (empty($_GET['forum_topic'])
+                || ($tid = $this->contents->cleanId($_GET['forum_topic'])) === false
+                || !file_exists($this->contents->dataFolder($forum) . $tid . '.dat')
+            ) {
+                return $this->viewTopics($forum);
+            } else {
+                return $this->viewTopic($forum, $tid);
+            }
+        case 'new':
+            return $this->commentForm() . $this->poweredBy();
+        case 'post':
+            if (!empty($_POST['forum_comment'])) {
+                $tid = $this->postComment(
+                    $forum, $_POST['forum_topic'], $_POST['forum_comment']
+                );
+            } else {
+                $tid = $this->postComment($forum, $_POST['forum_topic']);
+            }
+            $params = $tid ? "?$su&forum_topic=$tid" : "?$su";
+            header('Location: ' . FORUM_URL . $params, true, 303);
+            exit;
+        case 'edit':
+            $tid = $this->contents->cleanId($_GET['forum_topic']);
+            $cid = $this->contents->cleanId($_GET['forum_comment']);
+            if ($tid && $cid) {
+                return $this->commentForm($tid, $cid) . $this->poweredBy();
+            } else {
+                return ''; // should display error
+            }
+        case 'delete':
+            $this->deleteComment($forum, $tid, $cid);
+            break;
         }
     }
 
@@ -397,7 +484,8 @@ class Forum
         global $pth, $cf;
 
         $_xhtml = $cf['xhtml']['endtags'] == 'true';
-        $_template = $pth['folder']['plugins'] . 'forum/views/' . $_template . '.htm';
+        $_template = $pth['folder']['plugins'] . 'forum/views/' . $_template
+            . '.htm';
         unset($cf, $pth);
         extract($_bag);
         ob_start();
@@ -409,6 +497,13 @@ class Forum
         return $view;
     }
 
+    /**
+     * Returns the comment preview.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The paths of system files and folders.
+     */
     function commentPreview()
     {
         global $pth;
@@ -425,9 +520,9 @@ class Forum
      *
      * @return array
      *
-     * @global array  The paths of system files and folders.
-     * @global array  The localization of the core.
-     * @global array  The localization of the plugins.
+     * @global array The paths of system files and folders.
+     * @global array The localization of the core.
+     * @global array The localization of the plugins.
      */
     function systemChecks()
     {
@@ -436,16 +531,16 @@ class Forum
         $ptx = $plugin_tx['forum'];
         $phpVersion = '4.3.0';
         $checks = array();
-        $checks[sprintf($ptx['syscheck_phpversion'], $phpVersion)] =
-            version_compare(PHP_VERSION, $phpVersion) >= 0 ? 'ok' : 'fail';
+        $checks[sprintf($ptx['syscheck_phpversion'], $phpVersion)]
+            = version_compare(PHP_VERSION, $phpVersion) >= 0 ? 'ok' : 'fail';
         foreach (array('date', 'pcre', 'session') as $ext) {
-            $checks[sprintf($ptx['syscheck_extension'], $ext)] =
-                extension_loaded($ext) ? 'ok' : 'fail';
+            $checks[sprintf($ptx['syscheck_extension'], $ext)]
+                = extension_loaded($ext) ? 'ok' : 'fail';
         }
-        $checks[$ptx['syscheck_magic_quotes']] =
-            !get_magic_quotes_runtime() ? 'ok' : 'fail';
-        $checks[$ptx['syscheck_encoding']] =
-            strtoupper($tx['meta']['codepage']) == 'UTF-8' ? 'ok' : 'warn';
+        $checks[$ptx['syscheck_magic_quotes']]
+            = !get_magic_quotes_runtime() ? 'ok' : 'fail';
+        $checks[$ptx['syscheck_encoding']]
+            = strtoupper($tx['meta']['codepage']) == 'UTF-8' ? 'ok' : 'warn';
         $check = file_exists($pth['folder']['plugins'] . 'jquery/jquery.inc.php');
         $checks[$ptx['syscheck_jquery']] = $check ? 'ok' : 'fail';
         $folders = array();
@@ -454,8 +549,8 @@ class Forum
         }
         $folders[] = $this->contents->dataFolder();
         foreach ($folders as $folder) {
-            $checks[sprintf($ptx['syscheck_writable'], $folder)] =
-                is_writable($folder) ? 'ok' : 'warn';
+            $checks[sprintf($ptx['syscheck_writable'], $folder)]
+                = is_writable($folder) ? 'ok' : 'warn';
         }
         return $checks;
     }
@@ -463,7 +558,7 @@ class Forum
     /**
      * Returns the plugin information view.
      *
-     * @return string (X)HTML
+     * @return string (X)HTML.
      *
      * @global array The paths of system files and folders.
      * @global array The localization of the plugins.
@@ -488,8 +583,6 @@ class Forum
         $bag = compact('labels', 'checks', 'icon', 'version', 'images');
         return $this->render('info', $bag);
     }
-
-
 }
 
 ?>

@@ -1,5 +1,28 @@
 <?php
 
+/**
+ * The contents.
+ *
+ * PHP version 5
+ *
+ * @category  CMSimple_XH
+ * @package   Forum
+ * @author    Christoph M. Becker <cmbecker69@gmx.de>
+ * @copyright 2012-2014 Christoph M. Becker <http://3-magi.net>
+ * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @version   SVN: $Id$
+ * @link      http://3-magi.net/?CMSimple_XH/Forum_XH
+ */
+
+/**
+ * The contents.
+ *
+ * @category CMSimple_XH
+ * @package  Forum
+ * @author   Christoph M. Becker <cmbecker69@gmx.de>
+ * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @link     http://3-magi.net/?CMSimple_XH/Forum_XH
+ */
 class Forum_Contents
 {
     /**
@@ -70,16 +93,16 @@ class Forum_Contents
         $filename = $this->dataFolder($forum) . '.lock';
         touch($filename);
         switch ($op) {
-            case LOCK_SH:
-            case LOCK_EX:
-                $this->lockHandles[$forum] = fopen($filename, 'r+b');
-                flock($this->lockHandles[$forum], $op);
-                break;
-            case LOCK_UN:
-                flock($this->lockHandles[$forum], $op);
-                fclose($this->lockHandles[$forum]);
-                unset($this->lockHandles[$forum]);
-                break;
+        case LOCK_SH:
+        case LOCK_EX:
+            $this->lockHandles[$forum] = fopen($filename, 'r+b');
+            flock($this->lockHandles[$forum], $op);
+            break;
+        case LOCK_UN:
+            flock($this->lockHandles[$forum], $op);
+            fclose($this->lockHandles[$forum]);
+            unset($this->lockHandles[$forum]);
+            break;
         }
     }
 
@@ -258,6 +281,17 @@ class Forum_Contents
         $this->lock($forum, LOCK_UN);
     }
 
+    /**
+     * Updates a comment.
+     *
+     * @param string $forum   A forum name.
+     * @param string $tid     A topic ID.
+     * @param string $cid     A comment ID.
+     * @param array  $comment A comment record.
+     * @param string $user    A user.
+     *
+     * @return void
+     */
     function updateComment($forum, $tid, $cid, $comment, $user)
     {
         $this->lock($forum, LOCK_EX);
