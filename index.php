@@ -46,9 +46,7 @@ define(
     . preg_replace('/index.php$/', '', $_SERVER['PHP_SELF'])
 );
 
-require_once $pth['folder']['plugin_classes'] . 'Forum.php';
-$_Forum = new Forum();
-
+$_Forum = new Forum_Controller();
 
 /**
  * Handles the forum requests.

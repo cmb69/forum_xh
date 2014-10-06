@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The forums.
+ * The controllers.
  *
  * PHP version 5
  *
@@ -15,12 +15,7 @@
  */
 
 /**
- * The contents.
- */
-require_once $pth['folder']['plugin_classes'] . 'Contents.php';
-
-/**
- * The forums.
+ * The controllers.
  *
  * @category CMSimple_XH
  * @package  Forum
@@ -28,7 +23,7 @@ require_once $pth['folder']['plugin_classes'] . 'Contents.php';
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Forum_XH
  */
-class Forum
+class Forum_Controller
 {
     /**
      * The contents object.
@@ -69,7 +64,6 @@ class Forum
         global $pth;
 
         if (!isset($this->bbcode)) {
-            include_once $pth['folder']['plugins'] . 'forum/classes/BBCode.php';
             $emoticonFolder = $pth['folder']['plugins'] . 'forum/images/';
             $this->bbcode = new Forum_BBCode($emoticonFolder);
         }

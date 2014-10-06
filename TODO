@@ -1,5 +1,4 @@
 * metaconfig.php
-* use autoloading
 * fix FORUM_URL
 * check _ele suggestions
 * update data/.htaccess for Apache 2.4
