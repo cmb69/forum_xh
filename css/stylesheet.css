@@ -3,9 +3,6 @@ h6.forum_heading {font-weight: bold; font-size: 1.2em}
 div.forum_details {font-size: 85%; font-style: italic}
 div.forum_navlink {text-align: right; margin: 0.5em 0 0 0; font-weight: bold}
 
-/* powered by link; don't make it invisible! Turn it off in "Plugin language", if you don't like it. */
-div.forum_powered_by {text-align: center; font-size: 85%; margin: 1em 0}
-
 /* for zebra look */
 li.forum_odd {}
 li.forum_even {}

@@ -227,21 +227,6 @@ class Forum_Controller
     }
 
     /**
-     * Returns the powered by link.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugin.
-     */
-    function poweredBy()
-    {
-        global $plugin_tx;
-
-        return '<div class="forum_powered_by">'
-            . $plugin_tx['forum']['msg_powered_by'] . '</div>';
-    }
-
-    /**
      * Returns the comment form.
      *
      * @param string $tid A topic ID.
@@ -347,8 +332,7 @@ class Forum_Controller
         }
         $is_user = $this->user() !== false;
         $href = "?$su&amp;forum_actn=new";
-        $poweredBy = $this->poweredBy();
-        $bag = compact('label', 'topics', 'href', 'is_user', 'poweredBy');
+        $bag = compact('label', 'topics', 'href', 'is_user');
         return $this->render('topics', $bag);
     }
 
@@ -396,11 +380,10 @@ class Forum_Controller
         }
         $isUser = $this->user() !== false;
         $commentForm = $this->commentForm($tid);
-        $poweredBy = $this->poweredBy();
 
         $bag = compact(
             'label', 'tid', 'topic', 'su', 'deleteImg', 'editImg', 'href',
-            'poweredBy', 'isUser', 'commentForm'
+            'isUser', 'commentForm'
         );
         return $this->render('topic', $bag);
     }
@@ -439,7 +422,7 @@ class Forum_Controller
                 return $this->viewTopic($forum, $tid);
             }
         case 'new':
-            return $this->commentForm() . $this->poweredBy();
+            return $this->commentForm();
         case 'post':
             if (!empty($_POST['forum_comment'])) {
                 $tid = $this->postComment(
@@ -455,7 +438,7 @@ class Forum_Controller
             $tid = $this->contents->cleanId($_GET['forum_topic']);
             $cid = $this->contents->cleanId($_GET['forum_comment']);
             if ($tid && $cid) {
-                return $this->commentForm($tid, $cid) . $this->poweredBy();
+                return $this->commentForm($tid, $cid);
             } else {
                 return ''; // should display error
             }

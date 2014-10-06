@@ -17,7 +17,6 @@ $plugin_tx['forum']['msg_comments_plural_5']="%d Einträge";
 $plugin_tx['forum']['msg_confirm_delete']="Dieser Eintrag wird gelöscht!";
 $plugin_tx['forum']['msg_title']="Titel";
 $plugin_tx['forum']['msg_invalid_name']="Ungültiger Forumname (darf nur a-z, 0-9 and - enthalten):";
-$plugin_tx['forum']['msg_powered_by']="Powered by <a href=\"http://3-magi.net/?CMSimple_XH/Forum_XH\">Forum_XH</a>";
 
 $plugin_tx['forum']['lbl_title_missing']="Bitte einen Titel eingeben!";
 $plugin_tx['forum']['lbl_comment_missing']="Bitte einen Eintrag vornehmen!";
