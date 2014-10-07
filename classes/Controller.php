@@ -237,49 +237,58 @@ class Forum_Controller
      *
      * @global array  The paths of system files and folders.
      * @global string The (X)HTML of the head element.
-     * @global array  The localization of the plugins.
      */
     protected function hjs()
     {
-        global $pth, $hjs, $plugin_tx;
+        global $pth, $hjs;
 
-        $ptx = $plugin_tx['forum'];
-        $dir = $pth['folder']['plugins'].'forum/markitup/';
+        $dir = $pth['folder']['plugins'] . 'forum/markitup/';
         $hjs .= tag(
             'link rel="stylesheet" type="text/css" href="' . $dir
             . 'skins/simple/style.css"'
-        ) . "\n"
-            . tag(
-                'link rel="stylesheet" type="text/css" href="' . $dir
-                . 'sets/bbcode/style.css"'
-            ) . "\n";
+        ) . "\n";
+        $hjs .= tag(
+            'link rel="stylesheet" type="text/css" href="' . $dir
+            . 'sets/bbcode/style.css"'
+        ) . "\n";
         include_once $pth['folder']['plugins'] . 'jquery/jquery.inc.php';
         include_jQuery();
         include_jQueryPlugin('markitup', $dir . 'jquery.markitup.js');
-        $hjs .= '<script type="text/javascript">/* <![CDATA[ */' . "\n"
-            . 'Forum = {TX: {';
-        $texts = array(
+        $texts = XH_encodeJson($this->jsTexts());
+        $hjs .= <<<EOT
+<script type="text/javascript">/* <![CDATA[ */
+var Forum = {TX: $texts};
+jQuery(function() {
+    jQuery(".forum_comment textarea").markItUp(Forum.settings);
+});
+/* ]]> */</script>
+<script type="text/javascript" src="{$dir}sets/bbcode/set.js"></script>
+EOT;
+    }
+
+    /**
+     * Returns a map of localized texts.
+     *
+     * @return array
+     *
+     * @global array The localization of the plugins.
+     */
+    protected function jsTexts()
+    {
+        global $plugin_tx;
+
+        $keys = array(
             'title_missing', 'comment_missing', 'bold', 'italic', 'underline',
             'strikethrough', 'emoticon', 'smile', 'wink', 'happy', 'grin',
             'tongue', 'surprised', 'unhappy', 'picture', 'link', 'size', 'big',
             'normal', 'small', 'bulleted_list', 'numeric_list', 'list_item',
             'quotes', 'code', 'clean', 'preview', 'link_text'
         );
-        foreach ($texts as $i => $key) {
-            if ($i > 0) {
-                $hjs .= ', ';
-            }
-            $hjs .= strtoupper($key) . ': \''
-                . addcslashes(
-                    $ptx['lbl_'.$key], "\0..\37\\\'"
-                ) . '\'';
+        $texts = array();
+        foreach ($keys as $key) {
+            $texts[strtoupper($key)] = $plugin_tx['forum']['lbl_' . $key];
         }
-        $hjs .= '}}' . "\n"
-            . 'jQuery(function() {jQuery(\'form.forum_comment textarea\')'
-            . '.markItUp(Forum.settings)})' . "\n"
-            . '/* ]]> */</script>' . "\n";
-        $hjs .= '<script type="text/javascript" src="' . $dir
-            . 'sets/bbcode/set.js"></script>' . "\n";
+        return $texts;
     }
 
     /**
