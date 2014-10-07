@@ -30,19 +30,19 @@ class Forum_Controller
      *
      * @var object
      */
-    var $contents;
+    protected $contents;
 
     /**
      * The BBCode to HTML converter.
      *
      * @var object
      */
-    var $bbcode;
+    protected $bbcode;
 
     /**
      * Constructs an instance.
      */
-    function __construct()
+    public function __construct()
     {
         global $pth, $plugin_cf;
 
@@ -59,7 +59,7 @@ class Forum_Controller
      *
      * @global array The paths of system files and folders.
      */
-    function getBbcode()
+    protected function getBbcode()
     {
         global $pth;
 
@@ -77,7 +77,7 @@ class Forum_Controller
      *
      * @return string
      */
-    function numerus($count)
+    protected function numerus($count)
     {
         if ($count == 1) {
             return '_singular';
@@ -93,7 +93,7 @@ class Forum_Controller
      *
      * @return string
      */
-    function user()
+    protected function user()
     {
         if (session_id() == '') {
             session_start();
@@ -115,7 +115,7 @@ class Forum_Controller
      *
      * @return string
      */
-    function postComment($forum, $tid = null, $cid = null)
+    protected function postComment($forum, $tid = null, $cid = null)
     {
         if (!isset($tid) && empty($_POST['forum_title'])
             || $this->user() === false || empty($_POST['forum_text'])
@@ -161,7 +161,7 @@ class Forum_Controller
      * @global bool   Whether we're logged in as administrator.
      * @global string The URL of the current page.
      */
-    function deleteComment($forum, $tid, $cid)
+    protected function deleteComment($forum, $tid, $cid)
     {
         global $adm, $su;
 
@@ -183,7 +183,7 @@ class Forum_Controller
      * @global string The (X)HTML of the head element.
      * @global array  The localization of the plugins.
      */
-    function hjs()
+    protected function hjs()
     {
         global $pth, $hjs, $plugin_tx;
 
@@ -237,7 +237,7 @@ class Forum_Controller
      * @global string The URL of the requested page.
      * @global array  The localization of the plugins.
      */
-    function commentForm($tid = null, $cid = null)
+    protected function commentForm($tid = null, $cid = null)
     {
         global $su, $plugin_tx;
 
@@ -282,7 +282,7 @@ class Forum_Controller
      *
      * @global array The localization of the plugins.
      */
-    function posted($rec)
+    protected function posted($rec)
     {
         global $plugin_tx;
 
@@ -305,7 +305,7 @@ class Forum_Controller
      * @global string The URL of the requested page.
      * @global array  The localization of the plugins.
      */
-    function viewTopics($forum)
+    protected function viewTopics($forum)
     {
         global $su, $plugin_tx;
 
@@ -350,7 +350,7 @@ class Forum_Controller
      * @global bool   Whether we're logged in as administrator.
      * @global array  The localization of the plugins.
      */
-    function viewTopic($forum, $tid)
+    protected function viewTopic($forum, $tid)
     {
         global $sn, $su, $pth, $adm, $plugin_tx;
 
@@ -399,7 +399,7 @@ class Forum_Controller
      * @global string The (X)HTML of the error messages.
      * @global array  The localization of the plugins.
      */
-    function main($forum)
+    public function main($forum)
     {
         global $su, $e, $plugin_tx;
 
@@ -459,7 +459,7 @@ class Forum_Controller
      *
      * @return string (X)HTML
      */
-    function render($_template, $_bag)
+    protected function render($_template, $_bag)
     {
         global $pth, $cf;
 
@@ -484,7 +484,7 @@ class Forum_Controller
      *
      * @global array The paths of system files and folders.
      */
-    function commentPreview()
+    public function commentPreview()
     {
         global $pth;
 
@@ -504,7 +504,7 @@ class Forum_Controller
      * @global array The localization of the core.
      * @global array The localization of the plugins.
      */
-    function systemChecks()
+    protected function systemChecks()
     {
         global $pth, $tx, $plugin_tx;
 
@@ -543,7 +543,7 @@ class Forum_Controller
      * @global array The paths of system files and folders.
      * @global array The localization of the plugins.
      */
-    function infoView()
+    protected function infoView()
     {
         global $pth, $plugin_tx;
 

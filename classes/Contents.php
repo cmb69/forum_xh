@@ -60,7 +60,7 @@ class Forum_Contents
      *
      * @return string
      */
-    function dataFolder($forum = null)
+    public function dataFolder($forum = null)
     {
         $filename = $this->dataFolder;
         if (isset($forum)) {
@@ -88,7 +88,7 @@ class Forum_Contents
      *
      * @todo Error handling.
      */
-    function lock($forum, $op)
+    protected function lock($forum, $op)
     {
         $filename = $this->dataFolder($forum) . '.lock';
         touch($filename);
@@ -113,7 +113,7 @@ class Forum_Contents
      *
      * @return array
      */
-    function getTopics($forum)
+    protected function getTopics($forum)
     {
         $filename = $this->dataFolder($forum) . 'topics.dat';
         if (is_readable($filename)
@@ -134,7 +134,7 @@ class Forum_Contents
      *
      * @return void
      */
-    function setTopics($forum, $data)
+    protected function setTopics($forum, $data)
     {
         $filename = $this->dataFolder($forum) . 'topics.dat';
         $contents = serialize($data);
@@ -151,7 +151,7 @@ class Forum_Contents
      *
      * @return array
      */
-    function getTopic($forum, $tid)
+    public function getTopic($forum, $tid)
     {
         $filename = $this->dataFolder($forum) . $tid . '.dat';
         if (is_readable($filename)
@@ -173,7 +173,7 @@ class Forum_Contents
      *
      * @return void
      */
-    function setTopic($forum, $tid, $data)
+    protected function setTopic($forum, $tid, $data)
     {
         $filename = $this->dataFolder($forum) . $tid . '.dat';
         $contents = serialize($data);
@@ -187,7 +187,7 @@ class Forum_Contents
      *
      * @return string
      */
-    function getId()
+    public function getId()
     {
         return uniqid();
     }
@@ -199,7 +199,7 @@ class Forum_Contents
      *
      * @return string
      */
-    function cleanId($id)
+    public function cleanId($id)
     {
         return preg_match('/^[a-f0-9]{13}+$/u', $id)
                 ? $id : false;
@@ -213,7 +213,7 @@ class Forum_Contents
      *
      * @return int
      */
-    function compareTopicTime($a, $b)
+    protected function compareTopicTime($a, $b)
     {
         return $b['time'] - $a['time'];
     }
@@ -225,7 +225,7 @@ class Forum_Contents
      *
      * @return array
      */
-    function getSortedTopics($forum)
+    public function getSortedTopics($forum)
     {
         $this->lock($forum, LOCK_SH);
         $topics = $this->getTopics($forum);
@@ -242,7 +242,7 @@ class Forum_Contents
      *
      * @return array
      */
-    function getTopicWithTitle($forum, $tid)
+    public function getTopicWithTitle($forum, $tid)
     {
         $this->lock($forum, LOCK_SH);
         $topics = $this->getTopics($forum);
@@ -262,7 +262,7 @@ class Forum_Contents
      *
      * @return void
      */
-    function createComment($forum, $tid, $title, $cid, $comment)
+    public function createComment($forum, $tid, $title, $cid, $comment)
     {
         $this->lock($forum, LOCK_EX);
 
@@ -292,7 +292,7 @@ class Forum_Contents
      *
      * @return void
      */
-    function updateComment($forum, $tid, $cid, $comment, $user)
+    public function updateComment($forum, $tid, $cid, $comment, $user)
     {
         $this->lock($forum, LOCK_EX);
 
@@ -322,7 +322,7 @@ class Forum_Contents
      *
      * @return string
      */
-    function deleteComment($forum, $tid, $cid, $user)
+    public function deleteComment($forum, $tid, $cid, $user)
     {
         global $adm;
 
