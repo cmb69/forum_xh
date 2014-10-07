@@ -113,7 +113,7 @@ class Forum_BBCode
                 $ok = false;
                 break;
             }
-            $start = '<a href="' . $url . '">';
+            $start = '<a href="' . $url . '" rel="nofollow">';
             $end = '</a>';
             break;
         case 'img':
