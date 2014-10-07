@@ -1,5 +1,18 @@
-Version 1beta2 - released TODO
-* added danish translation (contributed by maeg)
+Version 1.0beta2 - released 2014-10-07
+* fixed several flaws and minor bugs
+* lifted requirements to CMSimple_XH >= 1.6 and PHP >= 5.1.2
+* added CSRF protection
+* added support for XH 1.6 APIs
+* added possibility to edit existing posts
+* added strikethrough button to editor
+* added Danish translation (contributed by maeg)
+* added German translation
+* added German manual
+* added version.nfo
+* removed powered-by link
+* updated markItUp! to 1.1.14
+* updated data/.htaccess for Apache 2.4
+* refactored
 
 Version 1beta1 - released 2012-06-09
 * initial release
