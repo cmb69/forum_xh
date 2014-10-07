@@ -60,6 +60,9 @@ class Forum_Controller
     public function dispatch()
     {
         if (XH_ADM) {
+            if (function_exists('XH_registerStandardPluginMenuItems')) {
+                XH_registerStandardPluginMenuItems(false);
+            }
             if ($this->isAdministrationRequested()) {
                 $this->handleAdministration();
             }
@@ -77,7 +80,9 @@ class Forum_Controller
     {
         global $forum;
 
-        return isset($forum) && $forum == 'true';
+        return function_exists('XH_wantsPluginAdministration')
+            && XH_wantsPluginAdministration('forum')
+            || isset($forum) && $forum == 'true';
     }
 
     /**
