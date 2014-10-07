@@ -14,7 +14,12 @@
  * @link      http://3-magi.net/?CMSimple_XH/Forum_XH
  */
 
+require_once './vendor/autoload.php';
 require_once './classes/Contents.php';
+
+use org\bovigo\vfs\vfsStreamWrapper;
+use org\bovigo\vfs\vfsStreamDirectory;
+use org\bovigo\vfs\vfsStream;
 
 /**
  * Testing the contents.
@@ -48,20 +53,10 @@ class ContentsTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
+        vfsStreamWrapper::register();
+        vfsStreamWrapper::setRoot(new vfsStreamDirectory('test'));
         $this->forum = 'test';
-        $this->contents = new Forum_Contents('.');
-    }
-
-    /**
-     * Tears down the test fixture.
-     *
-     * @return void
-     */
-    public function tearDown()
-    {
-        if (file_exists($this->forum)) {
-            exec('rmdir /s /q ' . $this->forum);
-        }
+        $this->contents = new Forum_Contents(vfsStream::url('test'));
     }
 
     /**
