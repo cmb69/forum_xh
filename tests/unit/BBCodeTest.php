@@ -14,19 +14,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Forum_XH
  */
 
+require_once '../../cmsimple/functions.php';
 require_once './classes/BBCode.php';
-
-/**
- * A test dummy.
- *
- * @param string $s A string.
- *
- * @return string (X)HTML.
- */
-function tag($s)
-{
-    return '<' . $s . '>';
-}
 
 /**
  * Testing the BBCode.

@@ -361,7 +361,7 @@ class Forum_Controller
             . '&forum_comment=';
         $i = 1;
         $label = array(
-            'title' => htmlspecialchars($title, ENT_NOQUOTES, 'UTF-8'),
+            'title' => XH_hsc($title),
             'edit' => $ptx['lbl_edit'],
             'delete' => $ptx['lbl_delete'],
             'confirmDelete' => $ptx['msg_confirm_delete'],

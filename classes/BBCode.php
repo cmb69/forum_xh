@@ -220,7 +220,7 @@ class Forum_BBCode
      */
     public function toHtml($text)
     {
-        $text = htmlspecialchars($text, ENT_COMPAT, 'UTF-8');
+        $text = XH_hsc($text);
         $this->context = array();
         $text = $this->toHtmlRec(array($text, '', '', $text));
         $text = $this->emoticonsToHtml($text);
