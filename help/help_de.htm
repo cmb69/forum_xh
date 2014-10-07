@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<title>Forum_XH &ndash; Handbuch</title>
+<link rel="stylesheet" type="text/css" href="./stylesheet.css">
+</head>
+
+<body>
+
+<h1>Forum_XH &ndash; ein CMSimple_XH Plugin</h1>
+<img src="../forum.png" style="float: left; margin: 0 10px 0 0">
+<p style="text-align:justify">Forum_XH ermöglicht das Einbinden von einfachen
+Foren auf einer CMSimple_XH Website. Zur Benutzerverwaltung dient <a
+href="http://frankziesing.de/cmsimple/?Start:Memberpages">Memberpages</a> oder
+<a href="http://3-magi.net/de/?CMSimple_XH/Register_XH">Register_XH</a>. Das
+Posten erfordert als Mitglied angemeldet zu sein, auch wenn die Foren öffentlich
+eingesehen werden können. Auf diese Weise sind keine weiteren Vorsorgen nötig um
+Spam zu verhindern, und das Posten erfordert keine zusätzlichen Eingaben wie
+Benutzername, E-Mail-Adresse usw. Forum_XH bietet einen Editor, der einfache <a
+href="http://de.wikipedia.org/wiki/BBCode">BBCode</a> Auszeichnungen versteht.
+Die Daten werden in Flat-Files gespeichert, die durch pessimistisches Sperren
+des gesamten Forums vor gleichzeitigem Zugriff geschützt sind, so dass Forum_XH
+nicht für stark frequentierte Foren geeignet ist. Weiterhin fehlen typische
+fortgeschrittene Features wie Benutzersignaturen, PN, das Abonnieren von Themen
+usw.</p>
+
+<ul id="nav">
+<li><a href="#notice">Wichtiger Hinweis</a></li>
+<li><a href="#requirements">Voraussetzungen</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#settings">Einstellungen</a></li>
+<li><a href="#usage">Verwendung</a>
+<ul>
+    <li><a href="#usage-bbcode">BBCode</a></li>
+</ul>
+</li>
+<!--<li><a href="#limitations">Einschränkungen</a></li>-->
+<li><a href="#license">Lizenz</a></li>
+<li><a href="#credits">Danksagung</a></li>
+</ul>
+
+<div id="body">
+
+<p><strong>Bitte lesen Sie diese Dokumentation <em>bevor</em> Sie auf Probleme
+stoßen!</strong></p>
+
+<h2 id="notice">Wichtiger Hinweis</h2>
+<p><strong>Forum_XH  konnte bisher nicht in diversen Umgebungen getestet werden.
+Es ist eine so genannte Beta-Version. Vorsicht bei der Verwendung!</strong></p>
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+
+<h2 id="requirements">Voraussetzungen</h2>
+<p>Forum_XH ist ein Plugin für CMSimple_XH. Es benötigt CMSimple_XH &ge; 1.6 und
+PHP &ge; 5.1.2.</p>
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+
+<h2><a name="installation">Installation</a></h2>
+<p>Die Installation erfolgt wie bei vielen anderen CMSimple_XH-Plugins auch. Im
+<a href="http://www.cmsimple-xh.org/wiki/doku.php/de:installation">
+CMSimple_XH-Wiki</a> finden Sie weitere Details.</p>
+<ol>
+<li>Sichern Sie die Daten auf Ihrem Server.</li>
+<li>Entpacken Sie die ZIP-Datei auf Ihrem Rechner.</li>
+<li>Laden Sie das ganze Verzeichnis forum/ auf Ihren Server in CMSimple_XHs
+Plugin-Verzeichnis hoch.</li>
+<li>Machen Sie die Unterverzeichnisse config/, css/, languages/ und den
+Datenordner des Plugins beschreibbar.</li>
+<li>Gehen Sie zu "Forum" im Administrationsbereich, um zu prüfen, ob alle
+Voraussetzungen erfüllt sind.</li>
+</ol>
+<p>Beachten Sie, dass die Datendateien von Forum_XH durch direkten Aufruf ihrer
+URL eingesehen werden können. Eine .htaccess Datei um das zu verhindern befindet
+sich bereits im voreingestellten Datenordner. Für andere Server oder für
+angepasste Datenordner müssen Sie selbst darauf achten, dass diese Daten vor
+nicht autorisiertem Zugriff geschützt sind.</p>
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+
+<h2 id="settings">Einstellungen</h2>
+<p>Die Plugin-Konfiguration erfolgt wie bei vielen anderen CMSimple_XH-Plugins
+auch im Administrationsbereich der Website. Wählen Sie Plugins &rarr; Forum.</p>
+<p>Sie können die Voreinstellungen von Forum_XH unter "Konfiguration" ändern.
+Hinweise zu den Optionen werden beim Überfahren der Hilfe-Icons mit der Maus
+angezeigt.</p>
+<p>Die Lokalisierung wird unter "Sprache" vorgenommen. Sie können die
+Sprachtexte in Ihre eigene Sprache übersetzen, falls keine entsprechende
+Sprachdatei zur Verfügung steht, oder diese Ihren Wünschen gemäß anpassen.</p>
+<p>Das Aussehen von Forum_XH kann unter "Stylesheet" angepasst werden.</p>
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+
+<h2 id="usage">Verwendung</h2>
+<p>Das Einfügen eines Forums auf einer Seite erfolgt mit dem Pluginaufruf:</p>
+<pre>{{{forum('name-des-forums');}}}</pre>
+<p>Sie können so viele Foren verwenden wie Sie möchten, aber nur eines pro
+CMSimple_XH Seite. Die Foren werden durch ihre Namen unterschieden, die nur
+Kleinbuchstaben (a-z), Ziffern (0-9) und Minuszeichen (-) enthalten dürfen.</p>
+<p>Nach dem Wechsel in den Ansichtsmodus sehen Sie das Forum, und falls es
+bereits Themen enthält, können Sie durch diese navigieren. Das Posten von neuen
+Kommentaren erfordert, dass Sie per <a
+href="http://frankziesing.de/cmsimple/?Start:Memberpages">Memberpages</a> oder
+<a href="http://3-magi.net/de/?CMSimple_XH/Register_XH">Register_XH</a>
+angemeldet sind. Dann können Sie ebenfalls Ihre eigenen Posts bearbeiten und
+löschen. Der CMSimple_XH Administrator kann die Posts aller Benutzer bearbeiten
+und löschen, aber um neue Kommentare zu schreiben, muss er zusätzlich als
+Mitglied angemeldet sein. In der Plugin-Administration wird keine zusätzliche
+Verwaltungsfunktionalität angeboten</p>
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+
+<h3 id="usage-bbcode">BBCode</h3>
+<p>Damit Benutzer Ihre Kommentare auszeichnen können, ist grundlegender BBCode
+verfügbar. Die folgenden Elemente werden unterstützt:</p>
+<table class="bordered">
+<tr><td>[b]Fettschrift[/b]</td>
+<td><strong>Fettschrift</strong></td></tr>
+<tr><td>[i]Kursivschrift[/i]</td>
+<td><em>Kursivschrift</em></td></tr>
+<tr><td>[u]unterstrichener Text[/u]</td>
+<td><u>unterstrichener Text</u></td></tr>
+<tr><td>[s]durchgestrichener Text[/s]</td>
+<td><s>durchgestrichener Text</s></td></tr>
+<tr><td>[url]http://cmsimple-xh.org/[/url]</td>
+<td><a href="http://cmsimple-xh.org/" rel="nofollow">http://cmsimple-xh.org</a></td></tr>
+<tr><td>[url=http://cmsimple-xh.org/]CMSimple_XH[/url]</td>
+<td><a href="http://cmsimple-xh.org/" rel="nofollow">CMSimple_XH</a></td></tr>
+<tr><td>[img]http://cmsimple-xh.org/userfiles/images/flags/de.gif[/img]</td>
+<td><img src="http://cmsimple-xh.org/userfiles/images/flags/de.gif" alt=""></td></tr>
+<tr><td>[size=150]große Schrift[/size]</td>
+<td><span style="font-size:150%">große Schrift</span></td></tr>
+<tr><td>[list][*]Eins [*]Zwei[/list]</td>
+<td><ul><li>Eins</li><li>Zwei</li></ul></td></tr>
+<tr><td>[list=1][*]Eins [*]Zwei[/list]</td>
+<td><ol start="1"><li>Eins</li><li>Zwei</li></ol></td></tr>
+<tr><td>[quote]Zitierter Text[/quote]</td>
+<td><blockquote>Zitierter Text</blockquote></td></tr>
+<tr><td>[code]dicktengleiche Schrift[/code]</td>
+<td><pre>dicktengleiche Schrift</pre></td></tr>
+</table>
+<p>Beachten Sie, dass die Verschachtelung von gleichartigen Elementen nicht
+erlaubt ist (z.B. sind verschachtelte Listen nicht möglich). Das (X)HTML, das
+vom BBCode Konverter erzeugt wird, ist immer gültig und sicher (d.h.
+Script-Injektion ist nicht möglich). Falls die Verschachtelung von BBCode
+Elementen in ungültigem (X)HTML resultieren würde, dann werden die
+Problemelemente einfach ignoriert.</p>
+<p>Die Verwendung des Auszeichnungseditors sollte weitgehend selbsterklärend
+sein. Bitte beachten Sie, dass eine einfache Vorschau über den Schalter ganz
+rechts verfügbar ist. Wenn JavaScript im Browser des Benutzers nicht verfügbar
+ist, dann ist der Editor nicht verfügbar, aber die Verwendung von BBCode in der
+Textarea ist dennoch möglich.</p>
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+
+<!--<h2 id="limitations">Einschränkungen</h2>
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>-->
+
+<h2 id="license">Lizenz</h2>
+<p>Forum_XH kann unter Einhaltung der <a
+href="http://www.gnu.org/licenses/gpl.html">GPLv3</a> verwendet werden.</p>
+<p>&copy; 2012-2014 Christoph M. Becker</p>
+<p>Dänische Übersetzung &copy; 2012 Jens Maegard</p>
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+
+<h2 id="credits">Danksagung</h2>
+<p>Forum_XH verwendet <a
+href="http://markitup.jaysalvat.com/home/">markitup</a>. Vielen Dank an Jay
+Salvat für die Veröffentlichung dieses netten Auszeichnungseditors unter
+GPL.</p>
+<p>Das Pluginlogo wurde von <a
+href="http://www.dezinerfolio.com/">Dezinerfolio</a> gestaltet. Viele Dank für
+die Veröffentlichung des Icons als Freeware.</p>
+<p>Die Emoticons wurden dem <a href="http://led24.de/">LED icon pack</a>
+entnommen. Vielen Dank für die Veröffentlichung dieser Icons unter CC BY-SA.</p>
+<p>Dieses Plugin verwendet freie Anwendungs-Icons von <a
+href="http://www.aha-soft.com/">Aha-Soft</a>. Vielen Dank für die freie
+Verwendbarkeit dieser Icons.</p>
+<p>Vielen Dank an die Gemeinde im <a
+href="http://www.cmsimpleforum.com/">CMSimple_XH-Forum</a> für Hinweise,
+Vorschläge und das Testen. Besonders möchte ich Traktorist und Old für viele
+gute Vorschläge danken.</p>
+<p>Und zu guter letzt vielen Dank an <a href="http://www.harteg.dk">Peter
+Harteg</a>, den "Vater" von CMSimple, und allen Entwicklern von <a
+href="http://www.cmsimple-xh.org/de/">CMSimple_XH</a> ohne die es dieses
+phantastische CMS nicht gäbe.</p>
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+
+</div>
+
+</body>
+
+</html>

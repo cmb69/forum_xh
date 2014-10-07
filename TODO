@@ -1,8 +1,7 @@
 * metaconfig.php
-* translate manual to German
 
 * search in Forum
-* move set.js to forum.js
+* move set.js to forum.js; move set CSS to plugin stylesheet
 * handle empty title/comment from PHP too
 
 * phpBB emoticons
