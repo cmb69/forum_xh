@@ -46,7 +46,7 @@ class Forum_Contents
      */
     public function __construct($dataFolder)
     {
-        if (substr($dataFolder, -1)) {
+        if (substr($dataFolder, -1) != '/') {
             $dataFolder .= '/';
         }
         $this->dataFolder = $dataFolder;
