@@ -12,7 +12,6 @@
 * phpBB emoticons
 * textarea braucht {display:block}
 * PRG pattern: report errors!, even on redirect
-* fix bug: inside [code] no <br> (reported by Lubomyr/Advertising Expert)
 * add syntax highlighting-possibility (suggested by Lubomyr/Advertising Expert)
 * add i18n of day and month names (suggested by Lubomyr)
 * [url=http://] (suggested by Lubomyr)

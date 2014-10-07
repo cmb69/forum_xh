@@ -173,7 +173,7 @@ class Forum_BBCode
             }
             $start = '<pre>';
             $end = '</pre>';
-            $inner = $matches[3];
+            $inner = preg_replace('/\r\n|\r|\n/', "\x0B", $matches[3]);
             break;
         default:
             $start = '<' . $matches[1] . '>';
@@ -225,6 +225,7 @@ class Forum_BBCode
         $text = $this->toHtmlRec(array($text, '', '', $text));
         $text = $this->emoticonsToHtml($text);
         $text = preg_replace('/\r\n|\r|\n/', tag('br'), $text);
+        $text = str_replace("\x0B", "\n", $text);
         return $text;
     }
 

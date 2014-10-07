@@ -143,7 +143,11 @@ class BBCodeTest extends PHPUnit_Framework_TestCase
                 '[i][code]monospaced text[/code][/i]',
                 '<i>[code]monospaced text[/code]</i>'
             ),
-            array('[list]foo[*][/list]', '[list]foo[*][/list]')
+            array('[list]foo[*][/list]', '[list]foo[*][/list]'),
+            array(
+                "[code]first line\nsecond line[/code]",
+                "<pre>first line\nsecond line</pre>"
+            )
         );
     }
 }
