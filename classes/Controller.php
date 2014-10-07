@@ -22,6 +22,7 @@
  * @author   Christoph M. Becker <cmbecker69@gmx.de>
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Forum_XH
+ * @since    1.0beta2
  */
 class Forum_Controller
 {

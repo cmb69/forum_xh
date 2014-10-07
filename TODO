@@ -1,9 +1,7 @@
 * metaconfig.php
-
 * search in Forum
 * move set.js to forum.js; move set CSS to plugin stylesheet
 * handle empty title/comment from PHP too
-
 * phpBB emoticons
 * textarea braucht {display:block}
 * PRG pattern: report errors!, even on redirect
