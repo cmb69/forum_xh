@@ -26,6 +26,7 @@ $plugin_tx['forum']['lbl_delete']="Eintrag löschen";
 $plugin_tx['forum']['lbl_bold']="Fett";
 $plugin_tx['forum']['lbl_italic']="Kursiv";
 $plugin_tx['forum']['lbl_underline']="Unterstrichen";
+$plugin_tx['forum']['lbl_strikethrough']="Durchgestrichen";
 $plugin_tx['forum']['lbl_emoticon']="Emoticon";
 $plugin_tx['forum']['lbl_smile']="Lächeln";
 $plugin_tx['forum']['lbl_wink']="Zwinkern";

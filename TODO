@@ -1,11 +1,8 @@
 * metaconfig.php
 * translate manual to German
-* update markitup
 * credit Ele in manual for suggestions etc.
 
 * search in Forum
-* edit comments
-* strikethrough for markitup
 * move set.js to forum.js
 * handle empty title/comment from PHP too
 

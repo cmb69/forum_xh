@@ -18,6 +18,7 @@ Forum.settings = {
 		{name:Forum.TX.BOLD, key:'B', openWith:'[b]', closeWith:'[/b]'},
 		{name:Forum.TX.ITALIC, key:'I', openWith:'[i]', closeWith:'[/i]'},
 		{name:Forum.TX.UNDERLINE, key:'U', openWith:'[u]', closeWith:'[/u]'},
+		{name:Forum.TX.STRIKETHROUGH, openWith: "[s]", closeWith: "[/s]"},
 		{separator:'---------------' },
 		{name:Forum.TX.EMOTICON,
 		dropMenu:[

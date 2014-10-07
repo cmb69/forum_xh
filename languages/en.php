@@ -26,6 +26,7 @@ $plugin_tx['forum']['lbl_delete']="Delete Comment";
 $plugin_tx['forum']['lbl_bold']="Bold";
 $plugin_tx['forum']['lbl_italic']="Italic";
 $plugin_tx['forum']['lbl_underline']="Underline";
+$plugin_tx['forum']['lbl_strikethrough']="Strikethrough";
 $plugin_tx['forum']['lbl_emoticon']="Emoticon";
 $plugin_tx['forum']['lbl_smile']="Smile";
 $plugin_tx['forum']['lbl_wink']="Wink";

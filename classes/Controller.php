@@ -260,10 +260,10 @@ class Forum_Controller
             . 'Forum = {TX: {';
         $texts = array(
             'title_missing', 'comment_missing', 'bold', 'italic', 'underline',
-            'emoticon', 'smile', 'wink', 'happy', 'grin', 'tongue', 'surprised',
-            'unhappy', 'picture', 'link', 'size', 'big', 'normal', 'small',
-            'bulleted_list', 'numeric_list', 'list_item', 'quotes', 'code',
-            'clean', 'preview', 'link_text'
+            'strikethrough', 'emoticon', 'smile', 'wink', 'happy', 'grin',
+            'tongue', 'surprised', 'unhappy', 'picture', 'link', 'size', 'big',
+            'normal', 'small', 'bulleted_list', 'numeric_list', 'list_item',
+            'quotes', 'code', 'clean', 'preview', 'link_text'
         );
         foreach ($texts as $i => $key) {
             if ($i > 0) {
