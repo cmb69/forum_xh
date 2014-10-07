@@ -6,6 +6,7 @@
 <?php if ($comment['mayDelete']):?>
         <form class="forum_delete" action="." method="POST"
               onsubmit="return confirm(&quot;<?php echo $label['confirmDelete'];?>&quot;)">
+	    <?php echo $_XH_csrfProtection->tokenInput()?>
             <input type="hidden" name="selected" value="<?php echo $su;?>" />
 	    <input type="hidden" name="forum_actn" value="delete" />
 	    <input type="hidden" name="forum_topic" value="<?php echo $tid;?>" />

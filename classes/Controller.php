@@ -290,12 +290,13 @@ class Forum_Controller
      *
      * @return string  The (X)HTML.
      *
-     * @global string The URL of the requested page.
-     * @global array  The localization of the plugins.
+     * @global string            The URL of the requested page.
+     * @global array             The localization of the plugins.
+     * @global XH_CSRFProtection The CSRF protector.
      */
     protected function commentForm($tid = null, $cid = null)
     {
-        global $su, $plugin_tx;
+        global $su, $plugin_tx, $_XH_csrfProtection;
 
         if ($this->user() === false) {
             return false;
@@ -324,7 +325,8 @@ class Forum_Controller
         $overviewUrl = '?' . $su;
 
         $bag = compact(
-            'newTopic', 'labels', 'tid', 'cid', 'action', 'overviewUrl', 'comment'
+            'newTopic', 'labels', 'tid', 'cid', 'action', 'overviewUrl', 'comment',
+            '_XH_csrfProtection'
         );
         return $this->render('form', $bag);
     }
@@ -400,15 +402,16 @@ class Forum_Controller
      *
      * @return string  The (X)HTML.
      *
-     * @global string The script name.
-     * @global string The requested page URL.
-     * @global array  The paths of system files and folders.
-     * @global bool   Whether we're logged in as administrator.
-     * @global array  The localization of the plugins.
+     * @global string            The script name.
+     * @global string            The requested page URL.
+     * @global array             The paths of system files and folders.
+     * @global bool              Whether we're logged in as administrator.
+     * @global array             The localization of the plugins.
+     * @global XH_CSRFProtection The CSRF protector.
      */
     protected function viewTopic($forum, $tid)
     {
-        global $sn, $su, $pth, $adm, $plugin_tx;
+        global $sn, $su, $pth, $adm, $plugin_tx, $_XH_csrfProtection;
 
         $ptx = $plugin_tx['forum'];
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
@@ -439,7 +442,7 @@ class Forum_Controller
 
         $bag = compact(
             'label', 'tid', 'topic', 'su', 'deleteImg', 'editImg', 'href',
-            'isUser', 'commentForm'
+            'isUser', 'commentForm', '_XH_csrfProtection'
         );
         return $this->render('topic', $bag);
     }
@@ -451,13 +454,14 @@ class Forum_Controller
      *
      * @return mixed
      *
-     * @global string The requested page URL.
-     * @global string The (X)HTML of the error messages.
-     * @global array  The localization of the plugins.
+     * @global string            The requested page URL.
+     * @global string            The (X)HTML of the error messages.
+     * @global array             The localization of the plugins.
+     * @global XH_CSRFProtection The CSRF protector.
      */
     public function main($forum)
     {
-        global $su, $e, $plugin_tx;
+        global $su, $e, $plugin_tx, $_XH_csrfProtection;
 
         $ptx = $plugin_tx['forum'];
         if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
@@ -480,6 +484,7 @@ class Forum_Controller
         case 'new':
             return $this->commentForm();
         case 'post':
+            $_XH_csrfProtection->check();
             if (!empty($_POST['forum_comment'])) {
                 $tid = $this->postComment(
                     $forum, $_POST['forum_topic'], $_POST['forum_comment']
@@ -499,6 +504,7 @@ class Forum_Controller
                 return ''; // should display error
             }
         case 'delete':
+            $_XH_csrfProtection->check();
             $this->deleteComment($forum, $tid, $cid);
             break;
         }
