@@ -2,6 +2,7 @@
 * translate manual to German
 * update markitup
 * credit Ele in manual for suggestions etc.
+* add rel="nofollow" to BBCode links
 
 * search in Forum
 * edit comments
@@ -20,7 +21,6 @@
   (<http://www.cmsimpleforum.com/viewtopic.php?f=16&t=5066&p=30335#p30335>)
 * hinweis, dass user eingeloggt sein muss, um zu posten (inspired by Old)
 * paginierung
-* accept https:// for images and links
 * kompletten Thread loeschen (Erklaeren, dass alle Posts geloescht werden
   muessen!!!, oder aber entsprechende Moeglichkeit einbauen???) (insp. by Per)
 * set max-width: 100% for [img]

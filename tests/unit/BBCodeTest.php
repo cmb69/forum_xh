@@ -95,8 +95,16 @@ class BBCodeTest extends PHPUnit_Framework_TestCase
                 '<a href="http://example.com/">example.com</a>'
             ),
             array(
+                '[url=https://example.com/]example.com[/url]',
+                '<a href="https://example.com/">example.com</a>'
+            ),
+            array(
                 '[img]http://example.com/image.jpg[/img]',
                 '<img src="http://example.com/image.jpg" alt="image.jpg">'
+            ),
+            array(
+                '[img]https://example.com/image.jpg[/img]',
+                '<img src="https://example.com/image.jpg" alt="image.jpg">'
             ),
             array(
                 '[size=150]large text[/size]',

@@ -109,7 +109,7 @@ class Forum_BBCode
                     $this->pattern, array($this, 'toHtmlRec'), $matches[3]
                 );
             }
-            if (strpos($url, 'http:') !== 0) {
+            if (!preg_match('/^http(s)?:/', $url)) {
                 $ok = false;
                 break;
             }
@@ -118,7 +118,7 @@ class Forum_BBCode
             break;
         case 'img':
             $url = $matches[3];
-            if (strpos($url, 'http:') !== 0) {
+            if (!preg_match('/^http(s)?:/', $url)) {
                 $ok = false;
                 break;
             }
