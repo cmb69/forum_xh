@@ -53,6 +53,57 @@ class Forum_Controller
     }
 
     /**
+     * Dispatches on general plugin related requests.
+     *
+     * @return void
+     */
+    public function dispatch()
+    {
+        if (XH_ADM) {
+            if ($this->isAdministrationRequested()) {
+                $this->handleAdministration();
+            }
+        }
+    }
+
+    /**
+     * Returns whether the plugin administration is requested.
+     *
+     * @return bool
+     *
+     * @global string Whether the plugin administration is requested.
+     */
+    protected function isAdministrationRequested()
+    {
+        global $forum;
+
+        return isset($forum) && $forum == 'true';
+    }
+
+    /**
+     * Handles the plugin administration.
+     *
+     * @return void
+     *
+     * @global string The value of the admin GP parameter.
+     * @global string The value of the action GP parameter.
+     * @global string The (X)HTML of the contents area.
+     */
+    protected function handleAdministration()
+    {
+        global $admin, $action, $o;
+
+        $o .= print_plugin_admin('off');
+        switch ($admin) {
+        case '':
+            $o .= $this->infoView();
+            break;
+        default:
+            $o .= plugin_admin_common($action, $admin, 'forum');
+        }
+    }
+
+    /**
      * Returns the BBCode to HTML converter. Creates the object, if necessary.
      *
      * @return object

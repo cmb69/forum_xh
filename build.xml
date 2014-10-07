@@ -4,7 +4,6 @@
 
     <fileset id="php-sources" dir=".">
         <include name="classes/*.php"/>
-        <include name="admin.php"/>
         <include name="index.php"/>
     </fileset>
 

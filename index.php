@@ -59,4 +59,6 @@ if (isset($_GET['forum_preview'])) {
     exit;
 }
 
+$_Forum->dispatch();
+
 ?>
