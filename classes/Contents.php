@@ -71,7 +71,9 @@ class Forum_Contents
                 e('cntopen', 'folder', $filename); // exception
             }
         } else {
-            if (!mkdir($filename, 0777, true)) {
+            if (mkdir($filename, 0777, true)) {
+                chmod($filename, 0777);
+            } else {
                 e('cntsave', 'folder', $filename); // exception
             }
         }
