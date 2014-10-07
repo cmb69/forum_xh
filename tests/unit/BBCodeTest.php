@@ -88,7 +88,8 @@ class BBCodeTest extends PHPUnit_Framework_TestCase
             array('[s]foo[/s]', '<s>foo</s>'),
             array(
                 '[url]http://example.com/[/url]',
-                '<a href="http://example.com/" rel="nofollow">http://example.com/</a>'
+                '<a href="http://example.com/" rel="nofollow">http://example.com/'
+                . '</a>'
             ),
             array(
                 '[url=http://example.com/]example.com[/url]',
