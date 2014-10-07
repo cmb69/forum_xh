@@ -1,5 +1,4 @@
 * metaconfig.php
-* fix FORUM_URL
 * update data/.htaccess for Apache 2.4
 * translate manual to German
 * update markitup
@@ -18,7 +17,6 @@
 * add syntax highlighting-possibility (suggested by Lubomyr/Advertising Expert)
 * add i18n of day and month names (suggested by Lubomyr)
 * [url=http://] (suggested by Lubomyr)
-* fix FORUM_URL (see http://cmsimpleforum.com/viewtopic.php?f=29&t=4730)
 * Benachrichtigung (e-mail?, feed?)
 * feineres Berechtigungssystem
   (<http://www.cmsimpleforum.com/viewtopic.php?f=16&t=5066&p=30335#p30335>)

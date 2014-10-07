@@ -170,7 +170,7 @@ class Forum_Controller
         $user = $adm ? true : $this->user();
         $queryString = $this->contents->deleteComment($forum, $tid, $cid, $user)
             ? '?' . $su . '&forum_topic=' . $tid : '?' . $su;
-        header('Location: ' . FORUM_URL . $queryString, true, 303);
+        header('Location: ' . CMSIMPLE_URL . $queryString, true, 303);
         exit;
     }
 
@@ -432,7 +432,7 @@ class Forum_Controller
                 $tid = $this->postComment($forum, $_POST['forum_topic']);
             }
             $params = $tid ? "?$su&forum_topic=$tid" : "?$su";
-            header('Location: ' . FORUM_URL . $params, true, 303);
+            header('Location: ' . CMSIMPLE_URL . $params, true, 303);
             exit;
         case 'edit':
             $tid = $this->contents->cleanId($_GET['forum_topic']);

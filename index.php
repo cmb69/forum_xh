@@ -35,17 +35,6 @@ EOT
  */
 define('FORUM_VERSION', '@FORUM_VERSION@');
 
-/**
- * Fully qualified absolute URL to CMSimple's index.php.
- */
-define(
-    'FORUM_URL',
-    'http://'
-    . (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 's' : '')
-    . $_SERVER['SERVER_NAME']
-    . preg_replace('/index.php$/', '', $_SERVER['PHP_SELF'])
-);
-
 $_Forum = new Forum_Controller();
 
 /**
