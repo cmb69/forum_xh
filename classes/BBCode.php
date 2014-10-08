@@ -160,7 +160,7 @@ class Forum_BBCode
                 $ok = false;
                 break;
             }
-            $start = '<blockquote>';
+            $start = '<blockquote class="forum_quote">';
             $end = '</blockquote>';
             $inner = preg_replace_callback(
                 $this->pattern, array($this, 'toHtmlRec'), $matches[3]
@@ -171,7 +171,7 @@ class Forum_BBCode
                 $ok = false;
                 break;
             }
-            $start = '<pre>';
+            $start = '<pre class="forum_code">';
             $end = '</pre>';
             $inner = preg_replace('/\r\n|\r|\n/', "\x0B", $matches[3]);
             break;

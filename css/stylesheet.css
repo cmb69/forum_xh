@@ -66,6 +66,15 @@
     float: right;
     margin-left: 0.5em;
 }
+.forum_quote {
+    margin-left: 0;
+    border-left: 3px solid #888;
+    padding-left: 1em;
+}
+.forum_code {
+    border: 1px solid #888;
+    overflow-x: auto;
+}
 
 /*
  * Comment form

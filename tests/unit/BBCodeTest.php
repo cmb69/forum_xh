@@ -122,11 +122,11 @@ class BBCodeTest extends PHPUnit_Framework_TestCase
             ),
             array(
                 '[quote]quoted text[/quote]',
-                '<blockquote>quoted text</blockquote>'
+                '<blockquote class="forum_quote">quoted text</blockquote>'
             ),
             array(
                 '[code]monospaced text[/code]',
-                '<pre>monospaced text</pre>'
+                '<pre class="forum_code">monospaced text</pre>'
             ),
             array('<>&"\'', '&lt;&gt;&amp;&quot;\''),
             array(
@@ -155,7 +155,7 @@ class BBCodeTest extends PHPUnit_Framework_TestCase
             array('[list]foo[*][/list]', '[list]foo[*][/list]'),
             array(
                 "[code]first line\nsecond line[/code]",
-                "<pre>first line\nsecond line</pre>"
+                "<pre class=\"forum_code\">first line\nsecond line</pre>"
             )
         );
     }
