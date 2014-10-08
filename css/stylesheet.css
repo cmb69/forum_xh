@@ -1,34 +1,107 @@
-/* general */
-h6.forum_heading {font-weight: bold; font-size: 1.2em}
-div.forum_details {font-size: 85%; font-style: italic}
-div.forum_navlink {text-align: right; margin: 0.5em 0 0 0; font-weight: bold}
+/*
+ * General
+ */
+.forum_heading {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+.forum_details {
+    font-size: 85%;
+    font-style: italic;
+}
+.forum_navlink {
+    text-align: right;
+    margin: 0.5em 0 0 0;
+    font-weight: bold;
+}
 
-/* for zebra look */
-li.forum_odd {}
-li.forum_even {}
+/*
+ * Zebra look
+ */
+.forum_odd {}
+.forum_even {}
 
-/* all topics */
-ul.forum_topics {list-style: none; margin: 0; padding: 0}
-ul.forum_topics > li {margin: 0 0 0.5em 0; padding: 0 0 0.5em 0; border-bottom: 1px solid #888}
-ul.forum_topics div.forum_title {font-weight: bold; margin: 0.5em 0}
+/*
+ * All topics
+ */
+.forum_topics {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.forum_topics > li {
+    margin: 0 0 0.5em 0;
+    padding: 0 0 0.5em 0;
+    border-bottom: 1px solid #888;
+}
+.forum_topics .forum_title {
+    font-weight: bold;
+    margin: 0.5em 0;
+}
 
-/* single topic */
-ul.forum_topic {list-style: none; margin: 0; padding: 0; width: 100%}
-ul.forum_topic > li {margin: 0 0 0.5em 0; padding: 0 0 0.5em 0; border-bottom: 1px solid #888}
-div.forum_comment {margin-top: 0.5em}
-a.forum_edit {float: right}
-a.forum_edit img {border: none}
-form.forum_delete {float: right; margin-left: 0.5em}
+/*
+ * Single topic
+ */
+.forum_topic {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+.forum_topic > li {
+    margin: 0 0 0.5em 0;
+    padding: 0 0 0.5em 0;
+    border-bottom: 1px solid #888;
+}
+.forum_comment {
+    margin-top: 0.5em;
+}
+.forum_edit {
+    float: right;
+}
+.forum_edit img {
+    border: none;
+}
+.forum_delete {
+    float: right;
+    margin-left: 0.5em;
+}
 
-/* comment form */
-form.forum_comment {margin: 1em 0}
-form.forum_comment div.forum_title {margin-bottom: 1em}
-form.forum_comment div.forum_title label {padding-right: 1em}
-form.forum_comment div.forum_title input {width: 30em}
-form.forum_comment textarea {width: 100%; padding: 0}
-form.forum_comment div.forum_submit {text-align: center}
-form.forum_comment div.forum_submit input.submit {padding: 0.2em 1em}
+/*
+ * Comment form
+ */
+.forum_comment {
+    margin: 1em 0;
+}
+.forum_comment .forum_title {
+    margin-bottom: 1em;
+}
+.forum_comment .forum_title label {
+    padding-right: 1em;
+}
+.forum_comment .forum_title input {
+    width: 30em;
+}
+.forum_comment textarea {
+    width: 100%;
+    padding: 0;
+}
+.forum_comment .forum_submit {
+    text-align: center;
+}
+.forum_comment .forum_submit .submit {
+    padding: 0.2em 1em;
+}
 
-/* back-end */
-img.forum_plugin_icon {display: block; float: left; margin: 0 10px 0 0}
-p.forum_license {clear: both; text-align: justify}
+/*
+ * Back-end
+ */
+.forum_plugin_icon {
+    display: block;
+    float: left;
+    margin: 0 10px 0 0;
+}
+.forum_license {
+    clear: both;
+    text-align: justify;
+}
