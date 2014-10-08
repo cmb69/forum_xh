@@ -1,3 +1,7 @@
+* Edit form: cancel or link back to topic (sugg. by Der Zwerch
+  <http://cmsimpleforum.com/viewtopic.php?f=16&t=8104&p=44089#p44084>)
+* Hide comment form (sugg. by Der Zwerch
+  <http://cmsimpleforum.com/viewtopic.php?f=16&t=8104&p=44089#p44085>)
 * metaconfig.php
 * search in Forum
 * move set.js to forum.js; move set CSS to plugin stylesheet
