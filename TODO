@@ -1,5 +1,3 @@
-* adjust width of textarea/editor and preview
-
 * metaconfig.php
 * search in Forum
 * move set.js to forum.js; move set CSS to plugin stylesheet

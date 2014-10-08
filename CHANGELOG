@@ -1,3 +1,10 @@
+Version 1.0beta3 - released 2014-10-08
+* fixed bug, where preview failed with fatal error (reported by Der Zwerch)
+* fixed bug, where editing of posts did only work for the forum named "test"
+  (reported by Der Zwerch)
+* improved styling of editor and preview
+* added some default styling for quotes and codes (suggested by Der Zwerch)
+
 Version 1.0beta2 - released 2014-10-07
 * fixed several flaws and minor bugs
 * lifted requirements to CMSimple_XH >= 1.6 and PHP >= 5.1.2
