@@ -1,3 +1,6 @@
+* adjust width of textarea/editor and preview
+* add CSS classes for [quote] and [code] (inspired by Der Zwerch)
+
 * metaconfig.php
 * search in Forum
 * move set.js to forum.js; move set CSS to plugin stylesheet

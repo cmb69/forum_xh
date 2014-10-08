@@ -295,8 +295,9 @@ EOT;
     /**
      * Returns the comment form.
      *
-     * @param string $tid A topic ID.
-     * @param string $cid A comment ID.
+     * @param string $forum A forum name.
+     * @param string $tid   A topic ID.
+     * @param string $cid   A comment ID.
      *
      * @return string  The (X)HTML.
      *
@@ -304,7 +305,7 @@ EOT;
      * @global array             The localization of the plugins.
      * @global XH_CSRFProtection The CSRF protector.
      */
-    protected function commentForm($tid = null, $cid = null)
+    protected function commentForm($forum, $tid = null, $cid = null)
     {
         global $su, $plugin_tx, $_XH_csrfProtection;
 
@@ -325,7 +326,7 @@ EOT;
         );
         $comment = '';
         if (isset($cid)) {
-            $topics = $this->contents->getTopic('test', $tid);
+            $topics = $this->contents->getTopic($forum, $tid);
             if ($topics[$cid]['user'] == $this->user()) {
                 $comment = $topics[$cid]['comment'];
             }
@@ -448,7 +449,7 @@ EOT;
             $i++;
         }
         $isUser = $this->user() !== false;
-        $commentForm = $this->commentForm($tid);
+        $commentForm = $this->commentForm($forum, $tid);
 
         $bag = compact(
             'label', 'tid', 'topic', 'su', 'deleteImg', 'editImg', 'href',
@@ -492,7 +493,7 @@ EOT;
                 return $this->viewTopic($forum, $tid);
             }
         case 'new':
-            return $this->commentForm();
+            return $this->commentForm($forum);
         case 'post':
             $_XH_csrfProtection->check();
             if (!empty($_POST['forum_comment'])) {
@@ -509,7 +510,7 @@ EOT;
             $tid = $this->contents->cleanId($_GET['forum_topic']);
             $cid = $this->contents->cleanId($_GET['forum_comment']);
             if ($tid && $cid) {
-                return $this->commentForm($tid, $cid);
+                return $this->commentForm($forum, $tid, $cid);
             } else {
                 return ''; // should display error
             }
