@@ -1,3 +1,4 @@
+*.komodoproject
 .komodotools
 doc
 tests/coverage
