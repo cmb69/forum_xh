@@ -1,6 +1,7 @@
 <!-- Forum_XH: comment form -->
 <form class="forum_comment" action="<?php echo $action;?>" method="post" accept-charset="UTF-8" onsubmit="return Forum.validate()">
-    <?php echo $_XH_csrfProtection->tokenInput()?>
+    <?php echo $this->getCSRFProtector()->tokenInput()?>
+    <?php $this->getCSRFProtector()->store()?>
 <?php if ($newTopic):?>
     <h6 class="forum_heading"><?php echo $labels['heading'];?></h6>
     <div class="forum_title">

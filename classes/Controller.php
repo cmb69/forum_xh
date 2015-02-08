@@ -41,6 +41,13 @@ class Forum_Controller
     protected $bbcode;
 
     /**
+     * The CSRF protector
+     *
+     * @var XH_CSRFProtection
+     */
+    protected $csrfProtector;
+
+    /**
      * Constructs an instance.
      */
     public function __construct()
@@ -303,11 +310,10 @@ EOT;
      *
      * @global string            The URL of the requested page.
      * @global array             The localization of the plugins.
-     * @global XH_CSRFProtection The CSRF protector.
      */
     protected function commentForm($forum, $tid = null, $cid = null)
     {
-        global $su, $plugin_tx, $_XH_csrfProtection;
+        global $su, $plugin_tx;
 
         if ($this->user() === false) {
             return false;
@@ -418,11 +424,10 @@ EOT;
      * @global array             The paths of system files and folders.
      * @global bool              Whether we're logged in as administrator.
      * @global array             The localization of the plugins.
-     * @global XH_CSRFProtection The CSRF protector.
      */
     protected function viewTopic($forum, $tid)
     {
-        global $sn, $su, $pth, $adm, $plugin_tx, $_XH_csrfProtection;
+        global $sn, $su, $pth, $adm, $plugin_tx;
 
         $ptx = $plugin_tx['forum'];
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
@@ -468,11 +473,10 @@ EOT;
      * @global string            The requested page URL.
      * @global string            The (X)HTML of the error messages.
      * @global array             The localization of the plugins.
-     * @global XH_CSRFProtection The CSRF protector.
      */
     public function main($forum)
     {
-        global $su, $e, $plugin_tx, $_XH_csrfProtection;
+        global $su, $e, $plugin_tx;
 
         $ptx = $plugin_tx['forum'];
         if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
@@ -495,7 +499,7 @@ EOT;
         case 'new':
             return $this->commentForm($forum);
         case 'post':
-            $_XH_csrfProtection->check();
+            $this->getCSRFProtector()->check();
             if (!empty($_POST['forum_comment'])) {
                 $tid = $this->postComment(
                     $forum, $_POST['forum_topic'], $_POST['forum_comment']
@@ -515,7 +519,7 @@ EOT;
                 return ''; // should display error
             }
         case 'delete':
-            $_XH_csrfProtection->check();
+            $this->getCSRFProtector()->check();
             $this->deleteComment($forum, $tid, $cid);
             break;
         }
@@ -635,6 +639,27 @@ EOT;
         }
         $bag = compact('labels', 'checks', 'icon', 'version', 'images');
         return $this->render('info', $bag);
+    }
+
+    /**
+     * Returns the CSRF protector.
+     *
+     * @return XH_CSRFProtection
+     *
+     * @global XH_CSRFProtection The CSRF protector.
+     */
+    protected function getCSRFProtector()
+    {
+        global $_XH_csrfProtection;
+
+        if (isset($_XH_csrfProtection)) {
+            return $_XH_csrfProtection;
+        } else {
+            if (!isset($this->csrfProtector)) {
+                $this->csrfProtector = new XH_CSRFProtection('forum_token');
+            }
+            return $this->csrfProtector;
+        }
     }
 }
 
