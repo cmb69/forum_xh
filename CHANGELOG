@@ -1,3 +1,7 @@
+Version 1.0beta4 - released 2015-02-08
+* fixed bug, where viewing of forms failed under CMSimple_XH 1.6.5 when not in
+  admin mode (reported by pmschulze)
+
 Version 1.0beta3 - released 2014-10-08
 * fixed bug, where preview failed with fatal error (reported by Der Zwerch)
 * fixed bug, where editing of posts did only work for the forum named "test"
