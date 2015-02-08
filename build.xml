@@ -32,12 +32,6 @@
         </phpcodesniffer>
     </target>
 
-    <target name="compat2"
-            description="checks compatibility with PHP_CompatInfo 2">
-        <exec command="C:\xampp\php\phpcompatinfo --configuration phpcompatinfo.xml print --exclude-pattern forum ."
-              logoutput="true"/>
-    </target>
-
     <target name="compat"
             description="checks compatibility with PHP_CompatInfo 3">
         <exec command="phpcompatinfo analyser:run ." logoutput="true"/>
