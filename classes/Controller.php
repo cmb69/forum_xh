@@ -232,7 +232,8 @@ class Forum_Controller
         $cid = $this->contents->cleanId($_POST['forum_comment']);
         $user = $adm ? true : $this->user();
         $queryString = $this->contents->deleteComment($forum, $tid, $cid, $user)
-            ? '?' . $su . '&forum_topic=' . $tid : '?' . $su;
+            ? '?' . $su . '&forum_topic=' . $tid . '#' . $forum: '?' . $su . 
+              '#' . $forum;
         header('Location: ' . CMSIMPLE_URL . $queryString, true, 303);
         exit;
     }
@@ -325,6 +326,7 @@ EOT;
             'heading' => $newTopic
                 ? $ptx['msg_new_topic']
                 : (isset($cid) ? $ptx['msg_edit_comment'] : $ptx['msg_add_comment']),
+            'anchor' => $forum,
             'title' => $ptx['msg_title'],
             'submit' => $ptx['lbl_submit'],
             'back' => $ptx['msg_back']
@@ -338,7 +340,7 @@ EOT;
             //$newTopic = true; // FIXME: hack to force overview link to be shown
         }
         $action = '?' . $su . '&amp;forum_actn=post';
-        $overviewUrl = '?' . $su;
+        $overviewUrl = '?' . $su . '#' . $forum;
 
         $bag = compact(
             'newTopic', 'labels', 'tid', 'cid', 'action', 'overviewUrl', 'comment',
@@ -387,11 +389,12 @@ EOT;
         $topics = $this->contents->getSortedTopics($forum);
         $label = array(
             'heading' => $ptx['msg_topics'],
+            'anchor' => $forum,
             'start_topic' => $ptx['msg_start_topic']
         );
         $i = 1;
         foreach ($topics as $tid => &$topic) {
-            $topic['href'] = "?$su&amp;forum_topic=$tid";
+            $topic['href'] = "?$su&amp;forum_topic=$tid#$forum";
             $comments = sprintf(
                 $ptx['msg_comments' . $this->numerus($topic['comments'])],
                 $topic['comments']
@@ -405,7 +408,7 @@ EOT;
             $i++;
         }
         $is_user = $this->user() !== false;
-        $href = "?$su&amp;forum_actn=new";
+        $href = "?$su&amp;forum_actn=new#$forum";
         $bag = compact('label', 'topics', 'href', 'is_user');
         return $this->render('topics', $bag);
     }
@@ -430,12 +433,13 @@ EOT;
 
         $ptx = $plugin_tx['forum'];
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
-        $href = "?$su";
+        $href = "?$su#$forum";
         $editUrl = $sn . '?' . $su . '&forum_actn=edit&forum_topic=' . $tid
             . '&forum_comment=';
         $i = 1;
         $label = array(
             'title' => XH_hsc($title),
+            'anchor' => $forum,
             'edit' => $ptx['lbl_edit'],
             'delete' => $ptx['lbl_delete'],
             'confirmDelete' => $ptx['msg_confirm_delete'],
@@ -506,7 +510,7 @@ EOT;
             } else {
                 $tid = $this->postComment($forum, $_POST['forum_topic']);
             }
-            $params = $tid ? "?$su&forum_topic=$tid" : "?$su";
+            $params = $tid ? "?$su&forum_topic=$tid#$forum" : "?$su#$forum";
             header('Location: ' . CMSIMPLE_URL . $params, true, 303);
             exit;
         case 'edit':

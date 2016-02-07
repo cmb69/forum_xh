@@ -1,5 +1,5 @@
 <!-- Forum_XH: Topic -->
-<h6 class="forum_heading"><?php echo $label['title'];?></h6>
+<h6 class="forum_heading" id="<?php echo $label['anchor'];?>"><?php echo $label['title'];?></h6>
 <ul class="forum_topic">
 <?php foreach ($topic as $cid => $comment):?>
     <li class="<?php echo $comment['class'];?>">
@@ -15,7 +15,7 @@
 	    <input type="image" src="<?php echo $deleteImg;?>"
                    alt="<?php echo $label['delete'];?>" title="<?php echo $label['delete'];?>" />
 	</form>
-	<a class="forum_edit" href="<?php echo $comment['editUrl'];?>">
+	<a class="forum_edit" href="<?php echo $comment['editUrl'];?>#<?php echo $label['anchor'];?>">
 	    <img src="<?php echo $editImg;?>" alt="<?php echo $label['edit'];?>"
 		 title="<?php echo $label['edit'];?>" />
 	</a>

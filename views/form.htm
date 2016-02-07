@@ -3,13 +3,13 @@
     <?php echo $this->getCSRFProtector()->tokenInput()?>
     <?php $this->getCSRFProtector()->store()?>
 <?php if ($newTopic):?>
-    <h6 class="forum_heading"><?php echo $labels['heading'];?></h6>
+    <h6 class="forum_heading" id="<?php echo $labels['anchor'];?>"><?php echo $labels['heading'];?></h6>
     <div class="forum_title">
         <label for="forum_title"><?php echo $labels['title'];?></label>
 	<input type="text" id="forum_title" name="forum_title" />
     </div>
 <?php else:?>
-    <h6 class="forum_heading"><?php echo $labels['heading'];?></h6>
+    <h6 class="forum_heading" id="<?php echo $labels['anchor'];?>"><?php echo $labels['heading'];?></h6>
     <input type="hidden" name="forum_topic" value="<?php echo $tid;?>" />
     <input type="hidden" name="forum_comment" value="<?php echo $cid;?>" />
 <?php endif;?>
