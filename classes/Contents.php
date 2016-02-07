@@ -139,7 +139,6 @@ class Forum_Contents
     protected function setTopics($forum, $data)
     {
         $filename = $this->dataFolder($forum) . 'topics.dat';
-        $contents = serialize($data);
         if (!file_put_contents($filename, serialize($data))) {
             e('cntsave', 'file', $filename); // throw exeption
         }
@@ -290,11 +289,10 @@ class Forum_Contents
      * @param string $tid     A topic ID.
      * @param string $cid     A comment ID.
      * @param array  $comment A comment record.
-     * @param string $user    A user.
      *
      * @return void
      */
-    public function updateComment($forum, $tid, $cid, $comment, $user)
+    public function updateComment($forum, $tid, $cid, $comment)
     {
         $this->lock($forum, LOCK_EX);
 
@@ -326,8 +324,6 @@ class Forum_Contents
      */
     public function deleteComment($forum, $tid, $cid, $user)
     {
-        global $adm;
-
         if (!$tid || !$cid) {
             return false;
         }
