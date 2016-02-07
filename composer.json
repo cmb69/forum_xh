@@ -3,7 +3,7 @@
         "phing/phing": "2.13.*",
         "squizlabs/php_codesniffer": "2.5.*",
         "bartlett/php-compatinfo": "5.0.*",
-        "phpunit/phpunit": "4.5.*",
+        "phpunit/phpunit": "5.2.*",
         "tcz/phpunit-mockfunction": "1.0.*",
         "mikey179/vfsStream": "1.6.*",
         "tedivm/jshrink": "1.1.*"
