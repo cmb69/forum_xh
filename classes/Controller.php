@@ -315,7 +315,7 @@ EOT;
     {
         global $su, $plugin_tx;
 
-        if ($this->user() === false) {
+        if ($this->user() === false && !XH_ADM) {
             return false;
         }
         $ptx = $plugin_tx['forum'];
@@ -334,7 +334,7 @@ EOT;
         $comment = '';
         if (isset($cid)) {
             $topics = $this->contents->getTopic($forum, $tid);
-            if ($topics[$cid]['user'] == $this->user()) {
+            if ($topics[$cid]['user'] == $this->user() || XH_ADM) {
                 $comment = $topics[$cid]['comment'];
             }
             //$newTopic = true; // FIXME: hack to force overview link to be shown
