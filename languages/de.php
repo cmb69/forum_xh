@@ -1,6 +1,6 @@
 <?php
 
-$plugin_tx['forum']['format_date']="F j, Y";
+$plugin_tx['forum']['format_date']="j.n.Y";
 $plugin_tx['forum']['format_time']="H:i:s";
 
 $plugin_tx['forum']['msg_start_topic']="Neues Thema erstellen";
