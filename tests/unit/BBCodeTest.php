@@ -58,27 +58,27 @@ class BBCodeTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests the toHtml() conversion.
+     * Tests the conversion.
      *
      * @param string $text     A text.
      * @param string $expected An expected result.
      *
      * @return void
      *
-     * @dataProvider dataForToHtml
+     * @dataProvider dataForConversion
      */
-    public function testToHtml($text, $expected)
+    public function testConversion($text, $expected)
     {
-        $actual = $this->bbcode->toHtml($text);
+        $actual = $this->bbcode->convert($text);
         $this->assertEquals($expected, $actual);
     }
 
     /**
-     * Supplies data for testToHtml().
+     * Supplies data for testConversion().
      *
      * @return array
      */
-    public function dataForToHtml()
+    public function dataForConversion()
     {
         return array(
             array('[i]foo[/i]', '<i>foo</i>'),

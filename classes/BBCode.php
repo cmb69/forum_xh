@@ -60,17 +60,17 @@ class Forum_BBCode
     }
 
     /**
-     * Returns a list item converted to (X)HTML.
+     * Converts a list item to (X)HTML.
      *
      * @param string $item The content of the list item.
      *
      * @return (X)HTML.
      */
-    protected function listItemsToHtml($item)
+    protected function convertListItem($item)
     {
         return '<li>'
             . preg_replace_callback(
-                $this->pattern, array($this, 'toHtmlRec'), $item
+                $this->pattern, array($this, 'doConvert'), $item
             )
             . '</li>';
     }
@@ -82,107 +82,188 @@ class Forum_BBCode
      *
      * @return string (X)HTML
      */
-    protected function toHtmlRec($matches)
+    protected function doConvert($matches)
     {
         $inlines = array('i', 'b', 'u', 's', 'url', 'img', 'size');
         array_push(
             $this->context,
             in_array($matches[1], $inlines) ? 'inline' : $matches[1]
         );
-        $ok = true;
         $matches[3] = trim($matches[3]);
         switch ($matches[1]) {
         case '':
-            $start = $end = '';
-            $inner = preg_replace_callback(
-                $this->pattern, array($this, 'toHtmlRec'), $matches[3]
+            $result = preg_replace_callback(
+                $this->pattern, array($this, 'doConvert'), $matches[3]
             );
             break;
         case 'url':
-            if (empty($matches[2])) {
-                $url = $matches[3];
-                $inner = $matches[3];
-            } else {
-                $url = substr($matches[2], 1);
-                $inner = preg_replace_callback(
-                    $this->pattern, array($this, 'toHtmlRec'), $matches[3]
-                );
-            }
-            if (!preg_match('/^http(s)?:/', $url)) {
-                $ok = false;
-                break;
-            }
-            $start = '<a href="' . $url . '" rel="nofollow">';
-            $end = '</a>';
+            $result = $this->convertUrl($matches);
             break;
         case 'img':
-            $url = $matches[3];
-            if (!preg_match('/^http(s)?:/', $url)) {
-                $ok = false;
-                break;
-            }
-            $start = tag('img src="' . $url . '" alt="' . basename($url) . '"');
-            $end = $inner = '';
+            $result = $this->convertImg($matches);
             break;
         case 'size':
-            $size = substr($matches[2], 1);
-            $inner = preg_replace_callback(
-                $this->pattern, array($this, 'toHtmlRec'), $matches[3]
-            );
-            $start = '<span style="font-size: ' . $size . '%; line-height: '
-                . $size . '%">';
-            $end = '</span>';
+            $result = $this->convertSize($matches);
             break;
         case 'list':
-            if (in_array('inline', $this->context)) {
-                $ok = false;
-                break;
-            }
-            if (empty($matches[2])) {
-                $start = '<ul>';
-                $end = '</ul>';
-            } else {
-                $start = '<ol start="' . substr($matches[2], 1) . '">';
-                $end = '</ol>';
-            }
-            $items = array_map('trim', explode('[*]', $matches[3]));
-            if (array_shift($items) != '') {
-                $ok = false;
-                break;
-            }
-            $inner = implode(
-                '', array_map(array($this, 'listItemsToHtml'), $items)
-            );
+            $result = $this->convertList($matches);
             break;
         case 'quote':
-            if (in_array('inline', $this->context)) {
-                $ok = false;
-                break;
-            }
-            $start = '<blockquote class="forum_quote">';
-            $end = '</blockquote>';
-            $inner = preg_replace_callback(
-                $this->pattern, array($this, 'toHtmlRec'), $matches[3]
-            );
+            $result = $this->convertQuote($matches);
             break;
         case 'code':
-            if (in_array('inline', $this->context)) {
-                $ok = false;
-                break;
-            }
-            $start = '<pre class="forum_code">';
-            $end = '</pre>';
-            $inner = preg_replace('/\r\n|\r|\n/', "\x0B", $matches[3]);
+            $result = $this->convertCode($matches);
             break;
         default:
-            $start = '<' . $matches[1] . '>';
-            $inner = preg_replace_callback(
-                $this->pattern, array($this, 'toHtmlRec'), $matches[3]
-            );
-            $end = '</' . $matches[1] . '>';
+            $result = $this->convertOther($matches);
         }
         array_pop($this->context);
-        return $ok ? $start . $inner . $end : $matches[0];
+        return $result;
+    }
+    
+    /**
+     * Converts a BBCode `url` element to (X)HTML.
+     *
+     * @param array $matches Matches of the previous preg_match().
+     *
+     * @return string (X)HTML
+     */
+    protected function convertUrl($matches)
+    {
+        if (empty($matches[2])) {
+            $url = $matches[3];
+            $inner = $matches[3];
+        } else {
+            $url = substr($matches[2], 1);
+            $inner = preg_replace_callback(
+                $this->pattern, array($this, 'doConvert'), $matches[3]
+            );
+        }
+        if (!preg_match('/^http(s)?:/', $url)) {
+            return $matches[0];
+        }
+        $start = '<a href="' . $url . '" rel="nofollow">';
+        $end = '</a>';
+        return $start . $inner . $end;
+    }
+    
+    /**
+     * Converts a BBCode `img` element to (X)HTML.
+     *
+     * @param array $matches Matches of the previous preg_match().
+     *
+     * @return string (X)HTML
+     */
+    protected function convertImg($matches)
+    {
+        $url = $matches[3];
+        if (!preg_match('/^http(s)?:/', $url)) {
+            return $matches[0];
+        }
+        return tag('img src="' . $url . '" alt="' . basename($url) . '"');
+    }
+    
+    /**
+     * Converts a BBCode `size` element to (X)HTML.
+     *
+     * @param array $matches Matches of the previous preg_match().
+     *
+     * @return string (X)HTML
+     */
+    protected function convertSize($matches)
+    {
+        $size = substr($matches[2], 1);
+        $inner = preg_replace_callback(
+            $this->pattern, array($this, 'doConvert'), $matches[3]
+        );
+        $start = '<span style="font-size: ' . $size . '%; line-height: '
+            . $size . '%">';
+        $end = '</span>';
+        return $start . $inner . $end;
+    }
+    
+    /**
+     * Converts a BBCode `list` element to (X)HTML.
+     *
+     * @param array $matches Matches of the previous preg_match().
+     *
+     * @return string (X)HTML
+     */
+    protected function convertList($matches)
+    {
+        if (in_array('inline', $this->context)) {
+            return $matches[0];
+        }
+        if (empty($matches[2])) {
+            $start = '<ul>';
+            $end = '</ul>';
+        } else {
+            $start = '<ol start="' . substr($matches[2], 1) . '">';
+            $end = '</ol>';
+        }
+        $items = array_map('trim', explode('[*]', $matches[3]));
+        if (array_shift($items) != '') {
+            return $matches[0];
+        }
+        $inner = implode(
+            '', array_map(array($this, 'convertListItem'), $items)
+        );
+        return $start . $inner . $end;
+    }
+    
+    /**
+     * Converts a BBCode `quote` element to (X)HTML.
+     *
+     * @param array $matches Matches of the previous preg_match().
+     *
+     * @return string (X)HTML
+     */
+    protected function convertQuote($matches)
+    {
+        if (in_array('inline', $this->context)) {
+            return $matches[0];
+        }
+        $start = '<blockquote class="forum_quote">';
+        $end = '</blockquote>';
+        $inner = preg_replace_callback(
+            $this->pattern, array($this, 'doConvert'), $matches[3]
+        );
+        return $start . $inner . $end;
+    }
+    
+    /**
+     * Converts a BBCode `code` element to (X)HTML.
+     *
+     * @param array $matches Matches of the previous preg_match().
+     *
+     * @return string (X)HTML
+     */
+    protected function convertCode($matches)
+    {
+        if (in_array('inline', $this->context)) {
+            return $matches[0];
+        }
+        $start = '<pre class="forum_code">';
+        $end = '</pre>';
+        $inner = preg_replace('/\r\n|\r|\n/', "\x0B", $matches[3]);
+        return $start . $inner . $end;
+    }
+    
+    /**
+     * Converts another BBCode element to (X)HTML.
+     *
+     * @param array $matches Matches of the previous preg_match().
+     *
+     * @return string (X)HTML
+     */
+    protected function convertOther($matches)
+    {
+        $start = '<' . $matches[1] . '>';
+        $inner = preg_replace_callback(
+            $this->pattern, array($this, 'doConvert'), $matches[3]
+        );
+        $end = '</' . $matches[1] . '>';
+        return $start . $inner . $end;
     }
 
     /**
@@ -192,7 +273,7 @@ class Forum_BBCode
      *
      * @return string (X)HTML.
      */
-    protected function emoticonsToHtml($text)
+    protected function convertEmoticons($text)
     {
         global $plugin_tx;
 
@@ -217,12 +298,12 @@ class Forum_BBCode
      *
      * @return string (X)HTML.
      */
-    public function toHtml($text)
+    public function convert($text)
     {
         $text = XH_hsc($text);
         $this->context = array();
-        $text = $this->toHtmlRec(array($text, '', '', $text));
-        $text = $this->emoticonsToHtml($text);
+        $text = $this->doConvert(array($text, '', '', $text));
+        $text = $this->convertEmoticons($text);
         $text = preg_replace('/\r\n|\r|\n/', tag('br'), $text);
         $text = str_replace("\x0B", "\n", $text);
         return $text;
