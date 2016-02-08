@@ -451,7 +451,7 @@ EOT;
             $mayDelete = $adm || $comment['user'] == $this->user();
             $comment['mayDelete'] = $mayDelete;
             $comment['class'] = 'forum_' . ($i & 1 ? 'odd' : 'even');
-            $comment['comment'] = $this->getBbcode()->toHtml($comment['comment']);
+            $comment['comment'] = $this->getBbcode()->convert($comment['comment']);
             $comment['details'] = $this->posted($comment);
             $comment['editUrl'] = $editUrl . $cid;
             $i++;
@@ -568,7 +568,7 @@ EOT;
     {
         global $pth;
 
-        $comment = $this->getBbcode()->toHtml(stsl($_POST['data']));
+        $comment = $this->getBbcode()->convert(stsl($_POST['data']));
         $templateStylesheet = $pth['file']['stylesheet'];
         $forumStylesheet = $pth['folder']['plugins'] . 'forum/css/stylesheet.css';
         $bag = compact('comment', 'templateStylesheet', 'forumStylesheet');
