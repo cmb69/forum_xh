@@ -60,19 +60,21 @@ class Forum_BBCode
     }
 
     /**
-     * Converts a list item to (X)HTML.
+     * Returns BBCode converted to (X)HTML.
      *
-     * @param string $item The content of the list item.
+     * @param string $text A BBCode formatted text.
      *
-     * @return (X)HTML.
+     * @return string (X)HTML.
      */
-    protected function convertListItem($item)
+    public function convert($text)
     {
-        return '<li>'
-            . preg_replace_callback(
-                $this->pattern, array($this, 'doConvert'), $item
-            )
-            . '</li>';
+        $text = XH_hsc($text);
+        $this->context = array();
+        $text = $this->doConvert(array($text, '', '', $text));
+        $text = $this->convertEmoticons($text);
+        $text = preg_replace('/\r\n|\r|\n/', tag('br'), $text);
+        $text = str_replace("\x0B", "\n", $text);
+        return $text;
     }
 
     /**
@@ -210,7 +212,23 @@ class Forum_BBCode
         );
         return $start . $inner . $end;
     }
-    
+
+    /**
+     * Converts a list item to (X)HTML.
+     *
+     * @param string $item The content of the list item.
+     *
+     * @return (X)HTML.
+     */
+    protected function convertListItem($item)
+    {
+        return '<li>'
+            . preg_replace_callback(
+                $this->pattern, array($this, 'doConvert'), $item
+            )
+            . '</li>';
+    }
+
     /**
      * Converts a BBCode `quote` element to (X)HTML.
      *
@@ -290,25 +308,6 @@ class Forum_BBCode
         }
         return str_replace($emoticons, $images, $text);
     }
-
-    /**
-     * Returns BBCode converted to (X)HTML.
-     *
-     * @param string $text A BBCode formatted text.
-     *
-     * @return string (X)HTML.
-     */
-    public function convert($text)
-    {
-        $text = XH_hsc($text);
-        $this->context = array();
-        $text = $this->doConvert(array($text, '', '', $text));
-        $text = $this->convertEmoticons($text);
-        $text = preg_replace('/\r\n|\r|\n/', tag('br'), $text);
-        $text = str_replace("\x0B", "\n", $text);
-        return $text;
-    }
-
 }
 
 ?>
