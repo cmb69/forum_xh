@@ -349,6 +349,30 @@ class Forum_Contents
         $this->lock($forum, LOCK_UN);
         return $tid;
     }
+    
+    /**
+     * Returns the most recent comments of a forum.
+     *
+     * @param string $forum A forum name.
+     * @param int    $count A comment count.
+     *
+     * @return array
+     */
+    public function getRecentComments($forum, $count)
+    {
+        $comments = array();
+        $topics = $this->getSortedTopics($forum);
+        foreach ($topics as $tid => $topic) {
+            $topicComments = $this->getTopic($forum, $tid);
+            foreach ($topicComments as &$topicComment) {
+                $topicComment['title'] = $topic['title'];
+            }
+            $comments = array_merge($comments, $topicComments);
+        }
+        uasort($comments, array($this, 'compareTopicTime'));
+        array_splice($comments, $count);
+        return $comments;
+    }
 }
 
 ?>

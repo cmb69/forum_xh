@@ -66,6 +66,11 @@ class Forum_Controller
      */
     public function dispatch()
     {
+        if (isset($_GET['forum_feed'])) {
+            // TODO: non existing forum should respond with 401 error
+            // FIXME: page URL can't be hard-coded!
+            $this->renderFeed($_GET['forum_feed'], 'Forum');
+        }
         if (XH_ADM) {
             if (function_exists('XH_registerStandardPluginMenuItems')) {
                 XH_registerStandardPluginMenuItems(false);
@@ -526,6 +531,31 @@ EOT;
             $this->deleteComment($forum, $tid, $cid);
             break;
         }
+    }
+    
+    /**
+     * Renders a forum feed.
+     *
+     * @param string $forum   A forum name.
+     * @param string $pageUrl A page URL.
+     *
+     * @return void
+     */
+    protected function renderFeed($forum, $pageUrl)
+    {
+        $url = CMSIMPLE_URL . "?$pageUrl";
+        // TODO: make comment count configurable
+        $comments = $this->contents->getRecentComments($forum, 30);
+        foreach ($comments as $id => &$comment) {
+            $comment['title'] = XH_hsc($comment['title']);
+            $comment['url'] = XH_hsc($url . "&forum_topic=$id");
+            $comment['time'] = date('r', $comment['time']);
+            // TODO: deliver comment either as HTML or strip bbcode tags
+            $comment['comment'] = XH_hsc($comment['comment']);
+        }
+        header('Content-Type: application/xml');
+        echo $this->render('feed', compact('forum', 'url', 'comments'));
+        exit;
     }
 
     /**
