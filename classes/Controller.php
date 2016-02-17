@@ -554,7 +554,8 @@ EOT;
             $comment['comment'] = XH_hsc($comment['comment']);
         }
         header('Content-Type: application/xml');
-        echo $this->render('feed', compact('forum', 'url', 'comments'));
+        echo '<?xml version="1.0" encoding="UTF-8"?>', PHP_EOL,
+            $this->render('feed', compact('forum', 'url', 'comments'));
         exit;
     }
 
