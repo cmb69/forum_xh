@@ -3,12 +3,12 @@
         <title><?php echo $forum?></title>
         <link><?php echo $url?></link>
         <description></description>
-<?php foreach ($comments as $id => $comment):?>
+<?php foreach ($comments as $comment):?>
         <item>
             <title><?php echo $comment['title']?></title>
             <link><?php echo $comment['url']?></link>
             <description><?php echo $comment['comment']?></description>
-            <guid><?php echo $id?></guid>
+            <guid><?php echo $comment['tid']?></guid>
             <pubDate><?php echo $comment['time']?></pubDate>
         </item>
 <?php endforeach?>

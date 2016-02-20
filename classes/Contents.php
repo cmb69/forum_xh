@@ -365,6 +365,7 @@ class Forum_Contents
         foreach ($topics as $tid => $topic) {
             $topicComments = $this->getTopic($forum, $tid);
             foreach ($topicComments as &$topicComment) {
+                $topicComment['tid'] = $tid;
                 $topicComment['title'] = $topic['title'];
             }
             $comments = array_merge($comments, $topicComments);

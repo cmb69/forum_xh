@@ -546,9 +546,9 @@ EOT;
         $url = CMSIMPLE_URL . "?$pageUrl";
         // TODO: make comment count configurable
         $comments = $this->contents->getRecentComments($forum, 30);
-        foreach ($comments as $id => &$comment) {
+        foreach ($comments as &$comment) {
             $comment['title'] = XH_hsc($comment['title']);
-            $comment['url'] = XH_hsc($url . "&forum_topic=$id");
+            $comment['url'] = XH_hsc($url . "&forum_topic=$comment[tid]");
             $comment['time'] = date('r', $comment['time']);
             // TODO: deliver comment either as HTML or strip bbcode tags
             $comment['comment'] = XH_hsc($comment['comment']);
