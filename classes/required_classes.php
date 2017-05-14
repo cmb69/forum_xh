@@ -19,17 +19,9 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-spl_autoload_register('Forum_autoload');
-
-/**
- * @param string $className
- */
-function Forum_autoload($className)
-{
-    global $pth;
-
+spl_autoload_register(function ($className) {
     $parts = explode('\\', $className);
-    if ($parts[0] == 'Forum') {
+    if ($parts[0] === 'Forum') {
         include_once __DIR__ . '/' . $parts[1] . '.php';
     }
-}
+});
