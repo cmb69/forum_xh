@@ -505,23 +505,19 @@ EOT;
      */
     protected function infoView()
     {
-        global $pth, $plugin_tx;
+        global $pth;
 
-        $ptx = $plugin_tx['forum'];
-        $labels = array(
-            'syscheck' => $ptx['syscheck_title'],
-            'about' => $ptx['about']
-        );
-        $icon = $pth['folder']['plugins'] . 'forum/forum.png';
-        $checks = $this->systemChecks();
-        $version = FORUM_VERSION;
+        $view = new View('info');
+        $view->logo = $pth['folder']['plugins'] . 'forum/forum.png';
+        $view->checks = $this->systemChecks();
+        $view->version = FORUM_VERSION;
         $images = array();
         foreach (array('ok', 'warn', 'fail') as $state) {
             $images[$state] = $pth['folder']['plugins']
                 . 'forum/images/' . $state . '.png';
         }
-        $bag = compact('labels', 'checks', 'icon', 'version', 'images');
-        return $this->render('info', $bag);
+        $view->images = $images;
+        return (string) $view;
     }
 
     /**
