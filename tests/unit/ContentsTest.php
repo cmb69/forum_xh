@@ -15,9 +15,6 @@
 
 namespace Forum;
 
-require_once './vendor/autoload.php';
-require_once './classes/Contents.php';
-
 use PHPUnit_Framework_TestCase;
 use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;

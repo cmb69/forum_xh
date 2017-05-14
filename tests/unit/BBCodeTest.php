@@ -15,9 +15,6 @@
 
 namespace Forum;
 
-require_once '../../cmsimple/functions.php';
-require_once './classes/BBCode.php';
-
 use PHPUnit_Framework_TestCase;
 
 /**

@@ -30,8 +30,7 @@ function Forum_autoload($className)
 
     $parts = explode('\\', $className);
     if ($parts[0] == 'Forum') {
-        include_once $pth['folder']['plugins'] . 'forum/classes/'
-            . $parts[1] . '.php';
+        include_once __DIR__ . '/' . $parts[1] . '.php';
     }
 }
 
