@@ -56,7 +56,6 @@ $plugin_tx['forum']['syscheck_title']="Проверка системы";
 $plugin_tx['forum']['syscheck_phpversion']="Версия PHP &ge; %s";
 $plugin_tx['forum']['syscheck_extension']="Расширение '%s' загружено";
 $plugin_tx['forum']['syscheck_encoding']="Кодировка 'UTF-8' установлена";
-$plugin_tx['forum']['syscheck_magic_quotes']="Экранирование спецсимволов (\"magic_quotes_runtime\") отключено";
 $plugin_tx['forum']['syscheck_jquery']="Плагин <a href=\"http://www.cmsimple-xh.com/wiki/doku.php/plugins:jquery4cmsimple\">jQuery4CMSimple</a> установлен";
 $plugin_tx['forum']['syscheck_writable']="Папка '%s' доступна для записи";
 $plugin_tx['forum']['cf_folder_data']="Путь к папке, где хранятся файлы данных, относительно корневого каталога CMSimple. Например, \"userfiles/forum/\". Оставьте поле пустым для хранения данных в папке по умолчанию (каталог <b>data/</b> в директории плагина).";

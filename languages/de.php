@@ -54,7 +54,6 @@ $plugin_tx['forum']['syscheck_title']="Systemprüfung";
 $plugin_tx['forum']['syscheck_phpversion']="PHP-Version &ge; %s";
 $plugin_tx['forum']['syscheck_extension']="Erweiterung '%s' geladen";
 $plugin_tx['forum']['syscheck_encoding']="Encoding 'UTF-8' configured";
-$plugin_tx['forum']['syscheck_magic_quotes']="magic_quotes_runtime ausgeschaltet";
 $plugin_tx['forum']['syscheck_jquery']="<a href=\"http://www.cmsimple-xh.com/wiki/doku.php/plugins:jquery4cmsimple\">jQuery4CMSimple plugin</a> installiert";
 $plugin_tx['forum']['syscheck_writable']="Ordner '%s' schreibbar";
 
