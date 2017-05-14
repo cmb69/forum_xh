@@ -1,50 +1,40 @@
 <?php
 
 /**
- * The contents.
+ * Copyright 2012-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Forum_XH.
  *
- * @category  CMSimple_XH
- * @package   Forum
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2012-2017 Christoph M. Becker <http://3-magi.net>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Forum_XH
+ * Forum_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Forum_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Forum;
 
-/**
- * The contents.
- *
- * @category CMSimple_XH
- * @package  Forum
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Forum_XH
- * @since    1.0beta2
- */
 class Contents
 {
     /**
-     * The path of the data folder.
-     *
      * @var string
      */
     protected $dataFolder;
 
     /**
-     * An associative array from forum names to their lock handles.
-     *
      * @var array
      */
     protected $lockHandles = array();
 
     /**
-     * Constructs an instance.
-     *
-     * @param string $dataFolder The path of the data folder.
+     * @param string $dataFolder
      */
     public function __construct($dataFolder)
     {
@@ -55,11 +45,7 @@ class Contents
     }
 
     /**
-     * Returns the path of the data folder of the forums or an individual forum.
-     *
-     * @param string $forum The name of a forum.
-     *                      <var>null</var> means the general forum folder.
-     *
+     * @param string $forum
      * @return string
      */
     public function dataFolder($forum = null)
@@ -83,38 +69,29 @@ class Contents
     }
 
     /**
-     * Locks resp. unlocks a forum's database.
-     *
-     * @param string $forum The name of a forum.
-     * @param int    $op    The locking operation.
-     *
-     * @return void
-     *
-     * @todo Error handling.
+     * @param string $forum
+     * @param int $op
      */
     protected function lock($forum, $op)
     {
         $filename = $this->dataFolder($forum) . '.lock';
         touch($filename);
         switch ($op) {
-        case LOCK_SH:
-        case LOCK_EX:
-            $this->lockHandles[$forum] = fopen($filename, 'r+b');
-            flock($this->lockHandles[$forum], $op);
-            break;
-        case LOCK_UN:
-            flock($this->lockHandles[$forum], $op);
-            fclose($this->lockHandles[$forum]);
-            unset($this->lockHandles[$forum]);
-            break;
+            case LOCK_SH:
+            case LOCK_EX:
+                $this->lockHandles[$forum] = fopen($filename, 'r+b');
+                flock($this->lockHandles[$forum], $op);
+                break;
+            case LOCK_UN:
+                flock($this->lockHandles[$forum], $op);
+                fclose($this->lockHandles[$forum]);
+                unset($this->lockHandles[$forum]);
+                break;
         }
     }
 
     /**
-     * Returns a forum's topics.
-     *
-     * @param string $forum The name of a forum.
-     *
+     * @param string $forum
      * @return array
      */
     protected function getTopics($forum)
@@ -131,12 +108,8 @@ class Contents
     }
 
     /**
-     * Writes a forum's topics.
-     *
-     * @param string $forum The name of a forum.
-     * @param array  $data  The topic data.
-     *
-     * @return void
+     * @param string $forum
+     * @param array $data
      */
     protected function setTopics($forum, $data)
     {
@@ -147,11 +120,8 @@ class Contents
     }
 
     /**
-     * Returns a topic.
-     *
-     * @param string $forum The name of a forum.
-     * @param string $tid   A topic ID.
-     *
+     * @param string $forum
+     * @param string $tid
      * @return array
      */
     public function getTopic($forum, $tid)
@@ -168,13 +138,9 @@ class Contents
     }
 
     /**
-     * Writes the topic $tid.
-     *
-     * @param string $forum The name of a forum.
-     * @param string $tid   A topic ID.
-     * @param array  $data  The new topic contents.
-     *
-     * @return void
+     * @param string $forum
+     * @param string $tid
+     * @param array $data
      */
     protected function setTopic($forum, $tid, $data)
     {
@@ -186,8 +152,6 @@ class Contents
     }
 
     /**
-     * Returns a new ID.
-     *
      * @return string
      */
     public function getId()
@@ -196,24 +160,17 @@ class Contents
     }
 
     /**
-     * Returns <var>$id</var>, if it's a valid ID, <var>false</var> otherwise.
-     *
-     * @param string $id An ID to check.
-     *
+     * @param string $id
      * @return string
      */
     public function cleanId($id)
     {
-        return preg_match('/^[a-f0-9]{13}+$/u', $id)
-                ? $id : false;
+        return preg_match('/^[a-f0-9]{13}+$/u', $id) ? $id : false;
     }
 
     /**
-     * Returns the result of comparing two topic times.
-     *
-     * @param array $a A topic.
-     * @param array $b Another topic.
-     *
+     * @param array $a
+     * @param array $b
      * @return int
      */
     protected function compareTopicTime($a, $b)
@@ -222,10 +179,7 @@ class Contents
     }
 
     /**
-     * Returns a chronologically ordered array of topics.
-     *
-     * @param string $forum A forum name.
-     *
+     * @param string $forum
      * @return array
      */
     public function getSortedTopics($forum)
@@ -238,11 +192,8 @@ class Contents
     }
 
     /**
-     * Returns a numeric array with topic title and topic details.
-     *
-     * @param string $forum A forum name.
-     * @param string $tid   A topic ID.
-     *
+     * @param string $forum
+     * @param string $tid
      * @return array
      */
     public function getTopicWithTitle($forum, $tid)
@@ -255,15 +206,11 @@ class Contents
     }
 
     /**
-     * Creates a comment.
-     *
-     * @param string $forum   A forum name.
-     * @param string $tid     A thread ID.
-     * @param string $title   A title of the comment.
-     * @param string $cid     A comment ID.
-     * @param array  $comment A comment record.
-     *
-     * @return void
+     * @param string $forum
+     * @param string $tid
+     * @param string $title
+     * @param string $cid
+     * @param array $comment
      */
     public function createComment($forum, $tid, $title, $cid, $comment)
     {
@@ -285,14 +232,10 @@ class Contents
     }
 
     /**
-     * Updates a comment.
-     *
-     * @param string $forum   A forum name.
-     * @param string $tid     A topic ID.
-     * @param string $cid     A comment ID.
-     * @param array  $comment A comment record.
-     *
-     * @return void
+     * @param string $forum
+     * @param string $tid
+     * @param string $cid
+     * @param array $comment
      */
     public function updateComment($forum, $tid, $cid, $comment)
     {
@@ -311,17 +254,10 @@ class Contents
     }
 
     /**
-     * Deletes a comment
-     *
-     * Returns the topic ID, if the topic has further comments,
-     * otherwise <var>null</var>,
-     * or <var>false</var>, if the comment couldn't be deleted.
-     *
-     * @param string $forum The name of a forum.
-     * @param string $tid   A topic ID.
-     * @param string $cid   A comment ID.
-     * @param string $user  The user who triggers the delete.
-     *
+     * @param string $forum
+     * @param string $tid
+     * @param string $cid
+     * @param string $user
      * @return string
      */
     public function deleteComment($forum, $tid, $cid, $user)
@@ -352,5 +288,3 @@ class Contents
         return $tid;
     }
 }
-
-?>

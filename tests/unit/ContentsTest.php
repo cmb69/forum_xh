@@ -1,16 +1,22 @@
 <?php
 
 /**
- * Testing the Contents.
+ * Copyright 2013-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Forum_XH.
  *
- * @category  Testing
- * @package   Forum
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2013-2017 Christoph M. Becker <http://3-magi.net/>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Forum_XH
+ * Forum_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Forum_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Forum;
@@ -20,36 +26,18 @@ use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStream;
 
-/**
- * Testing the contents.
- *
- * @category Testing
- * @package  Forum
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Forum_XH
- */
 class ContentsTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * The forum name.
-     *
      * @var string
      */
     protected $forum;
 
     /**
-     * The test subject.
-     *
      * @var object
      */
     protected $contents;
 
-    /**
-     * Sets up the test fixture.
-     *
-     * @return void
-     */
     public function setUp()
     {
         vfsStreamWrapper::register();
@@ -58,11 +46,6 @@ class ContentsTest extends PHPUnit_Framework_TestCase
         $this->contents = new Contents(vfsStream::url('test'));
     }
 
-    /**
-     * Tests cleanID().
-     *
-     * @return void
-     */
     public function testCleanId()
     {
         $id = $this->contents->getId();
@@ -70,12 +53,9 @@ class ContentsTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Gets a comment.
-     *
-     * @param string $forum A forum name.
-     * @param string $tid   A topic ID.
-     * @param string $cid   A comment ID.
-     *
+     * @param string $forum
+     * @param string $tid
+     * @param string $cid
      * @return array
      */
     protected function getComment($forum, $tid, $cid)
@@ -84,11 +64,6 @@ class ContentsTest extends PHPUnit_Framework_TestCase
         return isset($topic[$cid]) ? $topic[$cid] : array();
     }
 
-    /**
-     * Tests creating and deleting a comment.
-     *
-     * @return void
-     */
     public function testCreateAndDeleteComment()
     {
         $tid = $this->contents->getId();
@@ -109,5 +84,3 @@ class ContentsTest extends PHPUnit_Framework_TestCase
         $this->assertEmpty($actual);
     }
 }
-
-?>

@@ -1,56 +1,43 @@
 <?php
 
 /**
- * The controllers.
+ * Copyright 2012-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Forum_XH.
  *
- * @category  CMSimple_XH
- * @package   Forum
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2012-2017 Christoph M. Becker <http://3-magi.net>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Forum_XH
+ * Forum_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Forum_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Forum;
 
-/**
- * The controllers.
- *
- * @category CMSimple_XH
- * @package  Forum
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Forum_XH
- * @since    1.0beta2
- */
 class Controller
 {
     /**
-     * The contents object.
-     *
      * @var object
      */
     protected $contents;
 
     /**
-     * The BBCode to HTML converter.
-     *
      * @var object
      */
     protected $bbcode;
 
     /**
-     * The CSRF protector
-     *
      * @var XH_CSRFProtection
      */
     protected $csrfProtector;
 
-    /**
-     * Constructs an instance.
-     */
     public function __construct()
     {
         global $pth, $plugin_cf;
@@ -61,11 +48,6 @@ class Controller
         $this->contents = new Contents($folder);
     }
 
-    /**
-     * Dispatches on general plugin related requests.
-     *
-     * @return void
-     */
     public function dispatch()
     {
         if (XH_ADM) {
@@ -79,11 +61,7 @@ class Controller
     }
 
     /**
-     * Returns whether the plugin administration is requested.
-     *
      * @return bool
-     *
-     * @global string Whether the plugin administration is requested.
      */
     protected function isAdministrationRequested()
     {
@@ -94,35 +72,22 @@ class Controller
             || isset($forum) && $forum == 'true';
     }
 
-    /**
-     * Handles the plugin administration.
-     *
-     * @return void
-     *
-     * @global string The value of the admin GP parameter.
-     * @global string The value of the action GP parameter.
-     * @global string The (X)HTML of the contents area.
-     */
     protected function handleAdministration()
     {
         global $admin, $action, $o;
 
         $o .= print_plugin_admin('off');
         switch ($admin) {
-        case '':
-            $o .= $this->infoView();
-            break;
-        default:
-            $o .= plugin_admin_common($action, $admin, 'forum');
+            case '':
+                $o .= $this->infoView();
+                break;
+            default:
+                $o .= plugin_admin_common($action, $admin, 'forum');
         }
     }
 
     /**
-     * Returns the BBCode to HTML converter. Creates the object, if necessary.
-     *
      * @return object
-     *
-     * @global array The paths of system files and folders.
      */
     protected function getBbcode()
     {
@@ -136,10 +101,7 @@ class Controller
     }
 
     /**
-     * Returns the numerus suffix for the language keys.
-     *
-     * @param int $count A number.
-     *
+     * @param int $count
      * @return string
      */
     protected function numerus($count)
@@ -154,8 +116,6 @@ class Controller
     }
 
     /**
-     * Returns the currently logged in user (Memberpages or Register).
-     *
      * @return string
      */
     protected function user()
@@ -169,15 +129,9 @@ class Controller
     }
 
     /**
-     * Processes a posted comment.
-     *
-     * Returns the topic ID, if the comment could be posted,
-     * <var>false</var> otherwise.
-     *
-     * @param string $forum A forum name.
-     * @param string $tid   A topic ID (<var>null</var> means new topic).
-     * @param string $cid   A comment ID.
-     *
+     * @param string $forum
+     * @param string $tid
+     * @param string $cid
      * @return string
      */
     protected function postComment($forum, $tid = null, $cid = null)
@@ -211,20 +165,10 @@ class Controller
     }
 
     /**
-     * Deletes a comment
+     * @param string $forum
+     * @param string $tid
+     * @param string $cid
      *
-     * Returns the topic ID, if the topic has further comments,
-     * otherwise <var>null</var>,
-     * or <var>false</var>, if the comment couldn't be deleted.
-     *
-     * @param string $forum A forum name.
-     * @param string $tid   A topic ID.
-     * @param string $cid   A comment ID.
-     *
-     * @return void
-     *
-     * @global bool   Whether we're logged in as administrator.
-     * @global string The URL of the current page.
      */
     protected function deleteComment($forum, $tid, $cid)
     {
@@ -234,20 +178,12 @@ class Controller
         $cid = $this->contents->cleanId($_POST['forum_comment']);
         $user = $adm ? true : $this->user();
         $queryString = $this->contents->deleteComment($forum, $tid, $cid, $user)
-            ? '?' . $su . '&forum_topic=' . $tid . '#' . $forum: '?' . $su . 
+            ? '?' . $su . '&forum_topic=' . $tid . '#' . $forum: '?' . $su .
               '#' . $forum;
         header('Location: ' . CMSIMPLE_URL . $queryString, true, 303);
         exit;
     }
 
-    /**
-     * Includes JS and CSS to the <head>.
-     *
-     * @return void
-     *
-     * @global array  The paths of system files and folders.
-     * @global string The (X)HTML of the head element.
-     */
     protected function hjs()
     {
         global $pth, $hjs;
@@ -277,11 +213,7 @@ EOT;
     }
 
     /**
-     * Returns a map of localized texts.
-     *
      * @return array
-     *
-     * @global array The localization of the plugins.
      */
     protected function jsTexts()
     {
@@ -302,16 +234,10 @@ EOT;
     }
 
     /**
-     * Returns the comment form.
-     *
-     * @param string $forum A forum name.
-     * @param string $tid   A topic ID.
-     * @param string $cid   A comment ID.
-     *
-     * @return string  The (X)HTML.
-     *
-     * @global string            The URL of the requested page.
-     * @global array             The localization of the plugins.
+     * @param string $forum
+     * @param string $tid
+     * @param string $cid
+     * @return string
      */
     protected function commentForm($forum, $tid = null, $cid = null)
     {
@@ -344,21 +270,13 @@ EOT;
         $action = '?' . $su . '&amp;forum_actn=post';
         $overviewUrl = '?' . $su . '#' . $forum;
 
-        $bag = compact(
-            'newTopic', 'labels', 'tid', 'cid', 'action', 'overviewUrl', 'comment',
-            '_XH_csrfProtection'
-        );
+        $bag = compact('newTopic', 'labels', 'tid', 'cid', 'action', 'overviewUrl', 'comment', '_XH_csrfProtection');
         return $this->render('form', $bag);
     }
 
     /**
-     * Returns the posted by/on/at view.
-     *
-     * @param array $rec A topic or comment record.
-     *
-     * @return string The (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @param array $rec
+     * @return string
      */
     protected function posted($rec)
     {
@@ -367,21 +285,12 @@ EOT;
         $ptx = $plugin_tx['forum'];
         $date = date($ptx['format_date'], $rec['time']);
         $time = date($ptx['format_time'], $rec['time']);
-        return str_replace(
-            array('{user}', '{date}', '{time}'),
-            array($rec['user'], $date, $time), $ptx['msg_posted']
-        );
+        return str_replace(array('{user}', '{date}', '{time}'), array($rec['user'], $date, $time), $ptx['msg_posted']);
     }
 
     /**
-     * Returns the topics overview.
-     *
-     * @param string $forum A forum name.
-     *
-     * @return string The (X)HTML.
-     *
-     * @global string The URL of the requested page.
-     * @global array  The localization of the plugins.
+     * @param string $forum
+     * @return string
      */
     protected function viewTopics($forum)
     {
@@ -416,18 +325,9 @@ EOT;
     }
 
     /**
-     * Returns the topic view.
-     *
-     * @param string $forum A forum name.
-     * @param string $tid   A topic ID.
-     *
-     * @return string  The (X)HTML.
-     *
-     * @global string            The script name.
-     * @global string            The requested page URL.
-     * @global array             The paths of system files and folders.
-     * @global bool              Whether we're logged in as administrator.
-     * @global array             The localization of the plugins.
+     * @param string $forum
+     * @param string $tid
+     * @return string
      */
     protected function viewTopic($forum, $tid)
     {
@@ -462,22 +362,23 @@ EOT;
         $commentForm = $this->commentForm($forum, $tid);
 
         $bag = compact(
-            'label', 'tid', 'topic', 'su', 'deleteImg', 'editImg', 'href',
-            'isUser', 'commentForm', '_XH_csrfProtection'
+            'label',
+            'tid',
+            'topic',
+            'su',
+            'deleteImg',
+            'editImg',
+            'href',
+            'isUser',
+            'commentForm',
+            '_XH_csrfProtection'
         );
         return $this->render('topic', $bag);
     }
 
     /**
-     * Handles the forum requests.
-     *
-     * @param string $forum A forum name.
-     *
+     * @param string $forum
      * @return mixed
-     *
-     * @global string            The requested page URL.
-     * @global string            The (X)HTML of the error messages.
-     * @global array             The localization of the plugins.
      */
     public function main($forum)
     {
@@ -492,54 +393,48 @@ EOT;
         $action = isset($_REQUEST['forum_actn'])
             ? $_REQUEST['forum_actn'] : 'view';
         switch ($action) {
-        case 'view':
-            if (empty($_GET['forum_topic'])
-                || ($tid = $this->contents->cleanId($_GET['forum_topic'])) === false
-                || !file_exists($this->contents->dataFolder($forum) . $tid . '.dat')
-            ) {
-                return $this->viewTopics($forum);
-            } else {
-                return $this->viewTopic($forum, $tid);
-            }
-        case 'new':
-            return $this->commentForm($forum);
-        case 'post':
-            $this->getCSRFProtector()->check();
-            if (!empty($_POST['forum_comment'])) {
-                $tid = $this->postComment(
-                    $forum, $_POST['forum_topic'], $_POST['forum_comment']
-                );
-            } else {
-                $tid = $this->postComment($forum, $_POST['forum_topic']);
-            }
-            $params = $tid ? "?$su&forum_topic=$tid#$forum" : "?$su#$forum";
-            header('Location: ' . CMSIMPLE_URL . $params, true, 303);
-            exit;
-        case 'edit':
-            $tid = $this->contents->cleanId($_GET['forum_topic']);
-            $cid = $this->contents->cleanId($_GET['forum_comment']);
-            if ($tid && $cid) {
-                return $this->commentForm($forum, $tid, $cid);
-            } else {
-                return ''; // should display error
-            }
-        case 'delete':
-            $this->getCSRFProtector()->check();
-            $this->deleteComment($forum, $tid, $cid);
-            break;
+            case 'view':
+                if (empty($_GET['forum_topic'])
+                    || ($tid = $this->contents->cleanId($_GET['forum_topic'])) === false
+                    || !file_exists($this->contents->dataFolder($forum) . $tid . '.dat')
+                ) {
+                    return $this->viewTopics($forum);
+                } else {
+                    return $this->viewTopic($forum, $tid);
+                }
+                break;
+            case 'new':
+                return $this->commentForm($forum);
+            case 'post':
+                $this->getCSRFProtector()->check();
+                if (!empty($_POST['forum_comment'])) {
+                    $tid = $this->postComment($forum, $_POST['forum_topic'], $_POST['forum_comment']);
+                } else {
+                    $tid = $this->postComment($forum, $_POST['forum_topic']);
+                }
+                $params = $tid ? "?$su&forum_topic=$tid#$forum" : "?$su#$forum";
+                header('Location: ' . CMSIMPLE_URL . $params, true, 303);
+                exit;
+            case 'edit':
+                $tid = $this->contents->cleanId($_GET['forum_topic']);
+                $cid = $this->contents->cleanId($_GET['forum_comment']);
+                if ($tid && $cid) {
+                    return $this->commentForm($forum, $tid, $cid);
+                } else {
+                    return ''; // should display error
+                }
+                break;
+            case 'delete':
+                $this->getCSRFProtector()->check();
+                $this->deleteComment($forum, $tid, $cid);
+                break;
         }
     }
 
     /**
-     * Returns an instantiated view template.
-     *
-     * @param string $_template A template name.
-     * @param array  $_bag      Variables for the template.
-     *
-     * @global array The paths of system files and folders.
-     * @global array The configuration of the core.
-     *
-     * @return string (X)HTML
+     * @param string $_template
+     * @param array  $_bag
+     * @return string
      */
     protected function render($_template, $_bag)
     {
@@ -560,11 +455,7 @@ EOT;
     }
 
     /**
-     * Returns the comment preview.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The paths of system files and folders.
+     * @return string
      */
     public function commentPreview()
     {
@@ -578,13 +469,7 @@ EOT;
     }
 
     /**
-     * Returns the system checks.
-     *
      * @return array
-     *
-     * @global array The paths of system files and folders.
-     * @global array The localization of the core.
-     * @global array The localization of the plugins.
      */
     protected function systemChecks()
     {
@@ -618,12 +503,7 @@ EOT;
     }
 
     /**
-     * Returns the plugin information view.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The paths of system files and folders.
-     * @global array The localization of the plugins.
+     * @return string
      */
     protected function infoView()
     {
@@ -647,11 +527,7 @@ EOT;
     }
 
     /**
-     * Returns the CSRF protector.
-     *
      * @return XH_CSRFProtection
-     *
-     * @global XH_CSRFProtection The CSRF protector.
      */
     protected function getCSRFProtector()
     {
@@ -667,5 +543,3 @@ EOT;
         }
     }
 }
-
-?>

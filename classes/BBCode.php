@@ -1,57 +1,45 @@
 <?php
 
 /**
- * BBCode to (X)HTML conversion.
+ * Copyright 2013-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Forum_XH.
  *
- * @category  CMSimple_XH
- * @package   Forum
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2013-2017 Christoph M. Becker <http://3-magi.net/>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Forum_XH
+ * Forum_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Forum_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Forum;
 
-/**
- * The BBCode to (X)HTML conversion class.
- *
- * @category CMSimple_XH
- * @package  Forum
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Forum_XH
- * @since    1.0beta2
- */
 class BBCode
 {
     /**
-     * The BBCode regex pattern.
-     *
      * @var string
      */
     protected $pattern;
 
     /**
-     * The current context of the BBCode conversion.
-     *
      * @var array
      */
     protected $context;
 
     /**
-     * The path of the emoticon directory.
-     *
      * @var string
      */
     protected $emoticonDir;
 
     /**
-     * Constructs an instance.
-     *
-     * @param string $emoticonDir The path of the emoticon directory.
+     * @param string $emoticonDir
      */
     public function __construct($emoticonDir)
     {
@@ -62,11 +50,8 @@ class BBCode
     }
 
     /**
-     * Returns BBCode converted to (X)HTML.
-     *
-     * @param string $text A BBCode formatted text.
-     *
-     * @return string (X)HTML.
+     * @param string $text
+     * @return string
      */
     public function convert($text)
     {
@@ -80,11 +65,8 @@ class BBCode
     }
 
     /**
-     * Returns BBCode converted to (X)HTML.
-     *
-     * @param array $matches Matches of a previous preg_match().
-     *
-     * @return string (X)HTML
+     * @param array $matches
+     * @return string
      */
     protected function doConvert($matches)
     {
@@ -95,42 +77,37 @@ class BBCode
         );
         $matches[3] = trim($matches[3]);
         switch ($matches[1]) {
-        case '':
-            $result = preg_replace_callback(
-                $this->pattern, array($this, 'doConvert'), $matches[3]
-            );
-            break;
-        case 'url':
-            $result = $this->convertUrl($matches);
-            break;
-        case 'img':
-            $result = $this->convertImg($matches);
-            break;
-        case 'size':
-            $result = $this->convertSize($matches);
-            break;
-        case 'list':
-            $result = $this->convertList($matches);
-            break;
-        case 'quote':
-            $result = $this->convertQuote($matches);
-            break;
-        case 'code':
-            $result = $this->convertCode($matches);
-            break;
-        default:
-            $result = $this->convertOther($matches);
+            case '':
+                $result = preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
+                break;
+            case 'url':
+                $result = $this->convertUrl($matches);
+                break;
+            case 'img':
+                $result = $this->convertImg($matches);
+                break;
+            case 'size':
+                $result = $this->convertSize($matches);
+                break;
+            case 'list':
+                $result = $this->convertList($matches);
+                break;
+            case 'quote':
+                $result = $this->convertQuote($matches);
+                break;
+            case 'code':
+                $result = $this->convertCode($matches);
+                break;
+            default:
+                $result = $this->convertOther($matches);
         }
         array_pop($this->context);
         return $result;
     }
     
     /**
-     * Converts a BBCode `url` element to (X)HTML.
-     *
-     * @param array $matches Matches of the previous preg_match().
-     *
-     * @return string (X)HTML
+     * @param array $matches
+     * @return string
      */
     protected function convertUrl($matches)
     {
@@ -139,9 +116,7 @@ class BBCode
             $inner = $matches[3];
         } else {
             $url = substr($matches[2], 1);
-            $inner = preg_replace_callback(
-                $this->pattern, array($this, 'doConvert'), $matches[3]
-            );
+            $inner = preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
         }
         if (!preg_match('/^http(s)?:/', $url)) {
             return $matches[0];
@@ -152,11 +127,8 @@ class BBCode
     }
     
     /**
-     * Converts a BBCode `img` element to (X)HTML.
-     *
-     * @param array $matches Matches of the previous preg_match().
-     *
-     * @return string (X)HTML
+     * @param array $matches
+     * @return string
      */
     protected function convertImg($matches)
     {
@@ -168,18 +140,13 @@ class BBCode
     }
     
     /**
-     * Converts a BBCode `size` element to (X)HTML.
-     *
-     * @param array $matches Matches of the previous preg_match().
-     *
-     * @return string (X)HTML
+     * @param array $matches
+     * @return string
      */
     protected function convertSize($matches)
     {
         $size = substr($matches[2], 1);
-        $inner = preg_replace_callback(
-            $this->pattern, array($this, 'doConvert'), $matches[3]
-        );
+        $inner = preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
         $start = '<span style="font-size: ' . $size . '%; line-height: '
             . $size . '%">';
         $end = '</span>';
@@ -187,11 +154,8 @@ class BBCode
     }
     
     /**
-     * Converts a BBCode `list` element to (X)HTML.
-     *
-     * @param array $matches Matches of the previous preg_match().
-     *
-     * @return string (X)HTML
+     * @param array $matches
+     * @return string
      */
     protected function convertList($matches)
     {
@@ -209,34 +173,24 @@ class BBCode
         if (array_shift($items) != '') {
             return $matches[0];
         }
-        $inner = implode(
-            '', array_map(array($this, 'convertListItem'), $items)
-        );
+        $inner = implode('', array_map(array($this, 'convertListItem'), $items));
         return $start . $inner . $end;
     }
 
     /**
-     * Converts a list item to (X)HTML.
-     *
-     * @param string $item The content of the list item.
-     *
-     * @return (X)HTML.
+     * @param string $item
+     * @return string
      */
     protected function convertListItem($item)
     {
         return '<li>'
-            . preg_replace_callback(
-                $this->pattern, array($this, 'doConvert'), $item
-            )
+            . preg_replace_callback($this->pattern, array($this, 'doConvert'), $item)
             . '</li>';
     }
 
     /**
-     * Converts a BBCode `quote` element to (X)HTML.
-     *
-     * @param array $matches Matches of the previous preg_match().
-     *
-     * @return string (X)HTML
+     * @param array $matches
+     * @return string
      */
     protected function convertQuote($matches)
     {
@@ -245,18 +199,13 @@ class BBCode
         }
         $start = '<blockquote class="forum_quote">';
         $end = '</blockquote>';
-        $inner = preg_replace_callback(
-            $this->pattern, array($this, 'doConvert'), $matches[3]
-        );
+        $inner = preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
         return $start . $inner . $end;
     }
     
     /**
-     * Converts a BBCode `code` element to (X)HTML.
-     *
-     * @param array $matches Matches of the previous preg_match().
-     *
-     * @return string (X)HTML
+     * @param array $matches
+     * @return string
      */
     protected function convertCode($matches)
     {
@@ -270,28 +219,20 @@ class BBCode
     }
     
     /**
-     * Converts another BBCode element to (X)HTML.
-     *
-     * @param array $matches Matches of the previous preg_match().
-     *
-     * @return string (X)HTML
+     * @param array $matches
+     * @return string
      */
     protected function convertOther($matches)
     {
         $start = '<' . $matches[1] . '>';
-        $inner = preg_replace_callback(
-            $this->pattern, array($this, 'doConvert'), $matches[3]
-        );
+        $inner = preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
         $end = '</' . $matches[1] . '>';
         return $start . $inner . $end;
     }
 
     /**
-     * Returns the text with all emoticons replaced with images.
-     *
-     * @param string $text A text.
-     *
-     * @return string (X)HTML.
+     * @param string $text
+     * @return string
      */
     protected function convertEmoticons($text)
     {
@@ -311,5 +252,3 @@ class BBCode
         return str_replace($emoticons, $images, $text);
     }
 }
-
-?>
