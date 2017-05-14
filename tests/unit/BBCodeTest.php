@@ -13,8 +13,12 @@
  * @link      http://3-magi.net/?CMSimple_XH/Forum_XH
  */
 
+namespace Forum;
+
 require_once '../../cmsimple/functions.php';
 require_once './classes/BBCode.php';
+
+use PHPUnit_Framework_TestCase;
 
 /**
  * Testing the BBCode.
@@ -54,7 +58,7 @@ class BBCodeTest extends PHPUnit_Framework_TestCase
             'lbl_surprised' => 'surprised',
             'lbl_unhappy' => 'unhappy'
         );
-        $this->bbcode = new Forum_BBCode('./');
+        $this->bbcode = new BBCode('./');
     }
 
     /**

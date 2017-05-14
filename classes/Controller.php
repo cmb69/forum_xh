@@ -13,6 +13,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Forum_XH
  */
 
+namespace Forum;
+
 /**
  * The controllers.
  *
@@ -23,7 +25,7 @@
  * @link     http://3-magi.net/?CMSimple_XH/Forum_XH
  * @since    1.0beta2
  */
-class Forum_Controller
+class Controller
 {
     /**
      * The contents object.
@@ -56,7 +58,7 @@ class Forum_Controller
         $folder = $plugin_cf['forum']['folder_data'] != ''
             ? $pth['folder']['base'] . $plugin_cf['forum']['folder_data']
             : $pth['folder']['plugins'] . 'forum/data/';
-        $this->contents = new Forum_Contents($folder);
+        $this->contents = new Contents($folder);
     }
 
     /**
@@ -128,7 +130,7 @@ class Forum_Controller
 
         if (!isset($this->bbcode)) {
             $emoticonFolder = $pth['folder']['plugins'] . 'forum/images/';
-            $this->bbcode = new Forum_BBCode($emoticonFolder);
+            $this->bbcode = new BBCode($emoticonFolder);
         }
         return $this->bbcode;
     }

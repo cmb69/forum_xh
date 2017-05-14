@@ -35,7 +35,7 @@ EOT
  */
 define('FORUM_VERSION', '@FORUM_VERSION@');
 
-$_Forum = new Forum_Controller();
+$_Forum = new Forum\Controller();
 
 /**
  * Handles the forum requests.

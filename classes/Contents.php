@@ -13,6 +13,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Forum_XH
  */
 
+namespace Forum;
+
 /**
  * The contents.
  *
@@ -23,7 +25,7 @@
  * @link     http://3-magi.net/?CMSimple_XH/Forum_XH
  * @since    1.0beta2
  */
-class Forum_Contents
+class Contents
 {
     /**
      * The path of the data folder.

@@ -13,9 +13,12 @@
  * @link      http://3-magi.net/?CMSimple_XH/Forum_XH
  */
 
+namespace Forum;
+
 require_once './vendor/autoload.php';
 require_once './classes/Contents.php';
 
+use PHPUnit_Framework_TestCase;
 use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStream;
@@ -55,7 +58,7 @@ class ContentsTest extends PHPUnit_Framework_TestCase
         vfsStreamWrapper::register();
         vfsStreamWrapper::setRoot(new vfsStreamDirectory('test'));
         $this->forum = 'test';
-        $this->contents = new Forum_Contents(vfsStream::url('test'));
+        $this->contents = new Contents(vfsStream::url('test'));
     }
 
     /**
