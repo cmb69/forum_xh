@@ -52,17 +52,17 @@ class MainController
             || ($tid = $this->contents->cleanId($_GET['forum_topic'])) === false
             || !file_exists($this->contents->dataFolder($this->forum) . $tid . '.dat')
         ) {
-            echo $this->viewTopics($this->forum);
+            $this->prepareTopicsView($this->forum)->render();
         } else {
-            echo $this->viewTopic($this->forum, $tid);
+            $this->prepareTopicView($this->forum, $tid)->render();
         }
     }
 
     /**
      * @param string $forum
-     * @return string
+     * @return View
      */
-    private function viewTopics($forum)
+    private function prepareTopicsView($forum)
     {
         global $su;
 
@@ -79,15 +79,15 @@ class MainController
         $view->isUser = $this->user() !== false;
         $view->href = "?$su&forum_actn=new#$forum";
         $view->topics = $topics;
-        return (string) $view;
+        return $view;
     }
 
     /**
      * @param string $forum
      * @param string $tid
-     * @return string
+     * @return View
      */
-    private function viewTopic($forum, $tid)
+    private function prepareTopicView($forum, $tid)
     {
         global $sn, $su, $pth, $adm;
 
@@ -117,15 +117,15 @@ class MainController
         $view->editImg = $pth['folder']['plugins'] . 'forum/images/edit.png';
         $view->csrfTokenInput = new HtmlString($csrfProtector->tokenInput());
         $view->isUser = $this->user() !== false;
-        $view->commentForm = new HtmlString($this->commentForm($forum, $tid));
+        $view->commentForm = new HtmlString($this->prepareCommentForm($forum, $tid));
         $view->href = "?$su#$forum";
         $csrfProtector->store();
-        return (string) $view;
+        return $view;
     }
 
     public function newAction()
     {
-        echo $this->commentForm($this->forum);
+        $this->prepareCommentForm($this->forum)->render();
     }
 
     public function postAction()
@@ -184,7 +184,7 @@ class MainController
         $tid = $this->contents->cleanId($_GET['forum_topic']);
         $cid = $this->contents->cleanId($_GET['forum_comment']);
         if ($tid && $cid) {
-            echo $this->commentForm($this->forum, $tid, $cid);
+            $this->prepareCommentForm($this->forum, $tid, $cid)->render();
         } else {
             echo ''; // should display error
         }
@@ -209,9 +209,9 @@ class MainController
      * @param string $forum
      * @param string $tid
      * @param string $cid
-     * @return string
+     * @return View
      */
-    private function commentForm($forum, $tid = null, $cid = null)
+    private function prepareCommentForm($forum, $tid = null, $cid = null)
     {
         global $su;
 
@@ -243,7 +243,7 @@ class MainController
             : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment');
         $view->anchor = $forum;
         $csrfProtector->store();
-        return (string) $view;
+        return $view;
     }
 
     private function hjs()
