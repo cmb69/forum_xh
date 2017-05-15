@@ -5,7 +5,7 @@
 	<div class="forum_title">
             <a href="<?=$this->escape($topic['href'])?>"><?=$this->escape($topic['title'])?></a>
         </div>
-	<div class="forum_details"><?=$topic['details']?></div>
+	<div class="forum_details"><?=$this->plural('msg_comments', $topic['comments'])?> <?=$this->text('msg_topic_details', $topic['details'])?></div>
     </li>
 <?php endforeach?>
 </ul>

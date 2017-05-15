@@ -64,22 +64,13 @@ class MainController
      */
     private function viewTopics($forum)
     {
-        global $su, $plugin_tx;
+        global $su;
 
-        $ptx = $plugin_tx['forum'];
         $topics = $this->contents->getSortedTopics($forum);
         $i = 1;
         foreach ($topics as $tid => &$topic) {
             $topic['href'] = "?$su&forum_topic=$tid#$forum";
-            $comments = sprintf(
-                $ptx['msg_comments' . $this->numerus($topic['comments'])],
-                $topic['comments']
-            );
-            $topic['details'] = str_replace(
-                array('{comments}', '{posted}'),
-                array($comments, $this->posted($topic)),
-                $ptx['msg_topic_details']
-            );
+            $topic['details'] = $this->posted($topic);
             $topic['class'] = 'forum_' . ($i & 1 ? 'odd' : 'even');
             $i++;
         }
@@ -346,22 +337,5 @@ EOT;
         $date = date($ptx['format_date'], $rec['time']);
         $time = date($ptx['format_time'], $rec['time']);
         return str_replace(array('{user}', '{date}', '{time}'), array($rec['user'], $date, $time), $ptx['msg_posted']);
-    }
-
-    /**
-     * @param int $count
-     * @return string
-     */
-    private function numerus($count)
-    {
-        if ($count == 0) {
-            return '_0';
-        } elseif ($count == 1) {
-            return '_1';
-        } elseif ($count >= 2 && $count < 5) {
-            return '_2_4';
-        } else {
-            return '_5';
-        }
     }
 }
