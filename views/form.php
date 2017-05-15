@@ -1,3 +1,4 @@
+<div class="forum_preview"></div>
 <form class="forum_comment" action="<?=$this->action()?>" method="post" accept-charset="UTF-8" onsubmit="return Forum.validate()">
     <?=$this->csrfTokenInput()?>
 <?php if ($this->newTopic):?>
