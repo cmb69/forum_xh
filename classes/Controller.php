@@ -135,11 +135,11 @@ class Controller
         $comment = array(
                 'user' => $this->user(),
                 'time' => time(),
-                'comment' => stsl($_POST['forum_text']));
+                'comment' => $_POST['forum_text']);
         if (!isset($cid)) {
             $cid = $this->contents->getId();
             $title = isset($_POST['forum_title'])
-                ? stsl($_POST['forum_title']) : null;
+                ? $_POST['forum_title'] : null;
             $this->contents->createComment($forum, $tid, $title, $cid, $comment);
         } else {
             $this->contents->updateComment($forum, $tid, $cid, $comment);
@@ -445,7 +445,7 @@ EOT;
     {
         global $pth;
 
-        $comment = $this->getBbcode()->convert(stsl($_POST['data']));
+        $comment = $this->getBbcode()->convert($_POST['data']);
         $templateStylesheet = $pth['file']['stylesheet'];
         $forumStylesheet = $pth['folder']['plugins'] . 'forum/css/stylesheet.css';
         $bag = compact('comment', 'templateStylesheet', 'forumStylesheet');
