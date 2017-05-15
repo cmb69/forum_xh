@@ -58,9 +58,4 @@ function forum($forum)
     }
 }
 
-if (isset($_GET['forum_preview'])) {
-    (new Forum\MainController(''))->previewAction();
-    exit;
-}
-
 (new Forum\Plugin)->run();

@@ -266,7 +266,7 @@ class MainController
 
     private function hjs()
     {
-        global $hjs;
+        global $hjs, $su, $sn;
 
         $dir = "{$this->pluginFolder}markitup/";
         $hjs .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$dir}skins/simple/style.css\">\n";
@@ -283,6 +283,9 @@ jQuery(function() {
 });
 /* ]]> */</script>
 <script type="text/javascript" src="{$dir}sets/bbcode/set.js"></script>
+<script type="text/javascript">
+Forum.settings.previewParserPath = "$sn?$su&forum_actn=preview";
+</script>
 EOT;
     }
 
@@ -354,5 +357,6 @@ EOT;
     {
         $bbcode = new BBCode("{$this->pluginFolder}images/");
         echo $bbcode->convert($_POST['data']);
+        exit;
     }
 }

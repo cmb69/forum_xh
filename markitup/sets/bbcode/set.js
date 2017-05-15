@@ -9,9 +9,9 @@
 // ----------------------------------------------------------------------------
 // Feel free to add more tags
 // ----------------------------------------------------------------------------
+
 Forum.settings = {
 	previewInElement: ".forum_preview",
-	previewParserPath:	'?&forum_preview', // path to your BBCode parser
 	//previewInWindow: 'width=800, height=600, resizable=yes, scrollbars=yes',
 	//afterInsert: function() {$('iframe').attr('frameBorder', 0)},
 	markupSet: [
