@@ -21,6 +21,8 @@
 
 namespace Forum;
 
+use XH_CSRFProtection;
+
 class Controller
 {
     /**
