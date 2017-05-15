@@ -1,7 +1,7 @@
 <h6 class="forum_heading" id="<?=$this->anchor()?>"><?=$this->title()?></h6>
-<ul class="forum_topic">
+<div class="forum_topic">
 <?php foreach ($this->topic as $cid => $comment):?>
-    <li class="<?=$this->escape($comment['class'])?>">
+    <div class="<?=$this->escape($comment['class'])?>">
 <?php 	if ($comment['mayDelete']):?>
         <form class="forum_delete" action="." method="POST"
               onsubmit="return confirm(&quot;<?=$this->text('msg_confirm_delete')?>&quot;)">
@@ -19,10 +19,10 @@
 	</a>
 <?php 	endif?>
         <div class="forum_details"><?=$this->escape($comment['details'])?></div>
-	<div class="forum_comment"><?=$this->escape($comment['comment'])?></div>
-    </li>
+		<div class="forum_comment"><?=$this->escape($comment['comment'])?></div>
+    </div>
 <?php endforeach?>
-</ul>
+</div>
 <?php if ($this->isUser):?>
     <?=$this->commentForm()?>
 <?php endif?>

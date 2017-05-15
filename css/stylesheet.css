@@ -29,7 +29,7 @@
     margin: 0;
     padding: 0;
 }
-.forum_topics > li {
+.forum_topics > div {
     margin: 0 0 0.5em 0;
     padding: 0 0 0.5em 0;
     border-bottom: 1px solid #888;
@@ -48,7 +48,7 @@
     padding: 0;
     width: 100%;
 }
-.forum_topic > li {
+.forum_topic > div {
     margin: 0 0 0.5em 0;
     padding: 0 0 0.5em 0;
     border-bottom: 1px solid #888;
