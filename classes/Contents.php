@@ -169,16 +169,6 @@ class Contents
     }
 
     /**
-     * @param array $a
-     * @param array $b
-     * @return int
-     */
-    private function compareTopicTime($a, $b)
-    {
-        return $b['time'] - $a['time'];
-    }
-
-    /**
      * @param string $forum
      * @return array
      */
@@ -187,7 +177,9 @@ class Contents
         $this->lock($forum, LOCK_SH);
         $topics = $this->getTopics($forum);
         $this->lock($forum, LOCK_UN);
-        uasort($topics, array($this, 'compareTopicTime'));
+        uasort($topics, function ($a, $b) {
+            return $b['time'] - $a['time'];
+        });
         return $topics;
     }
 

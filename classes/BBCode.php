@@ -173,19 +173,15 @@ class BBCode
         if (array_shift($items) != '') {
             return $matches[0];
         }
-        $inner = implode('', array_map(array($this, 'convertListItem'), $items));
+        $inner = implode('', array_map(
+            function ($item) {
+                return '<li>'
+                    . preg_replace_callback($this->pattern, array($this, 'doConvert'), $item)
+                    . '</li>';
+            },
+            $items
+        ));
         return $start . $inner . $end;
-    }
-
-    /**
-     * @param string $item
-     * @return string
-     */
-    private function convertListItem($item)
-    {
-        return '<li>'
-            . preg_replace_callback($this->pattern, array($this, 'doConvert'), $item)
-            . '</li>';
     }
 
     /**
