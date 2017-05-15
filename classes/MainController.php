@@ -31,6 +31,21 @@ class MainController
     private $forum;
 
     /**
+     * @var array
+     */
+    private $lang;
+
+    /**
+     * @var string
+     */
+    private $pluginsFolder;
+
+    /**
+     * @var string
+     */
+    private $pluginFolder;
+
+    /**
      * @var Contents
      */
     private $contents;
@@ -40,9 +55,12 @@ class MainController
      */
     public function __construct($forum)
     {
-        global $pth;
+        global $pth, $plugin_tx;
 
         $this->forum = $forum;
+        $this->lang = $plugin_tx['forum'];
+        $this->pluginsFolder = $pth['folder']['plugins'];
+        $this->pluginFolder = "{$this->pluginsFolder}forum/";
         $this->contents = new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/");
     }
 
@@ -89,9 +107,9 @@ class MainController
      */
     private function prepareTopicView($forum, $tid)
     {
-        global $sn, $su, $pth, $adm;
+        global $sn, $su, $adm;
 
-        $bbcode = new BBCode($pth['folder']['plugins'] . 'forum/images/');
+        $bbcode = new BBCode("{$this->pluginFolder}images/");
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
         $editUrl = $sn . '?' . $su . '&forum_actn=edit&forum_topic=' . $tid
             . '&forum_comment=';
@@ -113,8 +131,8 @@ class MainController
         $view->topic = $topic;
         $view->tid = $tid;
         $view->su = $su;
-        $view->deleteImg = $pth['folder']['plugins'] . 'forum/images/delete.png';
-        $view->editImg = $pth['folder']['plugins'] . 'forum/images/edit.png';
+        $view->deleteImg = "{$this->pluginFolder}images/delete.png";
+        $view->editImg = "{$this->pluginFolder}images/edit.png";
         $view->csrfTokenInput = new HtmlString($csrfProtector->tokenInput());
         $view->isUser = $this->user() !== false;
         $view->commentForm = new HtmlString($this->prepareCommentForm($forum, $tid));
@@ -248,9 +266,9 @@ class MainController
 
     private function hjs()
     {
-        global $pth, $hjs;
+        global $hjs;
 
-        $dir = $pth['folder']['plugins'] . 'forum/markitup/';
+        $dir = "{$this->pluginFolder}markitup/";
         $hjs .= tag(
             'link rel="stylesheet" type="text/css" href="' . $dir
             . 'skins/simple/style.css"'
@@ -259,7 +277,7 @@ class MainController
             'link rel="stylesheet" type="text/css" href="' . $dir
             . 'sets/bbcode/style.css"'
         ) . "\n";
-        include_once $pth['folder']['plugins'] . 'jquery/jquery.inc.php';
+        include_once "{$this->pluginsFolder}jquery/jquery.inc.php";
         include_jQuery();
         include_jQueryPlugin('markitup', $dir . 'jquery.markitup.js');
         $texts = XH_encodeJson($this->jsTexts());
@@ -279,8 +297,6 @@ EOT;
      */
     private function jsTexts()
     {
-        global $plugin_tx;
-
         $keys = array(
             'title_missing', 'comment_missing', 'bold', 'italic', 'underline',
             'strikethrough', 'emoticon', 'smile', 'wink', 'happy', 'grin',
@@ -290,7 +306,7 @@ EOT;
         );
         $texts = array();
         foreach ($keys as $key) {
-            $texts[strtoupper($key)] = $plugin_tx['forum']['lbl_' . $key];
+            $texts[strtoupper($key)] = $this->lang['lbl_' . $key];
         }
         return $texts;
     }
@@ -331,11 +347,12 @@ EOT;
      */
     private function posted($rec)
     {
-        global $plugin_tx;
-
-        $ptx = $plugin_tx['forum'];
-        $date = date($ptx['format_date'], $rec['time']);
-        $time = date($ptx['format_time'], $rec['time']);
-        return str_replace(array('{user}', '{date}', '{time}'), array($rec['user'], $date, $time), $ptx['msg_posted']);
+        $date = date($this->lang['format_date'], $rec['time']);
+        $time = date($this->lang['format_time'], $rec['time']);
+        return str_replace(
+            array('{user}', '{date}', '{time}'),
+            array($rec['user'], $date, $time),
+            $this->lang['msg_posted']
+        );
     }
 }
