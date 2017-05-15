@@ -107,7 +107,7 @@ class MainController
      */
     private function prepareTopicView($forum, $tid)
     {
-        global $sn, $su, $adm;
+        global $sn, $su;
 
         $bbcode = new BBCode("{$this->pluginFolder}images/");
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
@@ -115,7 +115,7 @@ class MainController
             . '&forum_comment=';
         $i = 1;
         foreach ($topic as $cid => &$comment) {
-            $mayDelete = $adm || $comment['user'] == $this->user();
+            $mayDelete = XH_ADM || $comment['user'] == $this->user();
             $comment['mayDelete'] = $mayDelete;
             $comment['class'] = 'forum_' . ($i & 1 ? 'odd' : 'even');
             $comment['comment'] = new HtmlString($bbcode->convert($comment['comment']));
@@ -210,12 +210,12 @@ class MainController
 
     public function deleteAction()
     {
-        global $adm, $su;
+        global $su;
 
         $this->getCSRFProtector()->check();
         $tid = $this->contents->cleanId($_POST['forum_topic']);
         $cid = $this->contents->cleanId($_POST['forum_comment']);
-        $user = $adm ? true : $this->user();
+        $user = XH_ADM ? true : $this->user();
         $queryString = $this->contents->deleteComment($this->forum, $tid, $cid, $user)
             ? '?' . $su . '&forum_topic=' . $tid . '#' . $this->forum
             : '?' . $su . '#' . $this->forum;
