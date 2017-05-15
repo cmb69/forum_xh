@@ -36,24 +36,33 @@ EOT
     );
 }
 
-define('FORUM_VERSION', '@FORUM_VERSION@');
-
-$_Forum = new Forum\Controller();
-
 /**
  * @param string $forum
- * @return mixed
+ * @return ?string
  */
 function forum($forum)
 {
-    global $_Forum;
+    global $e, $plugin_tx;
 
-    return $_Forum->main($forum);
+    $ptx = $plugin_tx['forum'];
+    if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
+        $e .= '<li><b>' . $ptx['msg_invalid_name'] . '</b>' . '<br>'
+            . $forum . '</li>' . "\n";
+        return;
+    }
+    $controller = new Forum\MainController($forum);
+    $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'default';
+    $action .= 'Action';
+    if (method_exists($controller, $action)) {
+        ob_start();
+        $controller->{$action}();
+        return ob_get_clean();
+    }
 }
 
 if (isset($_GET['forum_preview'])) {
-    echo $_Forum->commentPreview();
+    (new Forum\MainController(''))->previewAction();
     exit;
 }
 
-$_Forum->dispatch();
+(new Forum\Plugin)->run();

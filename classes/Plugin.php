@@ -21,16 +21,33 @@
 
 namespace Forum;
 
-class InfoController
+class Plugin
 {
-    public function defaultAction()
-    {
-        global $pth;
+    const VERSION = '@FORUM_VERSION@';
 
-        $view = new View('info');
-        $view->logo = $pth['folder']['plugins'] . 'forum/forum.png';
-        $view->version = Plugin::VERSION;
-        $view->checks = (new SystemCheckService)->getChecks();
-        $view->render();
+    public function run()
+    {
+        if (XH_ADM) {
+            XH_registerStandardPluginMenuItems(false);
+            if (XH_wantsPluginAdministration('forum')) {
+                $this->handleAdministration();
+            }
+        }
+    }
+
+    private function handleAdministration()
+    {
+        global $admin, $action, $o;
+
+        $o .= print_plugin_admin('off');
+        switch ($admin) {
+            case '':
+                ob_start();
+                (new InfoController)->defaultAction();
+                $o .= ob_get_clean();
+                break;
+            default:
+                $o .= plugin_admin_common($action, $admin, 'forum');
+        }
     }
 }

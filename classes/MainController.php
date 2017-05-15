@@ -349,4 +349,16 @@ EOT;
             $this->lang['msg_posted']
         );
     }
+
+    public function previewAction()
+    {
+        global $pth;
+
+        $bbcode = new BBCode("{$this->pluginFolder}images/");
+        $view = new View('preview');
+        $view->comment = new HtmlString($bbcode->convert($_POST['data']));
+        $view->templateStylesheet = $pth['file']['stylesheet'];
+        $view->forumStylesheet = "{$this->pluginFolder}css/stylesheet.css";
+        $view->render();
+    }
 }
