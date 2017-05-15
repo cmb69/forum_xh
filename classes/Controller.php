@@ -453,38 +453,6 @@ EOT;
     }
 
     /**
-     * @return array
-     */
-    private function systemChecks()
-    {
-        global $pth, $tx, $plugin_tx;
-
-        $ptx = $plugin_tx['forum'];
-        $phpVersion = '5.4.0';
-        $checks = array();
-        $checks[sprintf($ptx['syscheck_phpversion'], $phpVersion)]
-            = version_compare(PHP_VERSION, $phpVersion) >= 0 ? 'ok' : 'fail';
-        foreach (array('session') as $ext) {
-            $checks[sprintf($ptx['syscheck_extension'], $ext)]
-                = extension_loaded($ext) ? 'ok' : 'fail';
-        }
-        $checks[$ptx['syscheck_encoding']]
-            = strtoupper($tx['meta']['codepage']) == 'UTF-8' ? 'ok' : 'warn';
-        $check = file_exists($pth['folder']['plugins'] . 'jquery/jquery.inc.php');
-        $checks[$ptx['syscheck_jquery']] = $check ? 'ok' : 'fail';
-        $folders = array();
-        foreach (array('css/', 'languages/') as $folder) {
-            $folders[] = $pth['folder']['plugins'] . 'forum/' . $folder;
-        }
-        $folders[] = $this->contents->dataFolder();
-        foreach ($folders as $folder) {
-            $checks[sprintf($ptx['syscheck_writable'], $folder)]
-                = is_writable($folder) ? 'ok' : 'warn';
-        }
-        return $checks;
-    }
-
-    /**
      * @return string
      */
     private function infoView()
@@ -493,14 +461,8 @@ EOT;
 
         $view = new View('info');
         $view->logo = $pth['folder']['plugins'] . 'forum/forum.png';
-        $view->checks = $this->systemChecks();
         $view->version = FORUM_VERSION;
-        $images = array();
-        foreach (array('ok', 'warn', 'fail') as $state) {
-            $images[$state] = $pth['folder']['plugins']
-                . 'forum/images/' . $state . '.png';
-        }
-        $view->images = $images;
+        $view->checks = (new SystemCheckService)->getChecks();
         return (string) $view;
     }
 

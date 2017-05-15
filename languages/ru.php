@@ -52,12 +52,6 @@ $plugin_tx['forum']['lbl_code']="Код";
 $plugin_tx['forum']['lbl_clean']="Очистить";
 $plugin_tx['forum']['lbl_preview']="Просмотр";
 $plugin_tx['forum']['lbl_link_text']="Введите текст для ссылки ...";
-$plugin_tx['forum']['syscheck_title']="Проверка системы";
-$plugin_tx['forum']['syscheck_phpversion']="Версия PHP &ge; %s";
-$plugin_tx['forum']['syscheck_extension']="Расширение '%s' загружено";
-$plugin_tx['forum']['syscheck_encoding']="Кодировка 'UTF-8' установлена";
-$plugin_tx['forum']['syscheck_jquery']="Плагин <a href=\"http://www.cmsimple-xh.com/wiki/doku.php/plugins:jquery4cmsimple\">jQuery4CMSimple</a> установлен";
-$plugin_tx['forum']['syscheck_writable']="Папка '%s' доступна для записи";
 $plugin_tx['forum']['cf_format_date']="Подробнее о форматировании даты читайте на http://php.net/manual/en/function.date.php.";
 $plugin_tx['forum']['cf_format_time']="Подробнее о форматировании времени читайте на http://php.net/manual/en/function.date.php.";
 

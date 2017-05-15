@@ -50,12 +50,16 @@ $plugin_tx['forum']['lbl_clean']="Bereinigen";
 $plugin_tx['forum']['lbl_preview']="Vorschau";
 $plugin_tx['forum']['lbl_link_text']="Ihr Text zum Verlinken hier...";
 
-$plugin_tx['forum']['syscheck_title']="Systemprüfung";
-$plugin_tx['forum']['syscheck_phpversion']="PHP-Version &ge; %s";
-$plugin_tx['forum']['syscheck_extension']="Erweiterung '%s' geladen";
-$plugin_tx['forum']['syscheck_encoding']="Encoding 'UTF-8' configured";
-$plugin_tx['forum']['syscheck_jquery']="<a href=\"http://www.cmsimple-xh.com/wiki/doku.php/plugins:jquery4cmsimple\">jQuery4CMSimple plugin</a> installiert";
-$plugin_tx['forum']['syscheck_writable']="Ordner '%s' schreibbar";
+$plugin_tx['forum']['syscheck_extension']="die PHP-Erweiterung '%s' geladen ist";
+$plugin_tx['forum']['syscheck_fail']="Fehler";
+$plugin_tx['forum']['syscheck_message']="Prüfe, dass %1\$s … %2\$s";
+$plugin_tx['forum']['syscheck_phpversion']="die PHP-Version ≥ %s";
+$plugin_tx['forum']['syscheck_plugin']="das CMSIMPLE_XH Plugin '%s' installiert ist";
+$plugin_tx['forum']['syscheck_success']="OK";
+$plugin_tx['forum']['syscheck_title']="System-Prüfung";
+$plugin_tx['forum']['syscheck_warning']="Warnung";
+$plugin_tx['forum']['syscheck_writable']="'%s' schreibbar ist";
+$plugin_tx['forum']['syscheck_xhversion']="die CMSimple_XH-Version ≥ %s";
 
 $plugin_tx['forum']['about']="Über Forum_XH";
 

@@ -1,13 +1,7 @@
 <h4><?=$this->text('syscheck_title')?></h4>
-<ul style="list-style: none">
-<?php foreach ($this->checks as $check => $state):?>
-    <li>
-        <img src="<?=$this->escape($this->images[$state])?>" alt="<?=$this->escape($this->images[$state])?>"
-            style="margin: 0; height: 1em; padding-right: 1em"/>
-        <span><?=$check?></span>
-    </li>
+<?php foreach ($this->checks as $check):?>
+    <p class="xh_<?=$this->escape($check->state)?>"><?=$this->text('syscheck_message', $check->label, $check->stateLabel)?></p>
 <?php endforeach?>
-</ul>
 <h4><?=$this->text('about')?></h4>
 <img src="<?=$this->logo()?>" style="float: left; width: 128px; height: 128px; margin-right: 16px"
 alt="Plugin Icon"/>

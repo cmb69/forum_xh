@@ -50,12 +50,6 @@ $plugin_tx['forum']['lbl_code']="Kode";
 $plugin_tx['forum']['lbl_clean']="Ryd";
 $plugin_tx['forum']['lbl_preview']="Vis";
 $plugin_tx['forum']['lbl_link_text']="Tekst til link her...";
-$plugin_tx['forum']['syscheck_title']="System check";
-$plugin_tx['forum']['syscheck_phpversion']="PHP version &ge; %s";
-$plugin_tx['forum']['syscheck_extension']="Extension '%s' loaded";
-$plugin_tx['forum']['syscheck_encoding']="Encoding 'UTF-8' configured";
-$plugin_tx['forum']['syscheck_jquery']="<a href=\"http://www.cmsimple-xh.com/wiki/doku.php/plugins:jquery4cmsimple\">jQuery4CMSimple plugin</a> installed";
-$plugin_tx['forum']['syscheck_writable']="Folder '%s' writable";
 $plugin_tx['forum']['cf_format_date']="For possible formatting options see http://php.net/manual/en/function.date.php.";
 $plugin_tx['forum']['cf_format_time']="For possible formatting options see http://php.net/manual/en/function.date.php.";
 
