@@ -15,7 +15,7 @@
 	</form>
 	<a class="forum_edit" href="<?=$this->escape($comment['editUrl'])?>#<?=$this->anchor()?>">
 	    <img src="<?=$this->editImg()?>" alt="<?=$this->text('lbl_edit')?>"
-		 title="<?=$this->text('lbl_edit')?>" />
+		 title="<?=$this->text('lbl_edit')?>">
 	</a>
 <?php 	endif?>
         <div class="forum_details"><?=$this->escape($comment['details'])?></div>

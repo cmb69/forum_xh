@@ -93,7 +93,7 @@ class Controller
 
         $ptx = $plugin_tx['forum'];
         if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
-            $e .= '<li><b>' . $ptx['msg_invalid_name'] . '</b>' . tag('br')
+            $e .= '<li><b>' . $ptx['msg_invalid_name'] . '</b>' . '<br>'
                 . $forum . '</li>' . "\n";
             return false;
         }

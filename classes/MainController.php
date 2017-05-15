@@ -269,14 +269,8 @@ class MainController
         global $hjs;
 
         $dir = "{$this->pluginFolder}markitup/";
-        $hjs .= tag(
-            'link rel="stylesheet" type="text/css" href="' . $dir
-            . 'skins/simple/style.css"'
-        ) . "\n";
-        $hjs .= tag(
-            'link rel="stylesheet" type="text/css" href="' . $dir
-            . 'sets/bbcode/style.css"'
-        ) . "\n";
+        $hjs .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$dir}skins/simple/style.css\">\n";
+        $hjs .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$dir}sets/bbcode/style.css\">\n";
         include_once "{$this->pluginsFolder}jquery/jquery.inc.php";
         include_jQuery();
         include_jQueryPlugin('markitup', $dir . 'jquery.markitup.js');

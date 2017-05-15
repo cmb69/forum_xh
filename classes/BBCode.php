@@ -59,7 +59,7 @@ class BBCode
         $this->context = array();
         $text = $this->doConvert(array($text, '', '', $text));
         $text = $this->convertEmoticons($text);
-        $text = preg_replace('/\r\n|\r|\n/', tag('br'), $text);
+        $text = preg_replace('/\r\n|\r|\n/', '<br>', $text);
         $text = str_replace("\x0B", "\n", $text);
         return $text;
     }
@@ -136,7 +136,7 @@ class BBCode
         if (!preg_match('/^http(s)?:/', $url)) {
             return $matches[0];
         }
-        return tag('img src="' . $url . '" alt="' . basename($url) . '"');
+        return '<img src="' . $url . '" alt="' . basename($url) . '">';
     }
     
     /**
@@ -243,7 +243,7 @@ class BBCode
         foreach ($emotions as $emotion) {
             $src = $this->emoticonDir . 'emoticon_' . $emotion . '.png';
             $alt = $ptx['lbl_' . $emotion];
-            $images[] = tag('img src="' . $src . '" alt="' . $alt . '"');
+            $images[] = '<img src="' . $src . '" alt="' . $alt . '">';
         }
         return str_replace($emoticons, $images, $text);
     }
