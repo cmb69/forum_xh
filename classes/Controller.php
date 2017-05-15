@@ -227,24 +227,14 @@ EOT;
      */
     private function commentForm($forum, $tid = null, $cid = null)
     {
-        global $su, $plugin_tx;
+        global $su;
 
         if ($this->user() === false && !XH_ADM) {
             return false;
         }
-        $ptx = $plugin_tx['forum'];
         $this->hjs();
 
         $newTopic = !isset($tid);
-        $labels = array(
-            'heading' => $newTopic
-                ? $ptx['msg_new_topic']
-                : (isset($cid) ? $ptx['msg_edit_comment'] : $ptx['msg_add_comment']),
-            'anchor' => $forum,
-            'title' => $ptx['msg_title'],
-            'submit' => $ptx['lbl_submit'],
-            'back' => $ptx['msg_back']
-        );
         $comment = '';
         if (isset($cid)) {
             $topics = $this->contents->getTopic($forum, $tid);
@@ -253,11 +243,21 @@ EOT;
             }
             //$newTopic = true; // FIXME: hack to force overview link to be shown
         }
-        $action = '?' . $su . '&amp;forum_actn=post';
-        $overviewUrl = '?' . $su . '#' . $forum;
-
-        $bag = compact('newTopic', 'labels', 'tid', 'cid', 'action', 'overviewUrl', 'comment', '_XH_csrfProtection');
-        return $this->render('form', $bag);
+        $csrfProtector = $this->getCSRFProtector();
+        $view = new View('form');
+        $view->newTopic = $newTopic;
+        $view->tid = $tid;
+        $view->cid = $cid;
+        $view->action = "?$su&forum_actn=post";
+        $view->overviewUrl = "?$su#$forum";
+        $view->comment = $comment;
+        $view->csrfTokenInput = new HtmlString($csrfProtector->tokenInput());
+        $view->headingKey = $newTopic
+            ? 'msg_new_topic'
+            : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment');
+        $view->anchor = $forum;
+        $csrfProtector->store();
+        return (string) $view;
     }
 
     /**
@@ -314,49 +314,37 @@ EOT;
      */
     private function viewTopic($forum, $tid)
     {
-        global $sn, $su, $pth, $adm, $plugin_tx;
+        global $sn, $su, $pth, $adm;
 
-        $ptx = $plugin_tx['forum'];
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
-        $href = "?$su#$forum";
         $editUrl = $sn . '?' . $su . '&forum_actn=edit&forum_topic=' . $tid
             . '&forum_comment=';
         $i = 1;
-        $label = array(
-            'title' => XH_hsc($title),
-            'anchor' => $forum,
-            'edit' => $ptx['lbl_edit'],
-            'delete' => $ptx['lbl_delete'],
-            'confirmDelete' => $ptx['msg_confirm_delete'],
-            'back' => $ptx['msg_back']
-        );
-        $deleteImg = $pth['folder']['plugins'] . 'forum/images/delete.png';
-        $editImg = $pth['folder']['plugins'] . 'forum/images/edit.png';
         foreach ($topic as $cid => &$comment) {
             $mayDelete = $adm || $comment['user'] == $this->user();
             $comment['mayDelete'] = $mayDelete;
             $comment['class'] = 'forum_' . ($i & 1 ? 'odd' : 'even');
-            $comment['comment'] = $this->getBbcode()->convert($comment['comment']);
-            $comment['details'] = $this->posted($comment);
+            $comment['comment'] = new HtmlString($this->getBbcode()->convert($comment['comment']));
+            $comment['details'] = new HtmlString($this->posted($comment));
             $comment['editUrl'] = $editUrl . $cid;
             $i++;
         }
-        $isUser = $this->user() !== false;
-        $commentForm = $this->commentForm($forum, $tid);
 
-        $bag = compact(
-            'label',
-            'tid',
-            'topic',
-            'su',
-            'deleteImg',
-            'editImg',
-            'href',
-            'isUser',
-            'commentForm',
-            '_XH_csrfProtection'
-        );
-        return $this->render('topic', $bag);
+        $csrfProtector = $this->getCSRFProtector();
+        $view = new View('topic');
+        $view->anchor = $forum;
+        $view->title = $title;
+        $view->topic = $topic;
+        $view->tid = $tid;
+        $view->su = $su;
+        $view->deleteImg = $pth['folder']['plugins'] . 'forum/images/delete.png';
+        $view->editImg = $pth['folder']['plugins'] . 'forum/images/edit.png';
+        $view->csrfTokenInput = new HtmlString($csrfProtector->tokenInput());
+        $view->isUser = $this->user() !== false;
+        $view->commentForm = new HtmlString($this->commentForm($forum, $tid));
+        $view->href = "?$su#$forum";
+        $csrfProtector->store();
+        return (string) $view;
     }
 
     /**
@@ -415,40 +403,17 @@ EOT;
     }
 
     /**
-     * @param string $_template
-     * @param array  $_bag
-     * @return string
-     */
-    private function render($_template, $_bag)
-    {
-        global $pth, $cf;
-
-        $_xhtml = $cf['xhtml']['endtags'] == 'true';
-        $_template = $pth['folder']['plugins'] . 'forum/views/' . $_template
-            . '.htm';
-        unset($cf, $pth);
-        extract($_bag);
-        ob_start();
-        include $_template;
-        $view = ob_get_clean();
-        if (!$_xhtml) {
-            $view = str_replace(' />', '>', $view);
-        }
-        return $view;
-    }
-
-    /**
      * @return string
      */
     public function commentPreview()
     {
         global $pth;
 
-        $comment = $this->getBbcode()->convert($_POST['data']);
-        $templateStylesheet = $pth['file']['stylesheet'];
-        $forumStylesheet = $pth['folder']['plugins'] . 'forum/css/stylesheet.css';
-        $bag = compact('comment', 'templateStylesheet', 'forumStylesheet');
-        return $this->render('preview', $bag);
+        $view = new View('preview');
+        $view->comment = new HtmlString($this->getBbcode()->convert($_POST['data']));
+        $view->templateStylesheet = $pth['file']['stylesheet'];
+        $view->forumStylesheet = $pth['folder']['plugins'] . 'forum/css/stylesheet.css';
+        return (string) $view;
     }
 
     /**
