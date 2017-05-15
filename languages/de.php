@@ -50,6 +50,8 @@ $plugin_tx['forum']['lbl_clean']="Bereinigen";
 $plugin_tx['forum']['lbl_preview']="Vorschau";
 $plugin_tx['forum']['lbl_link_text']="Ihr Text zum Verlinken hier...";
 
+$plugin_tx['forum']['alt_logo']="Stilisierte Leute";
+
 $plugin_tx['forum']['syscheck_extension']="die PHP-Erweiterung '%s' geladen ist";
 $plugin_tx['forum']['syscheck_fail']="Fehler";
 $plugin_tx['forum']['syscheck_message']="Prüfe, dass %1\$s … %2\$s";
@@ -60,8 +62,6 @@ $plugin_tx['forum']['syscheck_title']="System-Prüfung";
 $plugin_tx['forum']['syscheck_warning']="Warnung";
 $plugin_tx['forum']['syscheck_writable']="'%s' schreibbar ist";
 $plugin_tx['forum']['syscheck_xhversion']="die CMSimple_XH-Version ≥ %s";
-
-$plugin_tx['forum']['about']="Über Forum_XH";
 
 $plugin_tx['forum']['cf_format_date']="Formatierungsmöglichkeiten sind unter http://php.net/manual/de/function.date.php aufgelistet.";
 $plugin_tx['forum']['cf_format_time']="Formatierungsmöglichkeiten sind unter http://php.net/manual/de/function.date.php aufgelistet.";

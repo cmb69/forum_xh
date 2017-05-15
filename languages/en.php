@@ -50,6 +50,8 @@ $plugin_tx['forum']['lbl_clean']="Clean";
 $plugin_tx['forum']['lbl_preview']="Preview";
 $plugin_tx['forum']['lbl_link_text']="Your text to link here...";
 
+$plugin_tx['forum']['alt_logo']="Stylized People";
+
 $plugin_tx['forum']['syscheck_extension']="the PHP extension '%s' is loaded";
 $plugin_tx['forum']['syscheck_fail']="failure";
 $plugin_tx['forum']['syscheck_message']="Checking that %1\$s … %2\$s";
@@ -60,8 +62,6 @@ $plugin_tx['forum']['syscheck_title']="System check";
 $plugin_tx['forum']['syscheck_warning']="warning";
 $plugin_tx['forum']['syscheck_writable']="'%s' is writable";
 $plugin_tx['forum']['syscheck_xhversion']="CMSimple_XH version ≥ %s";
-
-$plugin_tx['forum']['about']="About Forum_XH";
 
 $plugin_tx['forum']['cf_format_date']="For possible formatting options see http://php.net/manual/en/function.date.php.";
 $plugin_tx['forum']['cf_format_time']="For possible formatting options see http://php.net/manual/en/function.date.php.";
