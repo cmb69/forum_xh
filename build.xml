@@ -100,8 +100,6 @@
             </fileset>
         </move>
         <delete dir="export"/>
-        <copy file="dist/config/config.php"
-              tofile="dist/config/defaultconfig.php"/>
         <copy file="dist/languages/en.php" tofile="dist/languages/default.php"/>
         <zip destfile="Forum_XH-${version}.zip" basedir="dist"
              prefix="forum/"/>

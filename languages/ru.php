@@ -58,7 +58,6 @@ $plugin_tx['forum']['syscheck_extension']="Расширение '%s' загру�
 $plugin_tx['forum']['syscheck_encoding']="Кодировка 'UTF-8' установлена";
 $plugin_tx['forum']['syscheck_jquery']="Плагин <a href=\"http://www.cmsimple-xh.com/wiki/doku.php/plugins:jquery4cmsimple\">jQuery4CMSimple</a> установлен";
 $plugin_tx['forum']['syscheck_writable']="Папка '%s' доступна для записи";
-$plugin_tx['forum']['cf_folder_data']="Путь к папке, где хранятся файлы данных, относительно корневого каталога CMSimple. Например, \"userfiles/forum/\". Оставьте поле пустым для хранения данных в папке по умолчанию (каталог <b>data/</b> в директории плагина).";
 $plugin_tx['forum']['cf_format_date']="Подробнее о форматировании даты читайте на http://php.net/manual/en/function.date.php.";
 $plugin_tx['forum']['cf_format_time']="Подробнее о форматировании времени читайте на http://php.net/manual/en/function.date.php.";
 

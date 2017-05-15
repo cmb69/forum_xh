@@ -40,11 +40,9 @@ class Controller
 
     public function __construct()
     {
-        global $pth, $plugin_cf;
+        global $pth;
 
-        $folder = $plugin_cf['forum']['folder_data'] != ''
-            ? $pth['folder']['base'] . $plugin_cf['forum']['folder_data']
-            : $pth['folder']['plugins'] . 'forum/data/';
+        $folder = "{$pth['folder']['content']}{$pth['folder']['base']}forum/";
         $this->contents = new Contents($folder);
     }
 
@@ -475,7 +473,7 @@ EOT;
         $check = file_exists($pth['folder']['plugins'] . 'jquery/jquery.inc.php');
         $checks[$ptx['syscheck_jquery']] = $check ? 'ok' : 'fail';
         $folders = array();
-        foreach (array('config/', 'css/', 'languages/') as $folder) {
+        foreach (array('css/', 'languages/') as $folder) {
             $folders[] = $pth['folder']['plugins'] . 'forum/' . $folder;
         }
         $folders[] = $this->contents->dataFolder();

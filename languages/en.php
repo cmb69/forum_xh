@@ -59,7 +59,6 @@ $plugin_tx['forum']['syscheck_writable']="Folder '%s' writable";
 
 $plugin_tx['forum']['about']="About Forum_XH";
 
-$plugin_tx['forum']['cf_folder_data']="Path of a folder relative to the CMSimple_XH root directory, where to store the plugin's data. E.g. \"userfiles/forum/\". Leave empty to store in the plugin's data/ folder.";
 $plugin_tx['forum']['cf_format_date']="For possible formatting options see http://php.net/manual/en/function.date.php.";
 $plugin_tx['forum']['cf_format_time']="For possible formatting options see http://php.net/manual/en/function.date.php.";
 

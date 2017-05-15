@@ -59,7 +59,6 @@ $plugin_tx['forum']['syscheck_writable']="Ordner '%s' schreibbar";
 
 $plugin_tx['forum']['about']="Über Forum_XH";
 
-$plugin_tx['forum']['cf_folder_data']="Pfad eines Ordners relativ zum CMSimple_XH Installationsverzeichnis, wo die Plugin-Daten gespeichert werden sollen, z.B. \"userfiles/forum/\". Leer lassen, um im data/ Ordner des Plugins zu speichern.";
 $plugin_tx['forum']['cf_format_date']="Formatierungsmöglichkeiten sind unter http://php.net/manual/de/function.date.php aufgelistet.";
 $plugin_tx['forum']['cf_format_time']="Formatierungsmöglichkeiten sind unter http://php.net/manual/de/function.date.php aufgelistet.";
 
