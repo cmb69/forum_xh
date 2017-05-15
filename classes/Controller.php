@@ -282,14 +282,9 @@ EOT;
 
         $ptx = $plugin_tx['forum'];
         $topics = $this->contents->getSortedTopics($forum);
-        $label = array(
-            'heading' => $ptx['msg_topics'],
-            'anchor' => $forum,
-            'start_topic' => $ptx['msg_start_topic']
-        );
         $i = 1;
         foreach ($topics as $tid => &$topic) {
-            $topic['href'] = "?$su&amp;forum_topic=$tid#$forum";
+            $topic['href'] = "?$su&forum_topic=$tid#$forum";
             $comments = sprintf(
                 $ptx['msg_comments' . $this->numerus($topic['comments'])],
                 $topic['comments']
@@ -302,10 +297,12 @@ EOT;
             $topic['class'] = 'forum_' . ($i & 1 ? 'odd' : 'even');
             $i++;
         }
-        $is_user = $this->user() !== false;
-        $href = "?$su&amp;forum_actn=new#$forum";
-        $bag = compact('label', 'topics', 'href', 'is_user');
-        return $this->render('topics', $bag);
+        $view = new View('topics');
+        $view->anchorLabel = $forum;
+        $view->isUser = $this->user() !== false;
+        $view->href = "?$su&forum_actn=new#$forum";
+        $view->topics = $topics;
+        return (string) $view;
     }
 
     /**
