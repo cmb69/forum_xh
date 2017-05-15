@@ -35,11 +35,6 @@ class Controller
      */
     private $bbcode;
 
-    /**
-     * @var XH_CSRFProtection
-     */
-    private $csrfProtector;
-
     public function __construct()
     {
         global $pth;
@@ -89,273 +84,12 @@ class Controller
     }
 
     /**
-     * @param int $count
-     * @return string
-     */
-    private function numerus($count)
-    {
-        if ($count == 1) {
-            return '_singular';
-        } elseif ($count >= 2 && $count < 5) {
-            return '_plural_2-4';
-        } else {
-            return '_plural_5';
-        }
-    }
-
-    /**
-     * @return string
-     */
-    private function user()
-    {
-        if (session_id() == '') {
-            session_start();
-        }
-        return isset($_SESSION['Name'])
-            ? $_SESSION['Name']
-            : (isset($_SESSION['username']) ? $_SESSION['username'] : false);
-    }
-
-    /**
-     * @param string $forum
-     * @param string $tid
-     * @param string $cid
-     * @return string
-     */
-    private function postComment($forum, $tid = null, $cid = null)
-    {
-        if (!isset($tid) && empty($_POST['forum_title'])
-            || $this->user() === false || empty($_POST['forum_text'])
-        ) {
-            return false;
-        }
-        $tid = isset($tid)
-            ? $this->contents->cleanId($tid)
-            : $this->contents->getId();
-        if ($tid === false) {
-            return false;
-        }
-
-        $comment = array(
-                'user' => $this->user(),
-                'time' => time(),
-                'comment' => $_POST['forum_text']);
-        if (!isset($cid)) {
-            $cid = $this->contents->getId();
-            $title = isset($_POST['forum_title'])
-                ? $_POST['forum_title'] : null;
-            $this->contents->createComment($forum, $tid, $title, $cid, $comment);
-        } else {
-            $this->contents->updateComment($forum, $tid, $cid, $comment);
-        }
-
-        return $tid;
-    }
-
-    /**
-     * @param string $forum
-     * @param string $tid
-     * @param string $cid
-     *
-     */
-    private function deleteComment($forum, $tid, $cid)
-    {
-        global $adm, $su;
-
-        $tid = $this->contents->cleanId($_POST['forum_topic']);
-        $cid = $this->contents->cleanId($_POST['forum_comment']);
-        $user = $adm ? true : $this->user();
-        $queryString = $this->contents->deleteComment($forum, $tid, $cid, $user)
-            ? '?' . $su . '&forum_topic=' . $tid . '#' . $forum: '?' . $su .
-              '#' . $forum;
-        header('Location: ' . CMSIMPLE_URL . $queryString, true, 303);
-        exit;
-    }
-
-    private function hjs()
-    {
-        global $pth, $hjs;
-
-        $dir = $pth['folder']['plugins'] . 'forum/markitup/';
-        $hjs .= tag(
-            'link rel="stylesheet" type="text/css" href="' . $dir
-            . 'skins/simple/style.css"'
-        ) . "\n";
-        $hjs .= tag(
-            'link rel="stylesheet" type="text/css" href="' . $dir
-            . 'sets/bbcode/style.css"'
-        ) . "\n";
-        include_once $pth['folder']['plugins'] . 'jquery/jquery.inc.php';
-        include_jQuery();
-        include_jQueryPlugin('markitup', $dir . 'jquery.markitup.js');
-        $texts = XH_encodeJson($this->jsTexts());
-        $hjs .= <<<EOT
-<script type="text/javascript">/* <![CDATA[ */
-var Forum = {TX: $texts};
-jQuery(function() {
-    jQuery(".forum_comment textarea").markItUp(Forum.settings);
-});
-/* ]]> */</script>
-<script type="text/javascript" src="{$dir}sets/bbcode/set.js"></script>
-EOT;
-    }
-
-    /**
-     * @return array
-     */
-    private function jsTexts()
-    {
-        global $plugin_tx;
-
-        $keys = array(
-            'title_missing', 'comment_missing', 'bold', 'italic', 'underline',
-            'strikethrough', 'emoticon', 'smile', 'wink', 'happy', 'grin',
-            'tongue', 'surprised', 'unhappy', 'picture', 'link', 'size', 'big',
-            'normal', 'small', 'bulleted_list', 'numeric_list', 'list_item',
-            'quotes', 'code', 'clean', 'preview', 'link_text'
-        );
-        $texts = array();
-        foreach ($keys as $key) {
-            $texts[strtoupper($key)] = $plugin_tx['forum']['lbl_' . $key];
-        }
-        return $texts;
-    }
-
-    /**
-     * @param string $forum
-     * @param string $tid
-     * @param string $cid
-     * @return string
-     */
-    private function commentForm($forum, $tid = null, $cid = null)
-    {
-        global $su;
-
-        if ($this->user() === false && !XH_ADM) {
-            return false;
-        }
-        $this->hjs();
-
-        $newTopic = !isset($tid);
-        $comment = '';
-        if (isset($cid)) {
-            $topics = $this->contents->getTopic($forum, $tid);
-            if ($topics[$cid]['user'] == $this->user() || XH_ADM) {
-                $comment = $topics[$cid]['comment'];
-            }
-            //$newTopic = true; // FIXME: hack to force overview link to be shown
-        }
-        $csrfProtector = $this->getCSRFProtector();
-        $view = new View('form');
-        $view->newTopic = $newTopic;
-        $view->tid = $tid;
-        $view->cid = $cid;
-        $view->action = "?$su&forum_actn=post";
-        $view->overviewUrl = "?$su#$forum";
-        $view->comment = $comment;
-        $view->csrfTokenInput = new HtmlString($csrfProtector->tokenInput());
-        $view->headingKey = $newTopic
-            ? 'msg_new_topic'
-            : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment');
-        $view->anchor = $forum;
-        $csrfProtector->store();
-        return (string) $view;
-    }
-
-    /**
-     * @param array $rec
-     * @return string
-     */
-    private function posted($rec)
-    {
-        global $plugin_tx;
-
-        $ptx = $plugin_tx['forum'];
-        $date = date($ptx['format_date'], $rec['time']);
-        $time = date($ptx['format_time'], $rec['time']);
-        return str_replace(array('{user}', '{date}', '{time}'), array($rec['user'], $date, $time), $ptx['msg_posted']);
-    }
-
-    /**
-     * @param string $forum
-     * @return string
-     */
-    private function viewTopics($forum)
-    {
-        global $su, $plugin_tx;
-
-        $ptx = $plugin_tx['forum'];
-        $topics = $this->contents->getSortedTopics($forum);
-        $i = 1;
-        foreach ($topics as $tid => &$topic) {
-            $topic['href'] = "?$su&forum_topic=$tid#$forum";
-            $comments = sprintf(
-                $ptx['msg_comments' . $this->numerus($topic['comments'])],
-                $topic['comments']
-            );
-            $topic['details'] = str_replace(
-                array('{comments}', '{posted}'),
-                array($comments, $this->posted($topic)),
-                $ptx['msg_topic_details']
-            );
-            $topic['class'] = 'forum_' . ($i & 1 ? 'odd' : 'even');
-            $i++;
-        }
-        $view = new View('topics');
-        $view->anchorLabel = $forum;
-        $view->isUser = $this->user() !== false;
-        $view->href = "?$su&forum_actn=new#$forum";
-        $view->topics = $topics;
-        return (string) $view;
-    }
-
-    /**
-     * @param string $forum
-     * @param string $tid
-     * @return string
-     */
-    private function viewTopic($forum, $tid)
-    {
-        global $sn, $su, $pth, $adm;
-
-        list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
-        $editUrl = $sn . '?' . $su . '&forum_actn=edit&forum_topic=' . $tid
-            . '&forum_comment=';
-        $i = 1;
-        foreach ($topic as $cid => &$comment) {
-            $mayDelete = $adm || $comment['user'] == $this->user();
-            $comment['mayDelete'] = $mayDelete;
-            $comment['class'] = 'forum_' . ($i & 1 ? 'odd' : 'even');
-            $comment['comment'] = new HtmlString($this->getBbcode()->convert($comment['comment']));
-            $comment['details'] = new HtmlString($this->posted($comment));
-            $comment['editUrl'] = $editUrl . $cid;
-            $i++;
-        }
-
-        $csrfProtector = $this->getCSRFProtector();
-        $view = new View('topic');
-        $view->anchor = $forum;
-        $view->title = $title;
-        $view->topic = $topic;
-        $view->tid = $tid;
-        $view->su = $su;
-        $view->deleteImg = $pth['folder']['plugins'] . 'forum/images/delete.png';
-        $view->editImg = $pth['folder']['plugins'] . 'forum/images/edit.png';
-        $view->csrfTokenInput = new HtmlString($csrfProtector->tokenInput());
-        $view->isUser = $this->user() !== false;
-        $view->commentForm = new HtmlString($this->commentForm($forum, $tid));
-        $view->href = "?$su#$forum";
-        $csrfProtector->store();
-        return (string) $view;
-    }
-
-    /**
      * @param string $forum
      * @return mixed
      */
     public function main($forum)
     {
-        global $su, $e, $plugin_tx;
+        global $e, $plugin_tx;
 
         $ptx = $plugin_tx['forum'];
         if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
@@ -363,44 +97,13 @@ EOT;
                 . $forum . '</li>' . "\n";
             return false;
         }
-        $action = isset($_REQUEST['forum_actn'])
-            ? $_REQUEST['forum_actn'] : 'view';
-        switch ($action) {
-            case 'view':
-                if (empty($_GET['forum_topic'])
-                    || ($tid = $this->contents->cleanId($_GET['forum_topic'])) === false
-                    || !file_exists($this->contents->dataFolder($forum) . $tid . '.dat')
-                ) {
-                    return $this->viewTopics($forum);
-                } else {
-                    return $this->viewTopic($forum, $tid);
-                }
-                break;
-            case 'new':
-                return $this->commentForm($forum);
-            case 'post':
-                $this->getCSRFProtector()->check();
-                if (!empty($_POST['forum_comment'])) {
-                    $tid = $this->postComment($forum, $_POST['forum_topic'], $_POST['forum_comment']);
-                } else {
-                    $tid = $this->postComment($forum, $_POST['forum_topic']);
-                }
-                $params = $tid ? "?$su&forum_topic=$tid#$forum" : "?$su#$forum";
-                header('Location: ' . CMSIMPLE_URL . $params, true, 303);
-                exit;
-            case 'edit':
-                $tid = $this->contents->cleanId($_GET['forum_topic']);
-                $cid = $this->contents->cleanId($_GET['forum_comment']);
-                if ($tid && $cid) {
-                    return $this->commentForm($forum, $tid, $cid);
-                } else {
-                    return ''; // should display error
-                }
-                break;
-            case 'delete':
-                $this->getCSRFProtector()->check();
-                $this->deleteComment($forum, $tid, $cid);
-                break;
+        $controller = new MainController($forum);
+        $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'default';
+        $action .= 'Action';
+        if (method_exists($controller, $action)) {
+            ob_start();
+            $controller->{$action}();
+            return ob_get_clean();
         }
     }
 
@@ -416,22 +119,5 @@ EOT;
         $view->templateStylesheet = $pth['file']['stylesheet'];
         $view->forumStylesheet = $pth['folder']['plugins'] . 'forum/css/stylesheet.css';
         return (string) $view;
-    }
-
-    /**
-     * @return XH_CSRFProtection
-     */
-    private function getCSRFProtector()
-    {
-        global $_XH_csrfProtection;
-
-        if (isset($_XH_csrfProtection)) {
-            return $_XH_csrfProtection;
-        } else {
-            if (!isset($this->csrfProtector)) {
-                $this->csrfProtector = new XH_CSRFProtection('forum_token');
-            }
-            return $this->csrfProtector;
-        }
     }
 }
