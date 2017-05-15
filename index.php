@@ -42,13 +42,11 @@ EOT
  */
 function forum($forum)
 {
-    global $e, $plugin_tx;
+    global $plugin_tx;
 
     $ptx = $plugin_tx['forum'];
     if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
-        $e .= '<li><b>' . $ptx['msg_invalid_name'] . '</b>' . '<br>'
-            . $forum . '</li>' . "\n";
-        return;
+        return XH_message('fail', $ptx['msg_invalid_name'], $forum);
     }
     $controller = new Forum\MainController($forum);
     $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'default';

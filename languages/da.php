@@ -21,7 +21,6 @@ $plugin_tx['forum']['msg_comments_2_4']="%d comments";
 $plugin_tx['forum']['msg_comments_5']="%d comments";
 $plugin_tx['forum']['msg_confirm_delete']="Denne kommentar vil blive slettet!";
 $plugin_tx['forum']['msg_title']="Tittel";
-$plugin_tx['forum']['msg_invalid_name']="Ugyldig forumnavn (Må kun indeholde a-z, 0-9 og - ):";
 $plugin_tx['forum']['lbl_comment_missing']="Skriv dine kommentar";
 $plugin_tx['forum']['lbl_submit']="Send";
 $plugin_tx['forum']['lbl_delete']="Slet kommentar";

@@ -21,7 +21,6 @@ $plugin_tx['forum']['msg_comments_2_4']="Всего комментариев: %d
 $plugin_tx['forum']['msg_comments_5']="Комментариев: %d.";
 $plugin_tx['forum']['msg_confirm_delete']="Комментарий будет удален!";
 $plugin_tx['forum']['msg_title']="Название темы";
-$plugin_tx['forum']['msg_invalid_name']="Неправильное имя форума (разрешены только a-z,  0-9 и \"-\"):";
 $plugin_tx['forum']['msg_powered_by']="Предоставлено <a href=\"http://3-magi.net/?CMSimple_XH/Forum_XH\">Forum_XH</a>";
 $plugin_tx['forum']['lbl_title_missing']="Введите название темы";
 $plugin_tx['forum']['lbl_comment_missing']="Введите свой комментарий.";
