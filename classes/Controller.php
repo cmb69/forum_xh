@@ -51,25 +51,11 @@ class Controller
     public function dispatch()
     {
         if (XH_ADM) {
-            if (function_exists('XH_registerStandardPluginMenuItems')) {
-                XH_registerStandardPluginMenuItems(false);
-            }
-            if ($this->isAdministrationRequested()) {
+            XH_registerStandardPluginMenuItems(false);
+            if (XH_wantsPluginAdministration('forum')) {
                 $this->handleAdministration();
             }
         }
-    }
-
-    /**
-     * @return bool
-     */
-    private function isAdministrationRequested()
-    {
-        global $forum;
-
-        return function_exists('XH_wantsPluginAdministration')
-            && XH_wantsPluginAdministration('forum')
-            || isset($forum) && $forum == 'true';
     }
 
     private function handleAdministration()
