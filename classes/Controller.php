@@ -65,7 +65,9 @@ class Controller
         $o .= print_plugin_admin('off');
         switch ($admin) {
             case '':
-                $o .= $this->infoView();
+                ob_start();
+                (new InfoController)->defaultAction();
+                $o .= ob_get_clean();
                 break;
             default:
                 $o .= plugin_admin_common($action, $admin, 'forum');
@@ -413,20 +415,6 @@ EOT;
         $view->comment = new HtmlString($this->getBbcode()->convert($_POST['data']));
         $view->templateStylesheet = $pth['file']['stylesheet'];
         $view->forumStylesheet = $pth['folder']['plugins'] . 'forum/css/stylesheet.css';
-        return (string) $view;
-    }
-
-    /**
-     * @return string
-     */
-    private function infoView()
-    {
-        global $pth;
-
-        $view = new View('info');
-        $view->logo = $pth['folder']['plugins'] . 'forum/forum.png';
-        $view->version = FORUM_VERSION;
-        $view->checks = (new SystemCheckService)->getChecks();
         return (string) $view;
     }
 
