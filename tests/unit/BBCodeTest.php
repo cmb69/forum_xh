@@ -28,9 +28,9 @@ class BBCodeTest extends PHPUnit_Framework_TestCase
     /**
      * @var object
      */
-    protected $bbcode;
+    private $bbcode;
 
-    public function setUp()
+    protected function setUp()
     {
         global $plugin_tx;
 

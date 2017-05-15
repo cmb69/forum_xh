@@ -47,7 +47,7 @@ class CSRFAttackTest extends PHPUnit_Framework_TestCase
      */
     private $cookieFile;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->url = 'http://localhost' . getenv('CMSIMPLEDIR');
         $this->cookieFile = tempnam(sys_get_temp_dir(), 'CC');

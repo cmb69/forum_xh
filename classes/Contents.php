@@ -26,12 +26,12 @@ class Contents
     /**
      * @var string
      */
-    protected $dataFolder;
+    private $dataFolder;
 
     /**
      * @var array
      */
-    protected $lockHandles = array();
+    private $lockHandles = array();
 
     /**
      * @param string $dataFolder
@@ -72,7 +72,7 @@ class Contents
      * @param string $forum
      * @param int $op
      */
-    protected function lock($forum, $op)
+    private function lock($forum, $op)
     {
         $filename = $this->dataFolder($forum) . '.lock';
         touch($filename);
@@ -94,7 +94,7 @@ class Contents
      * @param string $forum
      * @return array
      */
-    protected function getTopics($forum)
+    private function getTopics($forum)
     {
         $filename = $this->dataFolder($forum) . 'topics.dat';
         if (is_readable($filename)
@@ -111,7 +111,7 @@ class Contents
      * @param string $forum
      * @param array $data
      */
-    protected function setTopics($forum, $data)
+    private function setTopics($forum, $data)
     {
         $filename = $this->dataFolder($forum) . 'topics.dat';
         if (!file_put_contents($filename, serialize($data))) {
@@ -142,7 +142,7 @@ class Contents
      * @param string $tid
      * @param array $data
      */
-    protected function setTopic($forum, $tid, $data)
+    private function setTopic($forum, $tid, $data)
     {
         $filename = $this->dataFolder($forum) . $tid . '.dat';
         $contents = serialize($data);
@@ -173,7 +173,7 @@ class Contents
      * @param array $b
      * @return int
      */
-    protected function compareTopicTime($a, $b)
+    private function compareTopicTime($a, $b)
     {
         return $b['time'] - $a['time'];
     }

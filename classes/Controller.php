@@ -26,17 +26,17 @@ class Controller
     /**
      * @var object
      */
-    protected $contents;
+    private $contents;
 
     /**
      * @var object
      */
-    protected $bbcode;
+    private $bbcode;
 
     /**
      * @var XH_CSRFProtection
      */
-    protected $csrfProtector;
+    private $csrfProtector;
 
     public function __construct()
     {
@@ -63,7 +63,7 @@ class Controller
     /**
      * @return bool
      */
-    protected function isAdministrationRequested()
+    private function isAdministrationRequested()
     {
         global $forum;
 
@@ -72,7 +72,7 @@ class Controller
             || isset($forum) && $forum == 'true';
     }
 
-    protected function handleAdministration()
+    private function handleAdministration()
     {
         global $admin, $action, $o;
 
@@ -89,7 +89,7 @@ class Controller
     /**
      * @return object
      */
-    protected function getBbcode()
+    private function getBbcode()
     {
         global $pth;
 
@@ -104,7 +104,7 @@ class Controller
      * @param int $count
      * @return string
      */
-    protected function numerus($count)
+    private function numerus($count)
     {
         if ($count == 1) {
             return '_singular';
@@ -118,7 +118,7 @@ class Controller
     /**
      * @return string
      */
-    protected function user()
+    private function user()
     {
         if (session_id() == '') {
             session_start();
@@ -134,7 +134,7 @@ class Controller
      * @param string $cid
      * @return string
      */
-    protected function postComment($forum, $tid = null, $cid = null)
+    private function postComment($forum, $tid = null, $cid = null)
     {
         if (!isset($tid) && empty($_POST['forum_title'])
             || $this->user() === false || empty($_POST['forum_text'])
@@ -170,7 +170,7 @@ class Controller
      * @param string $cid
      *
      */
-    protected function deleteComment($forum, $tid, $cid)
+    private function deleteComment($forum, $tid, $cid)
     {
         global $adm, $su;
 
@@ -184,7 +184,7 @@ class Controller
         exit;
     }
 
-    protected function hjs()
+    private function hjs()
     {
         global $pth, $hjs;
 
@@ -215,7 +215,7 @@ EOT;
     /**
      * @return array
      */
-    protected function jsTexts()
+    private function jsTexts()
     {
         global $plugin_tx;
 
@@ -239,7 +239,7 @@ EOT;
      * @param string $cid
      * @return string
      */
-    protected function commentForm($forum, $tid = null, $cid = null)
+    private function commentForm($forum, $tid = null, $cid = null)
     {
         global $su, $plugin_tx;
 
@@ -278,7 +278,7 @@ EOT;
      * @param array $rec
      * @return string
      */
-    protected function posted($rec)
+    private function posted($rec)
     {
         global $plugin_tx;
 
@@ -292,7 +292,7 @@ EOT;
      * @param string $forum
      * @return string
      */
-    protected function viewTopics($forum)
+    private function viewTopics($forum)
     {
         global $su, $plugin_tx;
 
@@ -329,7 +329,7 @@ EOT;
      * @param string $tid
      * @return string
      */
-    protected function viewTopic($forum, $tid)
+    private function viewTopic($forum, $tid)
     {
         global $sn, $su, $pth, $adm, $plugin_tx;
 
@@ -436,7 +436,7 @@ EOT;
      * @param array  $_bag
      * @return string
      */
-    protected function render($_template, $_bag)
+    private function render($_template, $_bag)
     {
         global $pth, $cf;
 
@@ -471,7 +471,7 @@ EOT;
     /**
      * @return array
      */
-    protected function systemChecks()
+    private function systemChecks()
     {
         global $pth, $tx, $plugin_tx;
 
@@ -503,7 +503,7 @@ EOT;
     /**
      * @return string
      */
-    protected function infoView()
+    private function infoView()
     {
         global $pth;
 
@@ -523,7 +523,7 @@ EOT;
     /**
      * @return XH_CSRFProtection
      */
-    protected function getCSRFProtector()
+    private function getCSRFProtector()
     {
         global $_XH_csrfProtection;
 

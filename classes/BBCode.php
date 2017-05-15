@@ -26,17 +26,17 @@ class BBCode
     /**
      * @var string
      */
-    protected $pattern;
+    private $pattern;
 
     /**
      * @var array
      */
-    protected $context;
+    private $context;
 
     /**
      * @var string
      */
-    protected $emoticonDir;
+    private $emoticonDir;
 
     /**
      * @param string $emoticonDir
@@ -68,7 +68,7 @@ class BBCode
      * @param array $matches
      * @return string
      */
-    protected function doConvert($matches)
+    private function doConvert($matches)
     {
         $inlines = array('i', 'b', 'u', 's', 'url', 'img', 'size');
         array_push(
@@ -109,7 +109,7 @@ class BBCode
      * @param array $matches
      * @return string
      */
-    protected function convertUrl($matches)
+    private function convertUrl($matches)
     {
         if (empty($matches[2])) {
             $url = $matches[3];
@@ -130,7 +130,7 @@ class BBCode
      * @param array $matches
      * @return string
      */
-    protected function convertImg($matches)
+    private function convertImg($matches)
     {
         $url = $matches[3];
         if (!preg_match('/^http(s)?:/', $url)) {
@@ -143,7 +143,7 @@ class BBCode
      * @param array $matches
      * @return string
      */
-    protected function convertSize($matches)
+    private function convertSize($matches)
     {
         $size = substr($matches[2], 1);
         $inner = preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
@@ -157,7 +157,7 @@ class BBCode
      * @param array $matches
      * @return string
      */
-    protected function convertList($matches)
+    private function convertList($matches)
     {
         if (in_array('inline', $this->context)) {
             return $matches[0];
@@ -181,7 +181,7 @@ class BBCode
      * @param string $item
      * @return string
      */
-    protected function convertListItem($item)
+    private function convertListItem($item)
     {
         return '<li>'
             . preg_replace_callback($this->pattern, array($this, 'doConvert'), $item)
@@ -192,7 +192,7 @@ class BBCode
      * @param array $matches
      * @return string
      */
-    protected function convertQuote($matches)
+    private function convertQuote($matches)
     {
         if (in_array('inline', $this->context)) {
             return $matches[0];
@@ -207,7 +207,7 @@ class BBCode
      * @param array $matches
      * @return string
      */
-    protected function convertCode($matches)
+    private function convertCode($matches)
     {
         if (in_array('inline', $this->context)) {
             return $matches[0];
@@ -222,7 +222,7 @@ class BBCode
      * @param array $matches
      * @return string
      */
-    protected function convertOther($matches)
+    private function convertOther($matches)
     {
         $start = '<' . $matches[1] . '>';
         $inner = preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
@@ -234,7 +234,7 @@ class BBCode
      * @param string $text
      * @return string
      */
-    protected function convertEmoticons($text)
+    private function convertEmoticons($text)
     {
         global $plugin_tx;
 

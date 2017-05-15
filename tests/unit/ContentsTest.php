@@ -31,14 +31,14 @@ class ContentsTest extends PHPUnit_Framework_TestCase
     /**
      * @var string
      */
-    protected $forum;
+    private $forum;
 
     /**
      * @var object
      */
-    protected $contents;
+    private $contents;
 
-    public function setUp()
+    protected function setUp()
     {
         vfsStreamWrapper::register();
         vfsStreamWrapper::setRoot(new vfsStreamDirectory('test'));
@@ -58,7 +58,7 @@ class ContentsTest extends PHPUnit_Framework_TestCase
      * @param string $cid
      * @return array
      */
-    protected function getComment($forum, $tid, $cid)
+    private function getComment($forum, $tid, $cid)
     {
         $topic = $this->contents->getTopic($forum, $tid);
         return isset($topic[$cid]) ? $topic[$cid] : array();
