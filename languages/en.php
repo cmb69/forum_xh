@@ -1,16 +1,12 @@
 <?php
 
-$plugin_tx['forum']['format_date']="F j, Y";
-$plugin_tx['forum']['format_time']="H:i:s";
-
 $plugin_tx['forum']['msg_start_topic']="Start a new topic";
 $plugin_tx['forum']['msg_back']="Back to overview";
 $plugin_tx['forum']['msg_add_comment']="Add your comment";
 $plugin_tx['forum']['msg_edit_comment']="Edit your comment";
 $plugin_tx['forum']['msg_new_topic']="New Topic";
 $plugin_tx['forum']['msg_topics']="Topics";
-$plugin_tx['forum']['msg_posted']="by {user} on {date} at {time}";
-$plugin_tx['forum']['msg_topic_details']="(most recent %s)";
+$plugin_tx['forum']['msg_topic_details']="most recent by %s";
 $plugin_tx['forum']['msg_comments_0']="no comment";
 $plugin_tx['forum']['msg_comments_1']="%d comment";
 $plugin_tx['forum']['msg_comments_2_4']="%d comments";
@@ -50,6 +46,7 @@ $plugin_tx['forum']['lbl_quotes']="Quotes";
 $plugin_tx['forum']['lbl_code']="Code";
 $plugin_tx['forum']['lbl_clean']="Clean";
 $plugin_tx['forum']['lbl_preview']="Preview";
+$plugin_tx['forum']['lbl_separator']="•";
 
 $plugin_tx['forum']['alt_logo']="Stylized People";
 
@@ -63,8 +60,5 @@ $plugin_tx['forum']['syscheck_title']="System check";
 $plugin_tx['forum']['syscheck_warning']="warning";
 $plugin_tx['forum']['syscheck_writable']="'%s' is writable";
 $plugin_tx['forum']['syscheck_xhversion']="CMSimple_XH version ≥ %s";
-
-$plugin_tx['forum']['cf_format_date']="For possible formatting options see http://php.net/manual/en/function.date.php.";
-$plugin_tx['forum']['cf_format_time']="For possible formatting options see http://php.net/manual/en/function.date.php.";
 
 ?>

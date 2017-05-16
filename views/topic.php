@@ -15,7 +15,11 @@
 			<button title="<?=$this->text('lbl_edit')?>"><i class="fa fa-pencil"></i></button>
 		</a>
 <?php 	endif?>
-        <div class="forum_details"><?=$this->escape($comment['details'])?></div>
+		<div class="forum_details">
+			<span class="forum_user"><?=$this->escape($comment['user'])?></span>
+			<span class="forum_separator"><?=$this->text('lbl_separator')?></span>
+			<span class="forum_date"><?=$this->escape($comment['date'])?></span>
+		</div>
 		<div class="forum_comment"><?=$this->escape($comment['comment'])?></div>
     </div>
 <?php endforeach?>

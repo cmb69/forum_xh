@@ -5,7 +5,13 @@
 	<div class="forum_title">
             <a href="<?=$this->escape($topic['href'])?>"><?=$this->escape($topic['title'])?></a>
         </div>
-	<div class="forum_details"><?=$this->plural('msg_comments', $topic['comments'])?> <?=$this->text('msg_topic_details', $topic['details'])?></div>
+	<div class="forum_details">
+		<span><?=$this->plural('msg_comments', $topic['comments'])?></span>
+		<span class="forum_separator"><?=$this->text('lbl_separator')?></span>
+		<span><?=$this->text('msg_topic_details', $topic['user'])?></span>
+		<span class="forum_separator"><?=$this->text('lbl_separator')?></span>
+		<span class="forum_date"><?=$this->escape($topic['date'])?></span>
+	</div>
     </div>
 <?php endforeach?>
 </div>

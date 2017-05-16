@@ -7,15 +7,11 @@
  * later.
  */
 
-$plugin_tx['forum']['format_date']="j F Y";
-$plugin_tx['forum']['format_time']="H:i:s";
 $plugin_tx['forum']['msg_start_topic']="Начать новую тему";
 $plugin_tx['forum']['msg_back']="Вернуться к темам";
 $plugin_tx['forum']['msg_add_comment']="Добавить комментарий";
 $plugin_tx['forum']['msg_new_topic']="Новая тема";
 $plugin_tx['forum']['msg_topics']="Темы";
-$plugin_tx['forum']['msg_posted']=" {user}, {date} в {time}";
-$plugin_tx['forum']['msg_topic_details']="Новый: %s.";
 $plugin_tx['forum']['msg_comments_1']="Комментрай %d.";
 $plugin_tx['forum']['msg_comments_2_4']="Всего комментариев: %d.";
 $plugin_tx['forum']['msg_comments_5']="Комментариев: %d.";
@@ -50,7 +46,5 @@ $plugin_tx['forum']['lbl_quotes']="Цитата";
 $plugin_tx['forum']['lbl_code']="Код";
 $plugin_tx['forum']['lbl_clean']="Очистить";
 $plugin_tx['forum']['lbl_preview']="Просмотр";
-$plugin_tx['forum']['cf_format_date']="Подробнее о форматировании даты читайте на http://php.net/manual/en/function.date.php.";
-$plugin_tx['forum']['cf_format_time']="Подробнее о форматировании времени читайте на http://php.net/manual/en/function.date.php.";
 
 ?>

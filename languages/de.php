@@ -1,16 +1,12 @@
 <?php
 
-$plugin_tx['forum']['format_date']="j.n.Y";
-$plugin_tx['forum']['format_time']="H:i:s";
-
 $plugin_tx['forum']['msg_start_topic']="Neues Thema erstellen";
 $plugin_tx['forum']['msg_back']="zur Übersicht";
 $plugin_tx['forum']['msg_add_comment']="Eintrag hinzufügen";
 $plugin_tx['forum']['msg_edit_comment']="Eintrag bearbeiten";
 $plugin_tx['forum']['msg_new_topic']="Überschrift";
 $plugin_tx['forum']['msg_topics']="Themenübersicht";
-$plugin_tx['forum']['msg_posted']="von {user} am {date} um {time}";
-$plugin_tx['forum']['msg_topic_details']="(letzter Eintrag %s)";
+$plugin_tx['forum']['msg_topic_details']="letzter Eintrag von %s";
 $plugin_tx['forum']['msg_comments_0']="kein Eintrag";
 $plugin_tx['forum']['msg_comments_1']="%d Eintrag";
 $plugin_tx['forum']['msg_comments_2_4']="%d Einträge";
@@ -50,6 +46,7 @@ $plugin_tx['forum']['lbl_quotes']="Zitat";
 $plugin_tx['forum']['lbl_code']="Code";
 $plugin_tx['forum']['lbl_clean']="Bereinigen";
 $plugin_tx['forum']['lbl_preview']="Vorschau";
+$plugin_tx['forum']['lbl_separator'] = "•";
 
 $plugin_tx['forum']['alt_logo']="Stilisierte Leute";
 
@@ -63,8 +60,5 @@ $plugin_tx['forum']['syscheck_title']="System-Prüfung";
 $plugin_tx['forum']['syscheck_warning']="Warnung";
 $plugin_tx['forum']['syscheck_writable']="'%s' schreibbar ist";
 $plugin_tx['forum']['syscheck_xhversion']="die CMSimple_XH-Version ≥ %s";
-
-$plugin_tx['forum']['cf_format_date']="Formatierungsmöglichkeiten sind unter http://php.net/manual/de/function.date.php aufgelistet.";
-$plugin_tx['forum']['cf_format_time']="Formatierungsmöglichkeiten sind unter http://php.net/manual/de/function.date.php aufgelistet.";
 
 ?>

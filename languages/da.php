@@ -7,15 +7,12 @@
  * License.
  */
 
-$plugin_tx['forum']['format_date']="F j, Y";
-$plugin_tx['forum']['format_time']="H:i:s";
 $plugin_tx['forum']['msg_start_topic']="Start et nyt emne";
 $plugin_tx['forum']['msg_back']="Tilbage til oversigten";
 $plugin_tx['forum']['msg_add_comment']="Tilføj dine kommentar";
 $plugin_tx['forum']['msg_new_topic']="Nyt emne";
 $plugin_tx['forum']['msg_topics']="Emner";
-$plugin_tx['forum']['msg_posted']="by {user} den. {date} kl. {time}";
-$plugin_tx['forum']['msg_topic_details']="(seneste %s)";
+$plugin_tx['forum']['msg_topic_details']="seneste by %s";
 $plugin_tx['forum']['msg_comments_1']="%d comment";
 $plugin_tx['forum']['msg_comments_2_4']="%d comments";
 $plugin_tx['forum']['msg_comments_5']="%d comments";
@@ -48,7 +45,5 @@ $plugin_tx['forum']['lbl_quotes']="Quotes";
 $plugin_tx['forum']['lbl_code']="Kode";
 $plugin_tx['forum']['lbl_clean']="Ryd";
 $plugin_tx['forum']['lbl_preview']="Vis";
-$plugin_tx['forum']['cf_format_date']="For possible formatting options see http://php.net/manual/en/function.date.php.";
-$plugin_tx['forum']['cf_format_time']="For possible formatting options see http://php.net/manual/en/function.date.php.";
 
 ?>

@@ -88,7 +88,7 @@ class MainController
         $topics = $this->contents->getSortedTopics($forum);
         foreach ($topics as $tid => &$topic) {
             $topic['href'] = "?$su&forum_topic=$tid#$forum";
-            $topic['details'] = $this->posted($topic);
+            $topic['date'] = XH_formatDate($topic['time']);
         }
         $view = new View('topics');
         $view->anchorLabel = $forum;
@@ -115,8 +115,8 @@ class MainController
         foreach ($topic as $cid => &$comment) {
             $mayDelete = XH_ADM || $comment['user'] == $this->user();
             $comment['mayDelete'] = $mayDelete;
+            $comment['date'] = XH_formatDate($comment['time']);
             $comment['comment'] = new HtmlString($bbcode->convert($comment['comment']));
-            $comment['details'] = new HtmlString($this->posted($comment));
             $comment['editUrl'] = $editUrl . $cid;
         }
 
@@ -313,21 +313,6 @@ class MainController
             }
             return $this->csrfProtector;
         }
-    }
-
-    /**
-     * @param array $rec
-     * @return string
-     */
-    private function posted($rec)
-    {
-        $date = date($this->lang['format_date'], $rec['time']);
-        $time = date($this->lang['format_time'], $rec['time']);
-        return str_replace(
-            array('{user}', '{date}', '{time}'),
-            array($rec['user'], $date, $time),
-            $this->lang['msg_posted']
-        );
     }
 
     public function previewAction()
