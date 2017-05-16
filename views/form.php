@@ -17,17 +17,23 @@
 		<button type="button" class="forum_italic_button" title="<?=$this->text('lbl_italic')?>" accesskey="i"><i class="fa fa-italic"></i></button>
 		<button type="button" class="forum_underline_button" title="<?=$this->text('lbl_underline')?>"><i class="fa fa-underline"></i></button>
 		<button type="button" class="forum_strikethrough_button" title="<?=$this->text('lbl_strikethrough')?>"><i class="fa fa-strikethrough"></i></button>
-		<button type="button" class="forum_smile_button"><?=$this->text('lbl_smile')?></button>
-		<button type="button" class="forum_wink_button"><?=$this->text('lbl_wink')?></button>
-		<button type="button" class="forum_happy_button"><?=$this->text('lbl_happy')?></button>
-		<button type="button" class="forum_grin_button"><?=$this->text('lbl_grin')?></button>
-		<button type="button" class="forum_tongue_button"><?=$this->text('lbl_tongue')?></button>
-		<button type="button" class="forum_surprised_button"><?=$this->text('lbl_surprised')?></button>
-		<button type="button" class="forum_unhappy_button"><?=$this->text('lbl_unhappy')?></button>
+		<button type="button" class="forum_emoticon_button" title="<?=$this->text('lbl_emoticon')?>"><i class="fa fa-smile-o"></i></button>
+		<div class="forum_emoticons">
+			<button type="button" class="forum_smile_button" title="<?=$this->text('lbl_smile')?>"><img src="<?=$this->escape($this->emoticons['smile'])?>" alt="<?=$this->text('lbl_smile')?>"></button>
+			<button type="button" class="forum_wink_button" title="<?=$this->text('lbl_wink')?>"><img src="<?=$this->escape($this->emoticons['wink'])?>" alt="<?=$this->text('lbl_wink')?>"></button>
+			<button type="button" class="forum_happy_button" title="<?=$this->text('lbl_happy')?>"><img src="<?=$this->escape($this->emoticons['happy'])?>" alt="<?=$this->text('lbl_happy')?>"></button>
+			<button type="button" class="forum_grin_button" title="<?=$this->text('lbl_grin')?>"><img src="<?=$this->escape($this->emoticons['grin'])?>" alt="<?=$this->text('lbl_grin')?>"></button>
+			<button type="button" class="forum_tongue_button" title="<?=$this->text('lbl_tongue')?>"><img src="<?=$this->escape($this->emoticons['tongue'])?>" alt="<?=$this->text('lbl_tongue')?>"></button>
+			<button type="button" class="forum_surprised_button" title="<?=$this->text('lbl_surprised')?>"><img src="<?=$this->escape($this->emoticons['surprised'])?>" alt="<?=$this->text('lbl_surprised')?>"></button>
+			<button type="button" class="forum_unhappy_button" title="<?=$this->text('lbl_unhappy')?>"><img src="<?=$this->escape($this->emoticons['unhappy'])?>" alt="<?=$this->text('lbl_unhappy')?>"></button>
+		</div>
 		<button type="button" class="forum_picture_button" title="<?=$this->text('lbl_picture')?>"><i class="fa fa-picture-o"></i></button>
 		<button type="button" class="forum_link_button" title="<?=$this->text('lbl_link')?>"><i class="fa fa-link"></i></button>
-		<button type="button" class="forum_big_button"><?=$this->text('lbl_big')?></button>
-		<button type="button" class="forum_small_button"><?=$this->text('lbl_small')?></button>
+		<button type="button" class="forum_font_button" title="<?=$this->text('lbl_size')?>"><i class="fa fa-font"></i></button>
+		<div class="forum_font_sizes">
+			<button type="button" class="forum_big_button"><?=$this->text('lbl_big')?></button>
+			<button type="button" class="forum_small_button"><?=$this->text('lbl_small')?></button>
+		</div>
 		<button type="button" class="forum_bulleted_list_button" title="<?=$this->text('lbl_bulleted_list')?>"><i class="fa fa-list-ul"></i></button>
 		<button type="button" class="forum_numeric_list_button" title="<?=$this->text('lbl_numeric_list')?>"><i class="fa fa-list-ol"></i></button>
 		<button type="button" class="forum_list_item_button" title="<?=$this->text('lbl_list_item')?>"><i class="fa fa-asterisk"></i></button>

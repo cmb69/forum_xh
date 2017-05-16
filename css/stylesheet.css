@@ -91,6 +91,15 @@
 .forum_comment .forum_title input {
     width: 30em;
 }
+.forum_editor {
+    position: relative;
+}
+.forum_emoticons,
+.forum_font_sizes {
+    display: none;
+    position: absolute;
+    z-index: 1;
+}
 .forum_comment textarea {
     width: 100%;
     padding: 0;

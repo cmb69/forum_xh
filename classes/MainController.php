@@ -250,6 +250,12 @@ class MainController
             }
             //$newTopic = true; // FIXME: hack to force overview link to be shown
         }
+        $imageFolder = "{$this->pluginFolder}images/";
+        $emotions = ['smile', 'wink', 'happy', 'grin', 'tongue', 'surprised', 'unhappy'];
+        $emoticons = [];
+        foreach ($emotions as $emotion) {
+            $emoticons[$emotion] = "{$this->pluginFolder}images/emoticon_$emotion.png";
+        }
         $csrfProtector = $this->getCSRFProtector();
         $view = new View('form');
         $view->newTopic = $newTopic;
@@ -265,6 +271,7 @@ class MainController
             : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment');
         $view->anchor = $forum;
         $view->i18n = XH_encodeJson($this->jsTexts());
+        $view->emoticons = $emoticons;
         $csrfProtector->store();
         return $view;
     }
