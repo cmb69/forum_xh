@@ -1,7 +1,7 @@
 <h6 class="forum_heading" id="<?=$this->anchor()?>"><?=$this->title()?></h6>
 <div class="forum_topic">
 <?php foreach ($this->topic as $cid => $comment):?>
-    <div class="<?=$this->escape($comment['class'])?>">
+    <div>
 <?php 	if ($comment['mayDelete']):?>
         <form class="forum_delete" action="." method="POST"
               onsubmit="return confirm(&quot;<?=$this->text('msg_confirm_delete')?>&quot;)">

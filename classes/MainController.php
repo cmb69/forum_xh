@@ -86,12 +86,9 @@ class MainController
         global $su;
 
         $topics = $this->contents->getSortedTopics($forum);
-        $i = 1;
         foreach ($topics as $tid => &$topic) {
             $topic['href'] = "?$su&forum_topic=$tid#$forum";
             $topic['details'] = $this->posted($topic);
-            $topic['class'] = 'forum_' . ($i & 1 ? 'odd' : 'even');
-            $i++;
         }
         $view = new View('topics');
         $view->anchorLabel = $forum;
@@ -115,15 +112,12 @@ class MainController
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
         $editUrl = $sn . '?' . $su . '&forum_actn=edit&forum_topic=' . $tid
             . '&forum_comment=';
-        $i = 1;
         foreach ($topic as $cid => &$comment) {
             $mayDelete = XH_ADM || $comment['user'] == $this->user();
             $comment['mayDelete'] = $mayDelete;
-            $comment['class'] = 'forum_' . ($i & 1 ? 'odd' : 'even');
             $comment['comment'] = new HtmlString($bbcode->convert($comment['comment']));
             $comment['details'] = new HtmlString($this->posted($comment));
             $comment['editUrl'] = $editUrl . $cid;
-            $i++;
         }
 
         $csrfProtector = $this->getCSRFProtector();
