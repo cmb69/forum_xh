@@ -57,6 +57,9 @@
 .forum_comment {
     margin-top: 0.5em;
 }
+.forum_comment img {
+    max-width: 100%;
+}
 .forum_edit {
     float: right;
 }
