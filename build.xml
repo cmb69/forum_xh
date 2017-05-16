@@ -94,9 +94,10 @@
                 <exclude name="build.xml"/>
                 <exclude name="composer.*"/>
                 <exclude name="coverage.xml"/>
+                <exclude name="pax_global_header"/>
                 <exclude name="phpcompatinfo.*"/>
+                <exclude name="README.md"/>
                 <exclude name="tests/**"/>
-                <exclude name="TODO"/>
             </fileset>
         </move>
         <delete dir="export"/>
