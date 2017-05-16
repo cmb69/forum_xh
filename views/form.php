@@ -13,7 +13,7 @@
     <input type="hidden" name="forum_comment" value="<?=$this->cid()?>">
 <?php endif?>
 	<script type="text/x-template" id="forum_toolbar">
-		<div class="forum_editor">
+		<div>
 			<button type="button" class="forum_bold_button" title="<?=$this->text('lbl_bold')?>" accesskey="b"><i class="fa fa-bold"></i></button>
 			<button type="button" class="forum_italic_button" title="<?=$this->text('lbl_italic')?>" accesskey="i"><i class="fa fa-italic"></i></button>
 			<button type="button" class="forum_underline_button" title="<?=$this->text('lbl_underline')?>"><i class="fa fa-underline"></i></button>
@@ -44,9 +44,9 @@
 		</div>
 	</script>
     <textarea name="forum_text" cols="80" rows="10"><?=$this->comment()?></textarea>
-    <div class="forum_submit">
+    <p class="forum_submit">
         <input type="submit" class="submit" value="<?=$this->text('lbl_submit')?>">
-    </div>
+    </p>
 </form>
 <?php if ($this->newTopic):?>
 <div class="forum_navlink">

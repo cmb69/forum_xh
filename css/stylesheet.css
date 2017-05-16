@@ -105,6 +105,7 @@
     z-index: 1;
 }
 .forum_comment textarea {
+    display: block;
     width: 100%;
     padding: 0;
 }
