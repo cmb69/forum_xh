@@ -48,7 +48,6 @@ $plugin_tx['forum']['lbl_quotes']="Quotes";
 $plugin_tx['forum']['lbl_code']="Kode";
 $plugin_tx['forum']['lbl_clean']="Ryd";
 $plugin_tx['forum']['lbl_preview']="Vis";
-$plugin_tx['forum']['lbl_link_text']="Tekst til link her...";
 $plugin_tx['forum']['cf_format_date']="For possible formatting options see http://php.net/manual/en/function.date.php.";
 $plugin_tx['forum']['cf_format_time']="For possible formatting options see http://php.net/manual/en/function.date.php.";
 

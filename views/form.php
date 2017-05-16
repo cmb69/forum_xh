@@ -1,5 +1,5 @@
-<div class="forum_preview"></div>
-<form class="forum_comment" action="<?=$this->action()?>" method="post" accept-charset="UTF-8" onsubmit="return Forum.validate()">
+<form class="forum_comment" action="<?=$this->action()?>" method="post" accept-charset="UTF-8" data-i18n="<?=$this->i18n()?>">
+	<div class="forum_preview_container"></div>
     <?=$this->csrfTokenInput()?>
 <?php if ($this->newTopic):?>
     <h6 class="forum_heading" id="<?=$this->anchor()?>"><?=$this->text($this->headingKey)?></h6>
@@ -12,6 +12,29 @@
     <input type="hidden" name="forum_topic" value="<?=$this->tid()?>">
     <input type="hidden" name="forum_comment" value="<?=$this->cid()?>">
 <?php endif?>
+	<div class="forum_editor">
+		<button type="button" class="forum_bold" accesskey="b"><?=$this->text('lbl_bold')?></button>
+		<button type="button" class="forum_italic" accesskey="i"><?=$this->text('lbl_italic')?></button>
+		<button type="button" class="forum_underline"><?=$this->text('lbl_underline')?></button>
+		<button type="button" class="forum_strikethrough"><?=$this->text('lbl_strikethrough')?></button>
+		<button type="button" class="forum_smile"><?=$this->text('lbl_smile')?></button>
+		<button type="button" class="forum_wink"><?=$this->text('lbl_wink')?></button>
+		<button type="button" class="forum_happy"><?=$this->text('lbl_happy')?></button>
+		<button type="button" class="forum_grin"><?=$this->text('lbl_grin')?></button>
+		<button type="button" class="forum_tongue"><?=$this->text('lbl_tongue')?></button>
+		<button type="button" class="forum_surprised"><?=$this->text('lbl_surprised')?></button>
+		<button type="button" class="forum_unhappy"><?=$this->text('lbl_unhappy')?></button>
+		<button type="button" class="forum_picture"><?=$this->text('lbl_picture')?></button>
+		<button type="button" class="forum_link"><?=$this->text('lbl_link')?></button>
+		<button type="button" class="forum_big"><?=$this->text('lbl_big')?></button>
+		<button type="button" class="forum_small"><?=$this->text('lbl_small')?></button>
+		<button type="button" class="forum_bulleted_list"><?=$this->text('lbl_bulleted_list')?></button>
+		<button type="button" class="forum_numeric_list"><?=$this->text('lbl_numeric_list')?></button>
+		<button type="button" class="forum_list_item"><?=$this->text('lbl_list_item')?></button>
+		<button type="button" class="forum_quotes"><?=$this->text('lbl_quotes')?></button>
+		<button type="button" class="forum_code"><?=$this->text('lbl_code')?></button>
+		<button type="button" class="forum_preview" data-url="<?=$this->previewUrl()?>"><?=$this->text('lbl_preview')?></button>
+	</div>
     <textarea name="forum_text" cols="80" rows="10"><?=$this->comment()?></textarea>
     <div class="forum_submit">
         <input type="submit" class="submit" value="<?=$this->text('lbl_submit')?>">

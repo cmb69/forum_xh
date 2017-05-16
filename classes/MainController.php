@@ -231,12 +231,12 @@ class MainController
      */
     private function prepareCommentForm($forum, $tid = null, $cid = null)
     {
-        global $su;
+        global $bjs, $sn, $su;
 
         if ($this->user() === false && !XH_ADM) {
             return false;
         }
-        $this->hjs();
+        $bjs .= "<script type=\"text/javascript\" src=\"{$this->pluginFolder}forum.min.js\"></script>";
 
         $newTopic = !isset($tid);
         $comment = '';
@@ -253,6 +253,7 @@ class MainController
         $view->tid = $tid;
         $view->cid = $cid;
         $view->action = "?$su&forum_actn=post";
+        $view->previewUrl = "$sn?$su&forum_actn=preview";
         $view->overviewUrl = "?$su#$forum";
         $view->comment = $comment;
         $view->csrfTokenInput = new HtmlString($csrfProtector->tokenInput());
@@ -260,33 +261,9 @@ class MainController
             ? 'msg_new_topic'
             : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment');
         $view->anchor = $forum;
+        $view->i18n = XH_encodeJson($this->jsTexts());
         $csrfProtector->store();
         return $view;
-    }
-
-    private function hjs()
-    {
-        global $hjs, $su, $sn;
-
-        $dir = "{$this->pluginFolder}markitup/";
-        $hjs .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$dir}skins/simple/style.css\">\n";
-        $hjs .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$dir}sets/bbcode/style.css\">\n";
-        include_once "{$this->pluginsFolder}jquery/jquery.inc.php";
-        include_jQuery();
-        include_jQueryPlugin('markitup', $dir . 'jquery.markitup.js');
-        $texts = XH_encodeJson($this->jsTexts());
-        $hjs .= <<<EOT
-<script type="text/javascript">/* <![CDATA[ */
-var Forum = {TX: $texts};
-jQuery(function() {
-    jQuery(".forum_comment textarea").markItUp(Forum.settings);
-});
-/* ]]> */</script>
-<script type="text/javascript" src="{$dir}sets/bbcode/set.js"></script>
-<script type="text/javascript">
-Forum.settings.previewParserPath = "$sn?$su&forum_actn=preview";
-</script>
-EOT;
     }
 
     /**
@@ -294,16 +271,10 @@ EOT;
      */
     private function jsTexts()
     {
-        $keys = array(
-            'title_missing', 'comment_missing', 'bold', 'italic', 'underline',
-            'strikethrough', 'emoticon', 'smile', 'wink', 'happy', 'grin',
-            'tongue', 'surprised', 'unhappy', 'picture', 'link', 'size', 'big',
-            'normal', 'small', 'bulleted_list', 'numeric_list', 'list_item',
-            'quotes', 'code', 'clean', 'preview', 'link_text'
-        );
+        $keys = ['title_missing', 'comment_missing', 'enter_url'];
         $texts = array();
         foreach ($keys as $key) {
-            $texts[strtoupper($key)] = $this->lang['lbl_' . $key];
+            $texts[strtoupper($key)] = $this->lang['msg_' . $key];
         }
         return $texts;
     }

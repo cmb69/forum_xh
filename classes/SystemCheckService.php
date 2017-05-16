@@ -62,7 +62,6 @@ class SystemCheckService
             $this->checkPhpVersion('5.4.0'),
             $this->checkExtension('session'),
             $this->checkXhVersion('1.6.3'),
-            $this->checkPlugin('jquery'),
             $this->checkWritability("$this->pluginFolder/css/"),
             $this->checkWritability("$this->pluginFolder/languages/"),
             $this->checkWritability($this->contentFolder)

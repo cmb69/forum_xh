@@ -17,10 +17,11 @@ $plugin_tx['forum']['msg_comments_2_4']="%d comments";
 $plugin_tx['forum']['msg_comments_5']="%d comments";
 $plugin_tx['forum']['msg_confirm_delete']="This comment will be deleted!";
 $plugin_tx['forum']['msg_title']="Title";
+$plugin_tx['forum']['msg_title_missing']="Enter a topic title!";
+$plugin_tx['forum']['msg_comment_missing']="Enter your comment!";
+$plugin_tx['forum']['msg_enter_url']="Enter URL:";
 $plugin_tx['forum']['msg_invalid_name']="\"%s\" is an invalid forum name (may contain a-z, 0-9 and - only)!";
 
-$plugin_tx['forum']['lbl_title_missing']="Enter a topic title!";
-$plugin_tx['forum']['lbl_comment_missing']="Enter your comment!";
 $plugin_tx['forum']['lbl_submit']="Submit";
 $plugin_tx['forum']['lbl_edit']="Edit Comment";
 $plugin_tx['forum']['lbl_delete']="Delete Comment";
@@ -49,7 +50,6 @@ $plugin_tx['forum']['lbl_quotes']="Quotes";
 $plugin_tx['forum']['lbl_code']="Code";
 $plugin_tx['forum']['lbl_clean']="Clean";
 $plugin_tx['forum']['lbl_preview']="Preview";
-$plugin_tx['forum']['lbl_link_text']="Your text to link here...";
 
 $plugin_tx['forum']['alt_logo']="Stylized People";
 

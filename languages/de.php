@@ -17,10 +17,11 @@ $plugin_tx['forum']['msg_comments_2_4']="%d Einträge";
 $plugin_tx['forum']['msg_comments_5']="%d Einträge";
 $plugin_tx['forum']['msg_confirm_delete']="Dieser Eintrag wird gelöscht!";
 $plugin_tx['forum']['msg_title']="Titel";
+$plugin_tx['forum']['msg_title_missing']="Bitte einen Titel eingeben!";
+$plugin_tx['forum']['msg_comment_missing']="Bitte einen Eintrag vornehmen!";
+$plugin_tx['forum']['msg_enter_url']="URL eingeben:";
 $plugin_tx['forum']['msg_invalid_name']="\"%s\" ist ein ungültiger Forenname (darf nur a-z, 0-9 and - enthalten)";
 
-$plugin_tx['forum']['lbl_title_missing']="Bitte einen Titel eingeben!";
-$plugin_tx['forum']['lbl_comment_missing']="Bitte einen Eintrag vornehmen!";
 $plugin_tx['forum']['lbl_submit']="Sichern";
 $plugin_tx['forum']['lbl_edit']="Eintrag bearbeiten";
 $plugin_tx['forum']['lbl_delete']="Eintrag löschen";
@@ -49,7 +50,6 @@ $plugin_tx['forum']['lbl_quotes']="Zitat";
 $plugin_tx['forum']['lbl_code']="Code";
 $plugin_tx['forum']['lbl_clean']="Bereinigen";
 $plugin_tx['forum']['lbl_preview']="Vorschau";
-$plugin_tx['forum']['lbl_link_text']="Ihr Text zum Verlinken hier...";
 
 $plugin_tx['forum']['alt_logo']="Stilisierte Leute";
 

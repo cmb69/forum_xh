@@ -21,9 +21,9 @@ $plugin_tx['forum']['msg_comments_2_4']="Всего комментариев: %d
 $plugin_tx['forum']['msg_comments_5']="Комментариев: %d.";
 $plugin_tx['forum']['msg_confirm_delete']="Комментарий будет удален!";
 $plugin_tx['forum']['msg_title']="Название темы";
+$plugin_tx['forum']['msg_title_missing']="Введите название темы";
+$plugin_tx['forum']['msg_comment_missing']="Введите свой комментарий.";
 $plugin_tx['forum']['msg_powered_by']="Предоставлено <a href=\"http://3-magi.net/?CMSimple_XH/Forum_XH\">Forum_XH</a>";
-$plugin_tx['forum']['lbl_title_missing']="Введите название темы";
-$plugin_tx['forum']['lbl_comment_missing']="Введите свой комментарий.";
 $plugin_tx['forum']['lbl_submit']="Добавить";
 $plugin_tx['forum']['lbl_delete']="Удалить комментарий";
 $plugin_tx['forum']['lbl_bold']="Полужирный";
@@ -50,7 +50,6 @@ $plugin_tx['forum']['lbl_quotes']="Цитата";
 $plugin_tx['forum']['lbl_code']="Код";
 $plugin_tx['forum']['lbl_clean']="Очистить";
 $plugin_tx['forum']['lbl_preview']="Просмотр";
-$plugin_tx['forum']['lbl_link_text']="Введите текст для ссылки ...";
 $plugin_tx['forum']['cf_format_date']="Подробнее о форматировании даты читайте на http://php.net/manual/en/function.date.php.";
 $plugin_tx['forum']['cf_format_time']="Подробнее о форматировании времени читайте на http://php.net/manual/en/function.date.php.";
 
