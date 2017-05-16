@@ -5,7 +5,7 @@
     <h6 class="forum_heading" id="<?=$this->anchor()?>"><?=$this->text($this->headingKey)?></h6>
     <div class="forum_title">
         <label for="forum_title"><?=$this->text('msg_title')?></label>
-	<input type="text" id="forum_title" name="forum_title">
+		<input type="text" id="forum_title" name="forum_title">
     </div>
 <?php else:?>
     <h6 class="forum_heading" id="<?=$this->anchor()?>"><?=$this->text($this->headingKey)?></h6>
