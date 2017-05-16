@@ -22,6 +22,7 @@
 namespace Forum;
 
 use XH_CSRFProtection;
+use Fa\RequireCommand as FaRequireCommand;
 
 class MainController
 {
@@ -109,6 +110,7 @@ class MainController
     {
         global $sn, $su;
 
+        (new FaRequireCommand)->execute();
         $bbcode = new BBCode("{$this->pluginFolder}images/");
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
         $editUrl = $sn . '?' . $su . '&forum_actn=edit&forum_topic=' . $tid
@@ -236,6 +238,7 @@ class MainController
         if ($this->user() === false && !XH_ADM) {
             return false;
         }
+        (new FaRequireCommand)->execute();
         $bjs .= "<script type=\"text/javascript\" src=\"{$this->pluginFolder}forum.min.js\"></script>";
 
         $newTopic = !isset($tid);

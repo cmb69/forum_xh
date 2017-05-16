@@ -10,12 +10,10 @@
 	    <input type="hidden" name="forum_actn" value="delete">
 	    <input type="hidden" name="forum_topic" value="<?=$this->tid()?>">
 	    <input type="hidden" name="forum_comment" value="<?=$this->escape($cid)?>">
-	    <input type="image" src="<?=$this->deleteImg()?>"
-                   alt="<?=$this->text('lbl_delete')?>" title="<?=$this->text('lbl_delete')?>">
+	    <button title="<?=$this->text('lbl_delete')?>"><i class="fa fa-trash"></i></button>
 	</form>
 	<a class="forum_edit" href="<?=$this->escape($comment['editUrl'])?>#<?=$this->anchor()?>">
-	    <img src="<?=$this->editImg()?>" alt="<?=$this->text('lbl_edit')?>"
-		 title="<?=$this->text('lbl_edit')?>">
+	    <button title="<?=$this->text('lbl_edit')?>"><i class="fa fa-pencil"></i></button>
 	</a>
 <?php 	endif?>
         <div class="forum_details"><?=$this->escape($comment['details'])?></div>
