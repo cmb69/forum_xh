@@ -3,8 +3,7 @@
 <?php foreach ($this->topic as $cid => $comment):?>
     <div>
 <?php 	if ($comment['mayDelete']):?>
-        <form class="forum_delete" action="." method="POST"
-              onsubmit="return confirm(&quot;<?=$this->text('msg_confirm_delete')?>&quot;)">
+        <form class="forum_delete" action="." method="POST" data-message="<?=$this->text('msg_confirm_delete')?>">
 	    <?=$this->csrfTokenInput()?>
             <input type="hidden" name="selected" value="<?=$this->su()?>">
 	    <input type="hidden" name="forum_actn" value="delete">
