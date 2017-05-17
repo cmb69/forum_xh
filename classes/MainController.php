@@ -244,7 +244,6 @@ class MainController
             }
             //$newTopic = true; // FIXME: hack to force overview link to be shown
         }
-        $imageFolder = "{$this->pluginFolder}images/";
         $emotions = ['smile', 'wink', 'happy', 'grin', 'tongue', 'surprised', 'unhappy'];
         $emoticons = [];
         foreach ($emotions as $emotion) {
