@@ -1,6 +1,7 @@
 <?php
 
 $plugin_tx['forum']['msg_start_topic']="Neues Thema erstellen";
+$plugin_tx['forum']['msg_post_reply']="Antwort posten";
 $plugin_tx['forum']['msg_back']="zur Übersicht";
 $plugin_tx['forum']['msg_add_comment']="Eintrag hinzufügen";
 $plugin_tx['forum']['msg_edit_comment']="Eintrag bearbeiten";

@@ -131,7 +131,7 @@ class MainController
         $view->editImg = "{$this->pluginFolder}images/edit.png";
         $view->csrfTokenInput = new HtmlString($csrfProtector->tokenInput());
         $view->isUser = $this->user() !== false;
-        $view->commentForm = new HtmlString($this->prepareCommentForm($forum, $tid));
+        $view->replyUrl = "$sn?$su&forum_actn=reply&forum_topic=$tid";
         $view->href = "?$su#$forum";
         $csrfProtector->store();
         return $view;
@@ -311,6 +311,14 @@ class MainController
                 $this->csrfProtector = new XH_CSRFProtection('forum_token');
             }
             return $this->csrfProtector;
+        }
+    }
+
+    public function replyAction()
+    {
+        if (isset($_GET['forum_topic'])) {
+            $tid = $this->contents->cleanId($_GET['forum_topic']);
+            $this->prepareCommentForm($this->forum, $tid)->render();
         }
     }
 

@@ -1,6 +1,7 @@
 <?php
 
 $plugin_tx['forum']['msg_start_topic']="Start a new topic";
+$plugin_tx['forum']['msg_post_reply']="Post reply";
 $plugin_tx['forum']['msg_back']="Back to overview";
 $plugin_tx['forum']['msg_add_comment']="Add your comment";
 $plugin_tx['forum']['msg_edit_comment']="Edit your comment";

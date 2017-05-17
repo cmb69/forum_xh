@@ -19,6 +19,9 @@
     margin: 0.5em 0 0 0;
     font-weight: bold;
 }
+.forum_navlink a {
+    padding-left: 1em;
+}
 
 /*
  * All topics
