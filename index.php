@@ -37,8 +37,16 @@ function forum($forum)
     $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'default';
     $action .= 'Action';
     if (method_exists($controller, $action)) {
-        ob_start();
-        $controller->{$action}();
-        return ob_get_clean();
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
+            $controller->{$action}();
+            exit;
+        } else {
+            ob_start();
+            $controller->{$action}();
+            return ob_get_clean();
+        }
     }
 }

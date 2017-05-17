@@ -75,6 +75,7 @@ class MainController
         } else {
             $this->prepareTopicView($this->forum, $tid)->render();
         }
+        $this->addScript("{$this->pluginFolder}forum.min.js");
     }
 
     /**
@@ -87,13 +88,12 @@ class MainController
 
         $topics = $this->contents->getSortedTopics($forum);
         foreach ($topics as $tid => &$topic) {
-            $topic['href'] = "?$su&forum_topic=$tid#$forum";
+            $topic['href'] = "?$su&forum_topic=$tid";
             $topic['date'] = XH_formatDate($topic['time']);
         }
         $view = new View('topics');
-        $view->anchorLabel = $forum;
         $view->isUser = $this->user() !== false;
-        $view->href = "?$su&forum_actn=new#$forum";
+        $view->href = "?$su&forum_actn=new";
         $view->topics = $topics;
         return $view;
     }
@@ -122,7 +122,6 @@ class MainController
 
         $csrfProtector = $this->getCSRFProtector();
         $view = new View('topic');
-        $view->anchor = $forum;
         $view->title = $title;
         $view->topic = $topic;
         $view->tid = $tid;
@@ -132,7 +131,7 @@ class MainController
         $view->csrfTokenInput = new HtmlString($csrfProtector->tokenInput());
         $view->isUser = $this->user() !== false;
         $view->replyUrl = "$sn?$su&forum_actn=reply&forum_topic=$tid";
-        $view->href = "?$su#$forum";
+        $view->href = "?$su";
         $csrfProtector->store();
         return $view;
     }
@@ -140,6 +139,7 @@ class MainController
     public function newAction()
     {
         $this->prepareCommentForm($this->forum)->render();
+        $this->addScript("{$this->pluginFolder}forum.min.js");
     }
 
     public function postAction()
@@ -152,7 +152,7 @@ class MainController
         } else {
             $tid = $this->postComment($this->forum, $_POST['forum_topic']);
         }
-        $params = $tid ? "?$su&forum_topic=$tid#{$this->forum}" : "?$su#{$this->forum}";
+        $params = $tid ? "?$su&forum_topic=$tid" : "?$su";
         header('Location: ' . CMSIMPLE_URL . $params, true, 303);
         exit;
     }
@@ -202,6 +202,7 @@ class MainController
         } else {
             echo ''; // should display error
         }
+        $this->addScript("{$this->pluginFolder}forum.min.js");
     }
 
     public function deleteAction()
@@ -213,8 +214,8 @@ class MainController
         $cid = $this->contents->cleanId($_POST['forum_comment']);
         $user = XH_ADM ? true : $this->user();
         $queryString = $this->contents->deleteComment($this->forum, $tid, $cid, $user)
-            ? '?' . $su . '&forum_topic=' . $tid . '#' . $this->forum
-            : '?' . $su . '#' . $this->forum;
+            ? '?' . $su . '&forum_topic=' . $tid
+            : '?' . $su ;
         header('Location: ' . CMSIMPLE_URL . $queryString, true, 303);
         exit;
     }
@@ -227,13 +228,12 @@ class MainController
      */
     private function prepareCommentForm($forum, $tid = null, $cid = null)
     {
-        global $bjs, $sn, $su;
+        global $sn, $su;
 
         if ($this->user() === false && !XH_ADM) {
             return false;
         }
         (new FaRequireCommand)->execute();
-        $bjs .= "<script type=\"text/javascript\" src=\"{$this->pluginFolder}forum.min.js\"></script>";
 
         $newTopic = !isset($tid);
         $comment = '';
@@ -257,7 +257,7 @@ class MainController
         $view->action = "?$su&forum_actn=post";
         $view->previewUrl = "$sn?$su&forum_actn=preview";
         if ($newTopic) {
-            $view->backUrl = "?$su#$forum";
+            $view->backUrl = "?$su";
             $view->headingKey = 'msg_new_topic';
         } else {
             $view->backUrl = "$sn?$su&forum_topic=$tid";
@@ -265,11 +265,17 @@ class MainController
         }
         $view->comment = $comment;
         $view->csrfTokenInput = new HtmlString($csrfProtector->tokenInput());
-        $view->anchor = $forum;
         $view->i18n = json_encode($this->jsTexts());
         $view->emoticons = $emoticons;
         $csrfProtector->store();
         return $view;
+    }
+
+    private function addScript($filename)
+    {
+        global $bjs;
+
+        $bjs .= sprintf('<script type="text/javascript" src="%s"></script>', XH_hsc($filename));
     }
 
     /**
@@ -323,6 +329,7 @@ class MainController
             $tid = $this->contents->cleanId($_GET['forum_topic']);
             $this->prepareCommentForm($this->forum, $tid)->render();
         }
+        $this->addScript("{$this->pluginFolder}forum.min.js");
     }
 
     public function previewAction()

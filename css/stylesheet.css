@@ -1,6 +1,9 @@
 /*
  * General
  */
+.forum_loading {
+    opacity: 0.3;
+}
 .forum_heading {
     font-weight: bold;
     font-size: 1.2em;
