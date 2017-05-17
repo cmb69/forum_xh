@@ -38,6 +38,7 @@ function forum($forum)
     $action .= 'Action';
     if (method_exists($controller, $action)) {
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+            header('X-Location: ' . CMSIMPLE_URL . "?{$_SERVER['QUERY_STRING']}");
             while (ob_get_level()) {
                 ob_end_clean();
             }
