@@ -48,8 +48,6 @@
         <input type="submit" class="submit" value="<?=$this->text('lbl_submit')?>">
     </p>
 </form>
-<?php if ($this->newTopic):?>
 <div class="forum_navlink">
-    <a href="<?=$this->overviewUrl()?>"><?=$this->text('msg_back')?></a>
+    <a href="<?=$this->backUrl()?>"><?=$this->text('msg_back')?></a>
 </div>
-<?php endif?>

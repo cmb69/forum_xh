@@ -26,7 +26,7 @@
 </div>
 <div class="forum_navlink">
 <?php if ($this->isUser):?>
-	<a href="<?=$this->replyUrl()?>"><?=$this->text('msg_post_reply')?></a>
+	<a href="<?=$this->replyUrl()?>"><?=$this->text('msg_reply')?></a>
 <?php endif?>
     <a href="<?=$this->href()?>"><?=$this->text('msg_back')?></a>
 </div>

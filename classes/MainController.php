@@ -256,12 +256,15 @@ class MainController
         $view->cid = $cid;
         $view->action = "?$su&forum_actn=post";
         $view->previewUrl = "$sn?$su&forum_actn=preview";
-        $view->overviewUrl = "?$su#$forum";
+        if ($newTopic) {
+            $view->backUrl = "?$su#$forum";
+            $view->headingKey = 'msg_new_topic';
+        } else {
+            $view->backUrl = "$sn?$su&forum_topic=$tid";
+            $view->headingKey = isset($cid) ? 'msg_edit_comment' : 'msg_add_comment';
+        }
         $view->comment = $comment;
         $view->csrfTokenInput = new HtmlString($csrfProtector->tokenInput());
-        $view->headingKey = $newTopic
-            ? 'msg_new_topic'
-            : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment');
         $view->anchor = $forum;
         $view->i18n = json_encode($this->jsTexts());
         $view->emoticons = $emoticons;

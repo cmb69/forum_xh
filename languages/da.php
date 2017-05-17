@@ -8,7 +8,6 @@
  */
 
 $plugin_tx['forum']['msg_start_topic']="Start et nyt emne";
-$plugin_tx['forum']['msg_back']="Tilbage til oversigten";
 $plugin_tx['forum']['msg_add_comment']="Tilføj dine kommentar";
 $plugin_tx['forum']['msg_new_topic']="Nyt emne";
 $plugin_tx['forum']['msg_topics']="Emner";
