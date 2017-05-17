@@ -60,6 +60,7 @@ class SystemCheckService
     {
         return array(
             $this->checkPhpVersion('5.4.0'),
+            $this->checkExtension('json'),
             $this->checkExtension('session'),
             $this->checkXhVersion('1.6.3'),
             $this->checkPlugin('fa'),

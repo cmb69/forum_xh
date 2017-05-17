@@ -264,7 +264,7 @@ class MainController
             ? 'msg_new_topic'
             : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment');
         $view->anchor = $forum;
-        $view->i18n = XH_encodeJson($this->jsTexts());
+        $view->i18n = json_encode($this->jsTexts());
         $view->emoticons = $emoticons;
         $csrfProtector->store();
         return $view;
