@@ -49,6 +49,10 @@ $plugin_tx['forum']['lbl_clean']="Bereinigen";
 $plugin_tx['forum']['lbl_preview']="Vorschau";
 $plugin_tx['forum']['lbl_separator'] = "•";
 
+$plugin_tx['forum']['mail_subject_new']="Ein neuer Kommentar wurde gepostet";
+$plugin_tx['forum']['mail_subject_edit']="Ein Kommentar wurde bearbeitet";
+$plugin_tx['forum']['mail_attribution']="Am %2\$s schrieb %1\$s:";
+
 $plugin_tx['forum']['alt_logo']="Stilisierte Leute";
 
 $plugin_tx['forum']['syscheck_extension']="die PHP-Erweiterung '%s' geladen ist";
@@ -61,5 +65,8 @@ $plugin_tx['forum']['syscheck_title']="System-Prüfung";
 $plugin_tx['forum']['syscheck_warning']="Warnung";
 $plugin_tx['forum']['syscheck_writable']="'%s' schreibbar ist";
 $plugin_tx['forum']['syscheck_xhversion']="die CMSimple_XH-Version ≥ %s";
+
+$plugin_tx['forum']['cf_mail_address']="Die Adresse des Empfängers von Benachrichtigungsmails. Falls leer, werden keine Benachrichtigungsmails versandt.";
+$plugin_tx['forum']['cf_mail_fix_headers']="Ob Probleme mit einigen fehlerhaften Mail Transfer Agents behoben werden sollen. Aktivieren Sie diese Option, wenn Sie die E-Mails nicht empfangen oder wenn ein Teil der Header-Informationen (z.B. \"MIME-Version: 1.0\") im Rumpf der E-Mail erscheint.";
 
 ?>

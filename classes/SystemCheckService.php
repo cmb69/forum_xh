@@ -48,7 +48,7 @@ class SystemCheckService
         global $pth, $plugin_tx;
 
         $this->pluginsFolder = $pth['folder']['plugins'];
-        $this->pluginFolder = "{$this->pluginsFolder}forum";
+        $this->pluginFolder = "{$this->pluginsFolder}forum/";
         $this->contentFolder = "{$pth['folder']['content']}{$pth['folder']['base']}forum/";
         $this->lang = $plugin_tx['forum'];
     }
@@ -64,8 +64,9 @@ class SystemCheckService
             $this->checkExtension('session'),
             $this->checkXhVersion('1.6.3'),
             $this->checkPlugin('fa'),
-            $this->checkWritability("$this->pluginFolder/css/"),
-            $this->checkWritability("$this->pluginFolder/languages/"),
+            $this->checkWritability("{$this->pluginFolder}css/"),
+            $this->checkWritability("{$this->pluginFolder}config"),
+            $this->checkWritability("{$this->pluginFolder}languages/"),
             $this->checkWritability($this->contentFolder)
         );
     }

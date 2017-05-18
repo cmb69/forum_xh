@@ -34,6 +34,11 @@ class MainController
     /**
      * @var array
      */
+    private $config;
+
+    /**
+     * @var array
+     */
     private $lang;
 
     /**
@@ -56,9 +61,10 @@ class MainController
      */
     public function __construct($forum)
     {
-        global $pth, $plugin_tx;
+        global $pth, $plugin_cf, $plugin_tx;
 
         $this->forum = $forum;
+        $this->config = $plugin_cf['forum'];
         $this->lang = $plugin_tx['forum'];
         $this->pluginsFolder = $pth['folder']['plugins'];
         $this->pluginFolder = "{$this->pluginsFolder}forum/";
@@ -165,6 +171,8 @@ class MainController
      */
     private function postComment($forum, $tid = null, $cid = null)
     {
+        global $su;
+
         if (!isset($tid) && empty($_POST['forum_title'])
             || $this->user() === false || empty($_POST['forum_text'])
         ) {
@@ -186,8 +194,19 @@ class MainController
             $title = isset($_POST['forum_title'])
                 ? $_POST['forum_title'] : null;
             $this->contents->createComment($forum, $tid, $title, $cid, $comment);
+            $subject = $this->lang['mail_subject_new'];
         } else {
             $this->contents->updateComment($forum, $tid, $cid, $comment);
+            $subject = $this->lang['mail_subject_edit'];
+        }
+
+        if (!XH_ADM && $this->config['mail_address']) {
+            $url = CMSIMPLE_URL . "?$su&forum_topic=$tid";
+            $date = XH_formatDate($comment['time']);
+            $attribution = sprintf($this->lang['mail_attribution'], $comment['user'], $date);
+            $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment['comment']);
+            $message = "$attribution\n\n> $content\n\n<$url>";
+            (new MailService)->sendMail($subject, $message, $url);
         }
 
         return $tid;
