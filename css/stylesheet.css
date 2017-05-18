@@ -2,7 +2,7 @@
  * General
  */
 .forum_loading {
-    opacity: 0.3;
+    visibility: hidden;
 }
 .forum_heading {
     font-weight: bold;
