@@ -1,3 +1,6 @@
+Version 1.0beta5 – released 2017-05-18
+see <https://github.com/cmb69/forum_xh/milestone/1?closed=1>
+
 Version 1.0beta4 - released 2015-02-08
 * fixed bug, where viewing of forms failed under CMSimple_XH 1.6.5 when not in
   admin mode (reported by pmschulze)
