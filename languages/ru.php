@@ -8,6 +8,7 @@
  */
 
 $plugin_tx['forum']['msg_start_topic']="Начать новую тему";
+$plugin_tx['forum']['msg_back']="Вернуться к темам";
 $plugin_tx['forum']['msg_add_comment']="Добавить комментарий";
 $plugin_tx['forum']['msg_new_topic']="Новая тема";
 $plugin_tx['forum']['msg_topics']="Темы";

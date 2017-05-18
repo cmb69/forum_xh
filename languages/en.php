@@ -1,8 +1,8 @@
 <?php
 
 $plugin_tx['forum']['msg_start_topic']="Start a new topic";
-$plugin_tx['forum']['msg_reply']="reply";
-$plugin_tx['forum']['msg_back']="back";
+$plugin_tx['forum']['msg_reply']="Reply";
+$plugin_tx['forum']['msg_back']="Back to overview";
 $plugin_tx['forum']['msg_add_comment']="Add your comment";
 $plugin_tx['forum']['msg_edit_comment']="Edit your comment";
 $plugin_tx['forum']['msg_new_topic']="New Topic";
