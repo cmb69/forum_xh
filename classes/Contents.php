@@ -267,7 +267,7 @@ class Contents
         if (count($comments) > 0) {
             $this->setTopic($forum, $tid, $comments);
             $comment = array_pop($comments);
-            $topics[$tid]['comments'] = count($comments);
+            $topics[$tid]['comments'] = count($comments) + 1;
             $topics[$tid]['user'] = $comment['user'];
             $topics[$tid]['time'] = $comment['time'];
         } else {

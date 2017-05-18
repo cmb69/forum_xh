@@ -83,4 +83,34 @@ class ContentsTest extends PHPUnit_Framework_TestCase
         $actual = $this->getComment($this->forum, $tid, $cid);
         $this->assertEmpty($actual);
     }
+
+    public function testDeleteFirstOfTwoCommentsProperlyUpdatesTopic()
+    {
+        $tid = $this->contents->getId();
+        $title = 'hallo';
+
+        $cid1 = $this->contents->getId();
+        $user1 = 'cmb';
+        $comment1 = array(
+            'user' => $user1, 'time' => 1, 'comment' => 'foo'
+        );
+        $this->contents->createComment($this->forum, $tid, $title, $cid1, $comment1);
+
+        $cid2 = $this->contents->getId();
+        $user2 = 'admin';
+        $comment2 = array(
+            'user' => $user2, 'time' => 2, 'comment' => 'bar'
+        );
+        $this->contents->createComment($this->forum, $tid, $title, $cid2, $comment2);
+
+        $this->contents->deleteComment($this->forum, $tid, $cid1, $user1);
+
+        $expected = array(
+            'title' => $title,
+            'comments' => 1,
+            'user' => $user2,
+            'time' => 2
+        );
+        $this->assertEquals($expected, $this->contents->getSortedTopics($this->forum)[$tid]);
+    }
 }
