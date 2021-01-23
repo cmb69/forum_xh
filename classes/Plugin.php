@@ -23,7 +23,7 @@ namespace Forum;
 
 class Plugin
 {
-    const VERSION = '@FORUM_VERSION@';
+    const VERSION = '1.0beta5';
 
     public function run()
     {

@@ -73,17 +73,6 @@
         <exec command="git archive -o export.tar HEAD" checkreturn="true"/>
         <untar file="export.tar" todir="export"/>
         <delete file="export.tar"/>
-        <move todir="dist">
-            <fileset dir="export">
-                <include name="classes/Plugin.php"/>
-                <include name="version.nfo"/>
-            </fileset>
-            <filterchain>
-                <replacetokens>
-                    <token key="FORUM_VERSION" value="${version}"/>
-                </replacetokens>
-            </filterchain>
-        </move>
         <jsMin targetDir="dist" suffix="" failOnError="false">
             <fileset dir="export">
                 <include name="*.js"/>
