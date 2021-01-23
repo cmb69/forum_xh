@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<!DOCTYPE teplad [
+  <!ELEMENT teplad (xml_url,name,date_update,version,date_version,coder,tags,url,compatibility,php_ver,license,descriptions,screenshots,logo) >
+    <!ELEMENT url (download_url,coder_url,demo_url) >
+    <!ELEMENT descriptions (description+) >
+    <!ELEMENT screenshots (screenshot*) >
+    
+    <!ELEMENT xml_url			(#PCDATA) >
+    <!ELEMENT name				(#PCDATA) >
+    <!ELEMENT date_update		(#PCDATA) >
+    <!ELEMENT version			(#PCDATA) >
+    <!ELEMENT date_version		(#PCDATA) >
+    <!ELEMENT coder				(#PCDATA) >
+    <!ELEMENT tags				(#PCDATA) >
+    <!ELEMENT compatibility		(#PCDATA) >
+    <!ELEMENT php_ver			(#PCDATA) >
+    <!ELEMENT license			(#PCDATA) >
+    <!ELEMENT logo				(#PCDATA) >
+    
+    <!ELEMENT download_url		(#PCDATA) >
+    <!ELEMENT coder_url			(#PCDATA) >
+    <!ELEMENT demo_url			(#PCDATA) >
+    <!ELEMENT description		(#PCDATA|br|ol|ul|li|i|b)* >
+    <!ELEMENT br					EMPTY >
+    <!ELEMENT ol					(li+) >
+    <!ELEMENT ul					(li+) >
+    <!ELEMENT li				(#PCDATA) >
+    <!ELEMENT i					(#PCDATA) >
+    <!ELEMENT b					(#PCDATA) >
+    <!ELEMENT screenshot		(#PCDATA) >
+    
+    <!ATTLIST teplad version CDATA	#REQUIRED >
+    <!ATTLIST name type	(plugin|template|addon) #REQUIRED >
+    <!ATTLIST description lang NMTOKEN	#REQUIRED >
+    <!ATTLIST screenshot view CDATA		#REQUIRED >
+]>
+
+<!-- Do note change the Element teplad! -->
+<teplad version="1.1">
+  <!-- the URL form this xml-file -->
+  <!-- full URL with http(s) -->
+  <xml_url>https://raw.githubusercontent.com/cmb69/forum_xh/master/teplad.xml</xml_url>
+  <!-- Attribute type for Data type: plugin, template or addon -->
+  <!-- the name of the Plugin -->
+  <name type="plugin">Forum_XH</name>
+  <!-- Date this xml-file was updated, yyyy.mm.dd -->
+  <date_update>2021.01.23</date_update>
+  <!-- version of Plugin -->
+  <version>1.0beta5</version>
+  <!-- date of publication, yyyy.mm.dd -->
+  <date_version>2017.05.18</date_version>
+  <!-- the name of the programmer -->
+  <coder>Christoph M. Becker</coder>
+  <!-- Categories must be written in lower case. More than one possible, separated by comma without spaces. -->
+  <!-- Plugin Categories, i.e. audio,video,datenschutz,socialmedia,system,admin,backup,calendar,form,seo. -->
+  <!-- Template Categories, i.e. cssonly,onepage. -->
+  <!-- You can currently define your own tags. These are displayed, but not filtered. -->
+  <!-- All available categories can be found on the website. -->
+  <tags></tags>
+  <!-- full URLs with http(s) -->
+  <url>
+    <!-- URL where you can download the plugin -->
+    <!-- If there no Download-URL, enter this follows! - <download_url></download_url> -->
+    <download_url>https://github.com/cmb69/forum_xh/releases/1.0beta5</download_url>
+    <!-- URL of the programmer's website -->
+    <!-- If there no Website, enter this follows! - <coder_url></coder_url> -->
+    <coder_url>https://3-magi.net</coder_url>
+    <!-- URL where find a demo -->
+    <!-- If there no Demo-Website, enter this follows! - <demo_url></demo_url> -->
+    <demo_url></demo_url>
+  </url>
+  <!-- compatibility with versions of XH, i.e. 1.6, 1.6.7 - 1.7.2, ≥ 1.7, ... -->
+  <compatibility>≥ 1.6.3</compatibility>
+  <!-- minimum version of PHP that is required, i.e. 5.3, 5.6, 7, ≥ 5.6, ... -->
+  <!-- If there no specification, e.g. for templates, enter this follows! - <php_ver></php_ver> -->
+  <php_ver>≥ 5.4.0</php_ver>
+  <!-- the License for the Plugin, GPLv3, AGPL, LGPL, GPLv2 ... -->
+  <license>GPLv3</license>
+  <!-- Description in English is mandatory -->
+  <descriptions>
+    <!-- description of the plugin, ca. 200 characters, you can use <br/>, <ol></ol>, <ul></ul>, <li></li>, <b></b>, <i></i>. -->
+    <description lang="en">
+      Forum_XH facilitates the embedding of simple forums on a CMSimple_XH site.
+      The user management relies on Memberpages or Register_XH.
+      Posting requires to be logged in as member, though the forums can be viewed publicly.
+      This way no further provisions are necessary to avoid spam,
+      and posting does not require any additional input such as user name, email address etc.
+      Forum_XH features a markup editor allowing basic BBCode markup.
+      All data is stored in flat files which are protected from concurrent access
+      by pessimistic locking of the whole forum,
+      so Forum_XH is not suitable for heavily frequented forums.
+      Furthermore common advanced forum features such as user signatures, PMs,
+      subscribing to topics etc. are not available.
+    </description>
+    <!-- Beschreibung des Plugins, ca. 200 Zeichen, es können <br/>, <ol></ol>, <ul></ul>, <li></li>, <b></b>, <i></i> genutzt werden. -->
+    <description lang="de">
+      Forum_XH ermöglicht das Einbinden von einfachen Foren auf einer CMSimple_XH Website.
+      Zur Benutzerverwaltung dient Memberpages oder Register_XH.
+      Das Posten erfordert als Mitglied angemeldet zu sein,
+      auch wenn die Foren öffentlich eingesehen werden können.
+      Auf diese Weise sind keine weiteren Vorsorgen nötig um Spam zu verhindern,
+      und das Posten erfordert keine zusätzlichen Eingaben wie Benutzername, E-Mail-Adresse usw.
+      Forum_XH bietet einen Editor, der einfache BBCode Auszeichnungen versteht.
+      Die Daten werden in Flat-Files gespeichert, die durch pessimistisches Sperren
+      des gesamten Forums vor gleichzeitigem Zugriff geschützt sind,
+      so dass Forum_XH nicht für stark frequentierte Foren geeignet ist.
+      Weiterhin fehlen typische fortgeschrittene Features wie Benutzersignaturen,
+      PN, das Abonnieren von Themen usw.
+    </description>
+    <!-- additional languages are possible, i.e. da, fr, pl, ... -->
+    <!-- The use of this language is limited by the website where the repository is hosted. -->
+  </descriptions>
+  <!-- If there no screenshots, enter this follows! - <screenshots></screenshots> -->
+  <screenshots/>
+  <!-- full URL with http(s) -->
+  <!-- , use only .gif, .jpg, .jpeg, .png or .svg! -->
+  <!-- The use of this different image formats is dependent on the configuration of the repository. -->
+  <!-- If there no logo, enter this follows! - <logo></logo> -->
+  <logo>https://raw.githubusercontent.com/cmb69/forum_xh/master/forum.png</logo>
+</teplad>
+<!-- Ich versichere, dass ich für alle angegebenen Texte und / oder Bilder die Urheberrechte besitze, oder eine entsprechende Nutzungsgenehmigung vorweisen kann. -->
+<!-- I guarantee, that I have the copyright for all texts and / or pictures, or can show a corresponding permission for their use. -->
