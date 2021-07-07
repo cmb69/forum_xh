@@ -121,7 +121,7 @@ class BBCode
         if (!preg_match('/^http(s)?:/', $url)) {
             return $matches[0];
         }
-        $start = '<a href="' . $url . '" rel="nofollow">';
+        $start = '<a class="forum_link" href="' . $url . '" rel="nofollow">';
         $end = '</a>';
         return $start . $inner . $end;
     }
