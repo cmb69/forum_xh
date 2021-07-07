@@ -41,6 +41,7 @@
                 <button type="button" class="forum_list_item_button" title="<?=$this->text('lbl_list_item')?>"><i class="fa fa-asterisk"></i></button>
                 <button type="button" class="forum_quotes_button" title="<?=$this->text('lbl_quotes')?>"><i class="fa fa-quote-right"></i></button>
                 <button type="button" class="forum_code_button" title="<?=$this->text('lbl_code')?>"><i class="fa fa-code"></i></button>
+                <button type="button" class="forum_iframe_button" title="<?=$this->text('lbl_iframe')?>"><i class="fa fa-hand-rock-o"></i></button>
                 <button type="button" class="forum_preview_button" title="<?=$this->text('lbl_preview')?>" data-url="<?=$this->previewUrl()?>"><i class="fa fa-eye"></i></button>
             </div>
         </script>

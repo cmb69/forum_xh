@@ -48,6 +48,7 @@ $plugin_tx['forum']['lbl_code']="Code";
 $plugin_tx['forum']['lbl_clean']="Bereinigen";
 $plugin_tx['forum']['lbl_preview']="Vorschau";
 $plugin_tx['forum']['lbl_separator'] = "•";
+$plugin_tx['forum']['lbl_iframe']="iframe";
 
 $plugin_tx['forum']['mail_subject_new']="Ein neuer Kommentar wurde gepostet";
 $plugin_tx['forum']['mail_subject_edit']="Ein Kommentar wurde bearbeitet";
