@@ -2,7 +2,7 @@
 
 /**
  * Copyright 2013-2014 The CMSimple_XH developers
- * Copyright 2014-2017 Christoph M. Becker
+ * Copyright 2014-2021 Christoph M. Becker
  *
  * This file is part of Forum_XH.
  *

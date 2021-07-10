@@ -4,7 +4,7 @@ Forum_XH – a CMSimple_XH plugin
 [![beta: 1.0beta5](https://img.shields.io/badge/beta-1.0beta5-red.svg)](https://github.com/cmb69/forum_xh/releases/tag/1.0beta5)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
-Copyright © 2012-2017 Christoph M. Becker
+Copyright © 2012-2021 Christoph M. Becker
 
 Forum_XH is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

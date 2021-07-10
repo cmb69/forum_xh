@@ -1,7 +1,7 @@
 <h1>Forum</h1>
 <img src="<?=$this->logo()?>" class="forum_logo" alt="<?=$this->text('alt_logo')?>">
 <p>Version: <?=$this->version()?></p>
-<p>Copyright © 2012-2017 Christoph M. Becker</p>
+<p>Copyright © 2012-2021 Christoph M. Becker</p>
 <p class="forum_license">
     Forum_XH is free software: you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the Free
