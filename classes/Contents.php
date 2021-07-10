@@ -29,7 +29,7 @@ class Contents
     private $dataFolder;
 
     /**
-     * @var array
+     * @var array<string,resource>
      */
     private $lockHandles = array();
 
@@ -71,6 +71,7 @@ class Contents
     /**
      * @param string $forum
      * @param int $op
+     * @return void
      */
     private function lock($forum, $op)
     {
@@ -92,7 +93,7 @@ class Contents
 
     /**
      * @param string $forum
-     * @return array
+     * @return array<string,mixed>
      */
     private function getTopics($forum)
     {
@@ -109,7 +110,8 @@ class Contents
 
     /**
      * @param string $forum
-     * @param array $data
+     * @param array<string,array> $data
+     * @return void
      */
     private function setTopics($forum, $data)
     {
@@ -122,7 +124,7 @@ class Contents
     /**
      * @param string $forum
      * @param string $tid
-     * @return array
+     * @return array<string,array>
      */
     public function getTopic($forum, $tid)
     {
@@ -140,7 +142,8 @@ class Contents
     /**
      * @param string $forum
      * @param string $tid
-     * @param array $data
+     * @param array<string,array> $data
+     * @return void
      */
     private function setTopic($forum, $tid, $data)
     {
@@ -170,7 +173,7 @@ class Contents
 
     /**
      * @param string $forum
-     * @return array
+     * @return array<string,mixed>
      */
     public function getSortedTopics($forum)
     {
@@ -186,7 +189,7 @@ class Contents
     /**
      * @param string $forum
      * @param string $tid
-     * @return array
+     * @return array{0:string,1:array}
      */
     public function getTopicWithTitle($forum, $tid)
     {
@@ -202,7 +205,8 @@ class Contents
      * @param string $tid
      * @param string|null $title
      * @param string $cid
-     * @param array $comment
+     * @param array<string,mixed> $comment
+     * @return void
      */
     public function createComment($forum, $tid, $title, $cid, $comment)
     {
@@ -227,7 +231,8 @@ class Contents
      * @param string $forum
      * @param string $tid
      * @param string $cid
-     * @param array $comment
+     * @param array<string,mixed> $comment
+     * @return void
      */
     public function updateComment($forum, $tid, $cid, $comment)
     {

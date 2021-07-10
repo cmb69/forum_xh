@@ -23,6 +23,9 @@ namespace Forum;
 
 class InfoController
 {
+    /**
+     * @return void
+     */
     public function defaultAction()
     {
         global $pth;

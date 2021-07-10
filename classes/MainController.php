@@ -32,12 +32,12 @@ class MainController
     private $forum;
 
     /**
-     * @var array
+     * @var array<string,string>
      */
     private $config;
 
     /**
-     * @var array
+     * @var array<string,string>
      */
     private $lang;
 
@@ -74,6 +74,9 @@ class MainController
         $this->contents = new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/");
     }
 
+    /**
+     * @return void
+     */
     public function defaultAction()
     {
         if (empty($_GET['forum_topic'])
@@ -153,6 +156,9 @@ class MainController
         $view->render($data);
     }
 
+    /**
+     * @return void
+     */
     public function newAction()
     {
         $this->renderCommentForm($this->forum);
@@ -163,6 +169,9 @@ class MainController
         }
     }
 
+    /**
+     * @return never
+     */
     public function postAction()
     {
         global $su;
@@ -228,6 +237,9 @@ class MainController
         return $tid;
     }
 
+    /**
+     * @return void
+     */
     public function editAction()
     {
         $tid = $this->contents->cleanId($_GET['forum_topic']);
@@ -244,6 +256,9 @@ class MainController
         }
     }
 
+    /**
+     * @return never
+     */
     public function deleteAction()
     {
         global $su;
@@ -307,6 +322,10 @@ class MainController
         $view->render($data);
     }
 
+    /**
+     * @param string $filename
+     * @return void
+     */
     private function addScript($filename)
     {
         global $bjs;
@@ -315,7 +334,7 @@ class MainController
     }
 
     /**
-     * @return array
+     * @return array<string,string>
      */
     private function jsTexts()
     {
@@ -355,6 +374,9 @@ class MainController
         }
     }
 
+    /**
+     * @return void
+     */
     public function replyAction()
     {
         if (isset($_GET['forum_topic'])) {
@@ -368,6 +390,9 @@ class MainController
         }
     }
 
+    /**
+     * @return never
+     */
     public function previewAction()
     {
         $bbcode = new BBCode("{$this->pluginFolder}images/", $this->lang['title_iframe']);

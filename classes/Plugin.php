@@ -25,6 +25,9 @@ class Plugin
 {
     const VERSION = '1.0beta5';
 
+    /**
+     * @return void
+     */
     public function run()
     {
         if (defined('XH_ADM') && XH_ADM) {
@@ -35,6 +38,9 @@ class Plugin
         }
     }
 
+    /**
+     * @return void
+     */
     private function handleAdministration()
     {
         global $admin, $o;

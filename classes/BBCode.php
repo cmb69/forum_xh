@@ -29,7 +29,7 @@ class BBCode
     private $pattern;
 
     /**
-     * @var array
+     * @var array<int,string>
      */
     private $context;
 
@@ -43,6 +43,7 @@ class BBCode
 
     /**
      * @param string $emoticonDir
+     * @param string $iframeTitle
      */
     public function __construct($emoticonDir, $iframeTitle)
     {
@@ -69,7 +70,7 @@ class BBCode
     }
 
     /**
-     * @param array $matches
+     * @param array<int,string> $matches
      * @return string
      */
     private function doConvert($matches)
@@ -113,7 +114,7 @@ class BBCode
     }
     
     /**
-     * @param array $matches
+     * @param array<int,string> $matches
      * @return string
      */
     private function convertUrl($matches)
@@ -134,7 +135,7 @@ class BBCode
     }
 
     /**
-     * @param array $matches
+     * @param array<int,string> $matches
      * @return string
      */
     private function convertImg($matches)
@@ -147,7 +148,7 @@ class BBCode
     }
 
     /**
-     * @param array $matches
+     * @param array<int,string> $matches
      * @return string
      */
     private function convertIframe($matches)
@@ -164,7 +165,7 @@ class BBCode
     }
 
     /**
-     * @param array $matches
+     * @param array<int,string> $matches
      * @return string
      */
     private function convertSize($matches)
@@ -178,7 +179,7 @@ class BBCode
     }
     
     /**
-     * @param array $matches
+     * @param array<int,string> $matches
      * @return string
      */
     private function convertList($matches)
@@ -209,7 +210,7 @@ class BBCode
     }
 
     /**
-     * @param array $matches
+     * @param array<int,string> $matches
      * @return string
      */
     private function convertQuote($matches)
@@ -224,7 +225,7 @@ class BBCode
     }
     
     /**
-     * @param array $matches
+     * @param array<int,string> $matches
      * @return string
      */
     private function convertCode($matches)
@@ -239,7 +240,7 @@ class BBCode
     }
     
     /**
-     * @param array $matches
+     * @param array<int,string> $matches
      * @return string
      */
     private function convertOther($matches)

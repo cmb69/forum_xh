@@ -29,7 +29,7 @@ class View
     private $template;
 
     /**
-     * @var array
+     * @var array<string,mixed>
      */
     private $data = array();
 
@@ -61,6 +61,7 @@ class View
 
     /**
      * @param string $name
+     * @param array<int,mixed> $args
      * @return string
      */
     public function __call($name, array $args)
@@ -84,6 +85,7 @@ class View
     /**
      * @param string $key
      * @param int $count
+     * @return string
      */
     protected function plural($key, $count)
     {
@@ -100,6 +102,7 @@ class View
     }
 
     /**
+     * @param array<string,mixed> $data
      * @return void
      */
     public function render(array $data)
