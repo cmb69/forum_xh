@@ -23,7 +23,7 @@
 
 /**
  * @param string $forum
- * @return string|void
+ * @return string|never
  */
 function forum($forum)
 {
@@ -50,4 +50,5 @@ function forum($forum)
             return ob_get_clean();
         }
     }
+    return "";
 }

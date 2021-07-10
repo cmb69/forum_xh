@@ -161,7 +161,7 @@ class Contents
 
     /**
      * @param string $id
-     * @return string
+     * @return string|false
      */
     public function cleanId($id)
     {
@@ -200,7 +200,7 @@ class Contents
     /**
      * @param string $forum
      * @param string $tid
-     * @param string $title
+     * @param string|null $title
      * @param string $cid
      * @param array $comment
      */
@@ -249,8 +249,8 @@ class Contents
      * @param string $forum
      * @param string $tid
      * @param string $cid
-     * @param string $user
-     * @return string
+     * @param string|bool $user
+     * @return string|false
      */
     public function deleteComment($forum, $tid, $cid, $user)
     {

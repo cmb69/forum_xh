@@ -183,7 +183,7 @@ class MainController
      * @param string $forum
      * @param string $tid
      * @param string $cid
-     * @return string
+     * @return string|false
      */
     private function postComment($forum, $tid = null, $cid = null)
     {
@@ -270,7 +270,7 @@ class MainController
         global $sn, $su;
 
         if ($this->user() === false && (!defined('XH_ADM') || !XH_ADM)) {
-            return false;
+            return;
         }
         (new FaRequireCommand)->execute();
 
@@ -328,7 +328,7 @@ class MainController
     }
 
     /**
-     * @return string
+     * @return string|false
      */
     private function user()
     {
