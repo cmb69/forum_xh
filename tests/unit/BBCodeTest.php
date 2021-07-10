@@ -69,16 +69,16 @@ class BBCodeTest extends PHPUnit_Framework_TestCase
             array('[s]foo[/s]', '<s>foo</s>'),
             array(
                 '[url]http://example.com/[/url]',
-                '<a href="http://example.com/" rel="nofollow">http://example.com/'
+                '<a class="forum_link" href="http://example.com/" rel="nofollow">http://example.com/'
                 . '</a>'
             ),
             array(
                 '[url=http://example.com/]example.com[/url]',
-                '<a href="http://example.com/" rel="nofollow">example.com</a>'
+                '<a class="forum_link" href="http://example.com/" rel="nofollow">example.com</a>'
             ),
             array(
                 '[url=https://example.com/]example.com[/url]',
-                '<a href="https://example.com/" rel="nofollow">example.com</a>'
+                '<a class="forum_link" href="https://example.com/" rel="nofollow">example.com</a>'
             ),
             array(
                 '[img]http://example.com/image.jpg[/img]',
