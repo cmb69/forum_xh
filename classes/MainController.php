@@ -168,10 +168,11 @@ class MainController
         global $su;
 
         $this->getCSRFProtector()->check();
+        $forumtopic = isset($_POST['forum_topic']) ? $_POST['forum_topic'] : null;
         if (!empty($_POST['forum_comment'])) {
-            $tid = $this->postComment($this->forum, $_POST['forum_topic'], $_POST['forum_comment']);
+            $tid = $this->postComment($this->forum, $forumtopic, $_POST['forum_comment']);
         } else {
-            $tid = $this->postComment($this->forum, $_POST['forum_topic']);
+            $tid = $this->postComment($this->forum, $forumtopic);
         }
         $params = $tid ? "?$su&forum_topic=$tid" : "?$su";
         header('Location: ' . CMSIMPLE_URL . $params, true, 303);
