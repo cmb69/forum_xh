@@ -23,6 +23,14 @@ namespace Forum;
 
 class InfoController
 {
+    /** @var SystemCheckService */
+    private $systemCheckService;
+
+    public function __construct(SystemCheckService $systemCheckService)
+    {
+        $this->systemCheckService = $systemCheckService;
+    }
+
     /**
      * @return void
      */
@@ -31,7 +39,7 @@ class InfoController
         $view = new View('info');
         $data = [
             'version' => Plugin::VERSION,
-            'checks' => (new SystemCheckService)->getChecks(),
+            'checks' => $this->systemCheckService->getChecks(),
         ];
         $view->render($data);
     }
