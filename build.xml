@@ -36,11 +36,9 @@
     </target>
 
     <target name="mess" description="detects code flaws">
-        <phpmd>
-            <fileset refid="php-sources"/>
-            <fileset refid="unit-tests"/>
-            <fileset refid="attack-tests"/>
-         </phpmd>
+        <exec executable="phpmd" passthru="true" checkreturn="true">
+            <arg line="classes,index.php,tests/unit,tests/attack ansi codesize,unusedcode"/>
+        </exec>
     </target>
 
     <target name="compat"
