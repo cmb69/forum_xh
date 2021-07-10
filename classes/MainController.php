@@ -315,11 +315,7 @@ class MainController
      */
     private function user()
     {
-        if (function_exists('XH_startSession')) {
-            XH_startSession();
-        } elseif (session_id() === '') {
-            session_start();
-        }
+        XH_startSession();
         return isset($_SESSION['Name'])
             ? $_SESSION['Name']
             : (isset($_SESSION['username']) ? $_SESSION['username'] : false);
