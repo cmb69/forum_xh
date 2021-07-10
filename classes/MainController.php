@@ -123,7 +123,7 @@ class MainController
         global $sn, $su;
 
         (new FaRequireCommand)->execute();
-        $bbcode = new BBCode("{$this->pluginFolder}images/");
+        $bbcode = new BBCode("{$this->pluginFolder}images/", $this->lang['title_iframe']);
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
         $editUrl = $sn . '?' . $su . '&forum_actn=edit&forum_topic=' . $tid
             . '&forum_comment=';
@@ -370,7 +370,7 @@ class MainController
 
     public function previewAction()
     {
-        $bbcode = new BBCode("{$this->pluginFolder}images/");
+        $bbcode = new BBCode("{$this->pluginFolder}images/", $this->lang['title_iframe']);
         echo $bbcode->convert($_POST['data']);
         exit;
     }

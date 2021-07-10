@@ -113,6 +113,9 @@ The following elements are supported:
   [CMSimple\_XH](https://cmsimple-xh.org/)
 - `[img]https://cmsimple-xh.org/userfiles/images/flags/en.gif[/img]`:
   ![](https://cmsimple-xh.org/userfiles/images/flags/en.gif)
+- `[iframe]https://cmsimple-xh.org/userfiles/images/flags/en.gif[/iframe]`:
+  ![](https://cmsimple-xh.org/userfiles/images/flags/en.gif)  
+  *Iframes are used to embed external content, for instance, Youtube videos.*
 - `[size=150]large text[/size]`:
   <span style="font-size:150%">large text</span>
 - `[list][*]One [*]Two[/list]`:

@@ -30,6 +30,7 @@
                     <button type="button" class="forum_unhappy_button" title="<?=$this->text('lbl_unhappy')?>"><img src="<?=$this->escape($this->emoticons['unhappy'])?>" alt="<?=$this->text('lbl_unhappy')?>"></button>
                 </div>
                 <button type="button" class="forum_picture_button" title="<?=$this->text('lbl_picture')?>"><i class="fa fa-picture-o"></i></button>
+                <button type="button" class="forum_iframe_button" title="<?=$this->text('lbl_iframe')?>"><i class="fa fa-hand-rock-o"></i></button>
                 <button type="button" class="forum_link_button" title="<?=$this->text('lbl_link')?>"><i class="fa fa-link"></i></button>
                 <button type="button" class="forum_font_button" title="<?=$this->text('lbl_size')?>"><i class="fa fa-font"></i></button>
                 <div class="forum_font_sizes">

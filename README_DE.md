@@ -115,6 +115,9 @@ BBCode verfügbar. Die folgenden Elemente werden unterstützt:
   [CMSimple\_XH](https://cmsimple-xh.org/)
 - `[img]https://cmsimple-xh.org/userfiles/images/flags/de.gif[/img]`:
   ![](https://cmsimple-xh.org/userfiles/images/flags/de.gif)
+- `[iframe]https://cmsimple-xh.org/userfiles/images/flags/de.gif[/iframe]`:
+  ![](https://cmsimple-xh.org/userfiles/images/flags/de.gif)  
+  *Iframes werden verwendet, um externe Inhalte einzubinden, z.B. Youtube-Videos.*
 - `[size=150]große Schrift[/size]`:
   <span style="font-size:150%">große Schrift</span>
 - `[list][*]Eins [*]Zwei[/list]`:
