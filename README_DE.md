@@ -183,6 +183,8 @@ Vielen Dank an die Gemeinde im [CMSimple\_XH
 Forum](https://www.cmsimpleforum.com/)</a> für Hinweise, Vorschläge und
 das Testen. Besonders möchte ich *Traktorist* und *Old* für viele gute
 Vorschläge danken.
+Ebenfalls vielen Dank an *Ulrich* für die Wiederbelebung des Plugins,
+und an *lck* für das Beisteuern der Iframe Markup Unterstützung.
 
 Und zu guter letzt vielen Dank an [Peter
 Harteg](https://www.harteg.dk/), den „Vater“ von CMSimple, und alle

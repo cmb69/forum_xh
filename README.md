@@ -178,6 +178,8 @@ Many thanks to the community at the
 [CMSimple\_XH forum](https://www.cmsimpleforum.com/)
 for tips, suggestions and testing.
 Especially I want to thank *Traktorist* and *Old* for many good suggestions.
+Also many thanks to *Ulrich* for reviving the plugin,
+and *lck* for contributing iframe markup support.
 
 And last but not least many thanks to
 [Peter Harteg](https://www.harteg.dk/), the “father” of CMSimple,
