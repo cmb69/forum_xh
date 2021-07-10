@@ -3,7 +3,9 @@
 <project name="Forum" default="help">
 
     <target name="help" description="lists available targets">
-        <exec command="phing -l" outputProperty="help"/>
+        <exec executable="phing" outputProperty="help">
+            <arg value="-l"/>
+        </exec>
         <echo>${help}</echo>
     </target>
 
@@ -33,7 +35,9 @@
 
     <target name="compat"
             description="checks compatibility with PHP_CompatInfo">
-        <exec command="phpcompatinfo analyser:run --alias current" logoutput="true"/>
+        <exec executable="phpcompatinfo" logoutput="true">
+            <arg line="analyser:run --alias current"/>
+        </exec>
     </target>
 
     <target name="gen-help" description="builds help.htm from README.md">
@@ -77,7 +81,9 @@
     </target>
 
     <target name="coverage" description="generates coverage report">
-        <exec command="phpunit --configuration coverage.xml" logoutput="true"/>
+        <exec executable="phpunit" logoutput="true">
+            <arg line="--configuration coverage.xml"/>
+        </exec>
     </target>
 
     <target name="minify" description="minifies JS files">
@@ -96,7 +102,9 @@
     </target>
 
     <target name="build" description="builds a distributable ZIP archive">
-        <exec command="git archive -o export.zip HEAD" checkreturn="true"/>
+        <exec executable="git" checkreturn="true">
+            <arg line="archive -o export.zip HEAD"/>
+        </exec>
         <unzip file="export.zip" todir="export"/>
         <delete file="export.zip"/>
         <phingcall target="minify">
