@@ -21,7 +21,7 @@
 
 namespace Forum;
 
-use XH_CSRFProtection;
+use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
 
 class MainController
@@ -55,6 +55,9 @@ class MainController
      * @var Contents
      */
     private $contents;
+
+    /** @var CSRFProtection|null */
+    private $csrfProtector = null;
 
     /**
      * @param string $forum
@@ -123,7 +126,7 @@ class MainController
         $editUrl = $sn . '?' . $su . '&forum_actn=edit&forum_topic=' . $tid
             . '&forum_comment=';
         foreach ($topic as $cid => &$comment) {
-            $mayDelete = XH_ADM || $comment['user'] == $this->user();
+            $mayDelete = defined('XH_ADM') && XH_ADM || $comment['user'] == $this->user();
             $comment['mayDelete'] = $mayDelete;
             $comment['date'] = XH_formatDate($comment['time']);
             $comment['comment'] = new HtmlString($bbcode->convert($comment['comment']));
@@ -208,7 +211,7 @@ class MainController
             $subject = $this->lang['mail_subject_edit'];
         }
 
-        if (!XH_ADM && $this->config['mail_address']) {
+        if (!defined('XH_ADM') || !XH_ADM && $this->config['mail_address']) {
             $url = CMSIMPLE_URL . "?$su&forum_topic=$tid";
             $date = XH_formatDate($comment['time']);
             $attribution = sprintf($this->lang['mail_attribution'], $comment['user'], $date);
@@ -243,7 +246,7 @@ class MainController
         $this->getCSRFProtector()->check();
         $tid = $this->contents->cleanId($_POST['forum_topic']);
         $cid = $this->contents->cleanId($_POST['forum_comment']);
-        $user = XH_ADM ? true : $this->user();
+        $user = defined('XH_ADM') && XH_ADM ? true : $this->user();
         $queryString = $this->contents->deleteComment($this->forum, $tid, $cid, $user)
             ? '?' . $su . '&forum_topic=' . $tid
             : '?' . $su ;
@@ -261,7 +264,7 @@ class MainController
     {
         global $sn, $su;
 
-        if ($this->user() === false && !XH_ADM) {
+        if ($this->user() === false && (!defined('XH_ADM') || !XH_ADM)) {
             return false;
         }
         (new FaRequireCommand)->execute();
@@ -270,7 +273,7 @@ class MainController
         $comment = '';
         if (isset($cid)) {
             $topics = $this->contents->getTopic($forum, $tid);
-            if ($topics[$cid]['user'] == $this->user() || XH_ADM) {
+            if ($topics[$cid]['user'] == $this->user() || (defined('XH_ADM') && XH_ADM)) {
                 $comment = $topics[$cid]['comment'];
             }
             //$newTopic = true; // FIXME: hack to force overview link to be shown
@@ -344,7 +347,7 @@ class MainController
             return $_XH_csrfProtection;
         } else {
             if (!isset($this->csrfProtector)) {
-                $this->csrfProtector = new XH_CSRFProtection('forum_token');
+                $this->csrfProtector = new CSRFProtection('forum_token');
             }
             return $this->csrfProtector;
         }

@@ -214,7 +214,7 @@ class Contents
 
         $topics = $this->getTopics($forum);
         $topics[$tid] = array(
-            'title' => isset($title) ? $title : $topics[$tid]['title'],
+            'title' => $title !== null ? $title : $topics[$tid]['title'],
             'comments' => count($comments),
             'user' => $comment['user'],
             'time' => $comment['time']);

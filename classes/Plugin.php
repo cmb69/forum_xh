@@ -27,7 +27,7 @@ class Plugin
 
     public function run()
     {
-        if (XH_ADM) {
+        if (defined('XH_ADM') && XH_ADM) {
             XH_registerStandardPluginMenuItems(false);
             if (XH_wantsPluginAdministration('forum')) {
                 $this->handleAdministration();
@@ -37,7 +37,7 @@ class Plugin
 
     private function handleAdministration()
     {
-        global $admin, $action, $o;
+        global $admin, $o;
 
         $o .= print_plugin_admin('off');
         switch ($admin) {
@@ -47,7 +47,7 @@ class Plugin
                 $o .= ob_get_clean();
                 break;
             default:
-                $o .= plugin_admin_common($action, $admin, 'forum');
+                $o .= plugin_admin_common();
         }
     }
 }
