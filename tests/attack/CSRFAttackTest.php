@@ -28,9 +28,9 @@
 
 namespace Forum;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class CSRFAttackTest extends PHPUnit_Framework_TestCase
+class CSRFAttackTest extends TestCase
 {
     /**
      * @var string
@@ -47,7 +47,7 @@ class CSRFAttackTest extends PHPUnit_Framework_TestCase
      */
     private $cookieFile;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->url = 'http://localhost' . getenv('CMSIMPLEDIR');
         $this->cookieFile = tempnam(sys_get_temp_dir(), 'CC');

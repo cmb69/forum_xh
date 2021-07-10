@@ -3,3 +3,4 @@ tests/coverage
 vendor
 /composer.lock
 /tools
+/.phpunit.result.cache

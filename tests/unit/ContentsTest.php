@@ -21,12 +21,12 @@
 
 namespace Forum;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStream;
 
-class ContentsTest extends PHPUnit_Framework_TestCase
+class ContentsTest extends TestCase
 {
     /**
      * @var string
@@ -38,7 +38,7 @@ class ContentsTest extends PHPUnit_Framework_TestCase
      */
     private $contents;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         vfsStreamWrapper::register();
         vfsStreamWrapper::setRoot(new vfsStreamDirectory('test'));

@@ -21,16 +21,16 @@
 
 namespace Forum;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class BBCodeTest extends PHPUnit_Framework_TestCase
+class BBCodeTest extends TestCase
 {
     /**
      * @var object
      */
     private $bbcode;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         global $plugin_tx;
 
