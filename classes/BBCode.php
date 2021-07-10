@@ -38,15 +38,19 @@ class BBCode
      */
     private $emoticonDir;
 
+    /** @var string */
+    private $iframeTitle;
+
     /**
      * @param string $emoticonDir
      */
-    public function __construct($emoticonDir)
+    public function __construct($emoticonDir, $iframeTitle)
     {
         $this->pattern = '/\[(i|b|u|s|url|img|iframe|size|list|quote|code)(=.*?)?]'
             . '(.*?)\[\/\1]/su';
         $this->context = array();
         $this->emoticonDir = rtrim($emoticonDir, '/') . '/';
+        $this->iframeTitle = $iframeTitle;
     }
 
     /**
@@ -152,7 +156,11 @@ class BBCode
         if (!preg_match('/^http(s)?:/', $url)) {
             return $matches[0];
         }
-        return '<div class="iframe_container"><iframe src="' . $url . '" title="' . basename($url) . '"></iframe></div>';
+        return sprintf(
+            '<div class="iframe_container"><iframe src="%s" title="%s"></iframe></div>',
+            $url,
+            $this->iframeTitle
+        );
     }
 
     /**

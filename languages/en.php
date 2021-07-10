@@ -50,6 +50,8 @@ $plugin_tx['forum']['lbl_clean']="Clean";
 $plugin_tx['forum']['lbl_preview']="Preview";
 $plugin_tx['forum']['lbl_separator']="•";
 
+$plugin_tx['forum']['title_iframe']="External content";
+
 $plugin_tx['forum']['mail_subject_new']="A new comment has been posted";
 $plugin_tx['forum']['mail_subject_edit']="A comment has been edited";
 $plugin_tx['forum']['mail_attribution']="On %2\$s, %1\$s wrote:";

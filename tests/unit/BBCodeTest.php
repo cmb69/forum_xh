@@ -43,7 +43,7 @@ class BBCodeTest extends TestCase
             'lbl_surprised' => 'surprised',
             'lbl_unhappy' => 'unhappy'
         );
-        $this->bbcode = new BBCode('./');
+        $this->bbcode = new BBCode('./', "External content");
     }
 
     /**

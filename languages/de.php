@@ -50,6 +50,8 @@ $plugin_tx['forum']['lbl_clean']="Bereinigen";
 $plugin_tx['forum']['lbl_preview']="Vorschau";
 $plugin_tx['forum']['lbl_separator'] = "•";
 
+$plugin_tx['forum']['title_iframe']="Externer Inhalt";
+
 $plugin_tx['forum']['mail_subject_new']="Ein neuer Kommentar wurde gepostet";
 $plugin_tx['forum']['mail_subject_edit']="Ein Kommentar wurde bearbeitet";
 $plugin_tx['forum']['mail_attribution']="Am %2\$s schrieb %1\$s:";
