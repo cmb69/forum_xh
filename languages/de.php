@@ -56,8 +56,6 @@ $plugin_tx['forum']['mail_subject_new']="Ein neuer Kommentar wurde gepostet";
 $plugin_tx['forum']['mail_subject_edit']="Ein Kommentar wurde bearbeitet";
 $plugin_tx['forum']['mail_attribution']="Am %2\$s schrieb %1\$s:";
 
-$plugin_tx['forum']['alt_logo']="Stilisierte Leute";
-
 $plugin_tx['forum']['syscheck_extension']="die PHP-Erweiterung '%s' geladen ist";
 $plugin_tx['forum']['syscheck_fail']="Fehler";
 $plugin_tx['forum']['syscheck_message']="Prüfe, dass %1\$s … %2\$s";

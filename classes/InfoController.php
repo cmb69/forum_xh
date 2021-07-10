@@ -28,11 +28,8 @@ class InfoController
      */
     public function defaultAction()
     {
-        global $pth;
-
         $view = new View('info');
         $data = [
-            'logo' => $pth['folder']['plugins'] . 'forum/forum.png',
             'version' => Plugin::VERSION,
             'checks' => (new SystemCheckService)->getChecks(),
         ];

@@ -56,8 +56,6 @@ $plugin_tx['forum']['mail_subject_new']="A new comment has been posted";
 $plugin_tx['forum']['mail_subject_edit']="A comment has been edited";
 $plugin_tx['forum']['mail_attribution']="On %2\$s, %1\$s wrote:";
 
-$plugin_tx['forum']['alt_logo']="Stylized People";
-
 $plugin_tx['forum']['syscheck_extension']="the PHP extension '%s' is loaded";
 $plugin_tx['forum']['syscheck_fail']="failure";
 $plugin_tx['forum']['syscheck_message']="Checking that %1\$s … %2\$s";
