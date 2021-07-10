@@ -89,6 +89,10 @@ class BBCodeTest extends TestCase
                 '<img src="https://example.com/image.jpg" alt="image.jpg">'
             ),
             array(
+                '[iframe]https://example.com/image.jpg[/iframe]',
+                '<div class="iframe_container"><iframe src="https://example.com/image.jpg" title="External content"></iframe></div>'
+            ),
+            array(
                 '[size=150]large text[/size]',
                 '<span style="font-size: 150%; line-height: 150%">'
                 . 'large text</span>'
