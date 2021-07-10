@@ -30,6 +30,7 @@
                     <button type="button" class="forum_unhappy_button" title="<?=$this->text('lbl_unhappy')?>"><img src="<?=$this->escape($this->emoticons['unhappy'])?>" alt="<?=$this->text('lbl_unhappy')?>"></button>
                 </div>
                 <button type="button" class="forum_picture_button" title="<?=$this->text('lbl_picture')?>"><i class="fa fa-picture-o"></i></button>
+                <button type="button" class="forum_iframe_button" title="<?=$this->text('lbl_iframe')?>"><i class="fa fa-hand-rock-o"></i></button>
                 <button type="button" class="forum_link_button" title="<?=$this->text('lbl_link')?>"><i class="fa fa-link"></i></button>
                 <button type="button" class="forum_font_button" title="<?=$this->text('lbl_size')?>"><i class="fa fa-font"></i></button>
                 <div class="forum_font_sizes">
@@ -41,7 +42,6 @@
                 <button type="button" class="forum_list_item_button" title="<?=$this->text('lbl_list_item')?>"><i class="fa fa-asterisk"></i></button>
                 <button type="button" class="forum_quotes_button" title="<?=$this->text('lbl_quotes')?>"><i class="fa fa-quote-right"></i></button>
                 <button type="button" class="forum_code_button" title="<?=$this->text('lbl_code')?>"><i class="fa fa-code"></i></button>
-                <button type="button" class="forum_iframe_button" title="<?=$this->text('lbl_iframe')?>"><i class="fa fa-hand-rock-o"></i></button>
                 <button type="button" class="forum_preview_button" title="<?=$this->text('lbl_preview')?>" data-url="<?=$this->previewUrl()?>"><i class="fa fa-eye"></i></button>
             </div>
         </script>

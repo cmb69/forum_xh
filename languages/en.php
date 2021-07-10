@@ -35,6 +35,7 @@ $plugin_tx['forum']['lbl_tongue']="Tongue";
 $plugin_tx['forum']['lbl_surprised']="Surprised";
 $plugin_tx['forum']['lbl_unhappy']="Unhappy";
 $plugin_tx['forum']['lbl_picture']="Picture";
+$plugin_tx['forum']['lbl_iframe']="Iframe (e.g. for Youtube video)";
 $plugin_tx['forum']['lbl_link']="Link";
 $plugin_tx['forum']['lbl_size']="size";
 $plugin_tx['forum']['lbl_big']="Big";
@@ -48,7 +49,6 @@ $plugin_tx['forum']['lbl_code']="Code";
 $plugin_tx['forum']['lbl_clean']="Clean";
 $plugin_tx['forum']['lbl_preview']="Preview";
 $plugin_tx['forum']['lbl_separator']="•";
-$plugin_tx['forum']['lbl_iframe']="iframe";
 
 $plugin_tx['forum']['mail_subject_new']="A new comment has been posted";
 $plugin_tx['forum']['mail_subject_edit']="A comment has been edited";

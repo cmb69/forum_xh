@@ -100,6 +100,19 @@ document.addEventListener("DOMContentLoaded", function () {
             textarea.focus();
         }
 
+        function iframe() {
+            var start = textarea.selectionStart;
+            var end = textarea.selectionEnd;
+            var url = prompt(i18n.ENTER_URL, "http://");
+            if (typeof url === "string") {
+                var repl = "[iframe]" + url + "[/iframe]";
+                var carret = start + repl.length;
+                textarea.value = textarea.value.substring(0,start) + repl + textarea.value.substring(end, textarea.textLength);
+                textarea.setSelectionRange(carret, carret);
+            }
+            textarea.focus();
+        }
+
         function url() {
             var start = textarea.selectionStart;
             var end = textarea.selectionEnd;
@@ -123,19 +136,6 @@ document.addEventListener("DOMContentLoaded", function () {
             textarea.value = textarea.value.substring(0, start) + tag +
                     textarea.value.substring(end, textarea.textLength);
             textarea.setSelectionRange(carret, carret);
-            textarea.focus();
-        }
-
-        function iframe() {
-            var start = textarea.selectionStart;
-            var end = textarea.selectionEnd;
-            var url = prompt(i18n.ENTER_URL, "http://");
-            if (typeof url === "string") {
-                var repl = "[iframe]" + url + "[/iframe]";
-                var carret = start + repl.length;
-                textarea.value = textarea.value.substring(0,start) + repl + textarea.value.substring(end, textarea.textLength);
-                textarea.setSelectionRange(carret, carret);
-            }
             textarea.focus();
         }
 
@@ -174,8 +174,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 event.stopPropagation();
             },
             forum_picture_button: image,
-            forum_link_button: url,
             forum_iframe_button: iframe,
+            forum_link_button: url,
             forum_font_button: function (event) {
                 var div = form.getElementsByClassName("forum_font_sizes")[0];
                 document.addEventListener("click", function fn() {

@@ -43,7 +43,7 @@ class BBCode
      */
     public function __construct($emoticonDir)
     {
-        $this->pattern = '/\[(i|b|u|s|url|img|size|list|quote|code|iframe)(=.*?)?]'
+        $this->pattern = '/\[(i|b|u|s|url|img|iframe|size|list|quote|code)(=.*?)?]'
             . '(.*?)\[\/\1]/su';
         $this->context = array();
         $this->emoticonDir = rtrim($emoticonDir, '/') . '/';
@@ -70,7 +70,7 @@ class BBCode
      */
     private function doConvert($matches)
     {
-        $inlines = array('i', 'b', 'u', 's', 'url', 'iframe', 'img', 'size');
+        $inlines = array('i', 'b', 'u', 's', 'url', 'img', 'iframe', 'size');
         array_push(
             $this->context,
             in_array($matches[1], $inlines) ? 'inline' : $matches[1]
@@ -83,11 +83,11 @@ class BBCode
             case 'url':
                 $result = $this->convertUrl($matches);
                 break;
+            case 'img':
+                $result = $this->convertImg($matches);
+                break;
             case 'iframe':
                 $result = $this->convertIframe($matches);
-                break;
-                case 'img':
-                $result = $this->convertImg($matches);
                 break;
             case 'size':
                 $result = $this->convertSize($matches);
@@ -133,6 +133,19 @@ class BBCode
      * @param array $matches
      * @return string
      */
+    private function convertImg($matches)
+    {
+        $url = $matches[3];
+        if (!preg_match('/^http(s)?:/', $url)) {
+            return $matches[0];
+        }
+        return '<img src="' . $url . '" alt="' . basename($url) . '">';
+    }
+
+    /**
+     * @param array $matches
+     * @return string
+     */
     private function convertIframe($matches)
     {
         $url = $matches[3];
@@ -142,19 +155,6 @@ class BBCode
         return '<div class="iframe_container"><iframe src="' . $url . '" title="' . basename($url) . '"></iframe></div>';
     }
 
-    /**
-     * @param array $matches
-     * @return string
-     */
-    private function convertImg($matches)
-    {
-        $url = $matches[3];
-        if (!preg_match('/^http(s)?:/', $url)) {
-            return $matches[0];
-        }
-        return '<img src="' . $url . '" alt="' . basename($url) . '">';
-    }
-    
     /**
      * @param array $matches
      * @return string
