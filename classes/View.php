@@ -43,15 +43,6 @@ class View
 
     /**
      * @param string $name
-     * @param mixed $value
-     */
-    public function __set($name, $value)
-    {
-        $this->data[$name] = $value;
-    }
-
-    /**
-     * @param string $name
      * @return string
      */
     public function __get($name)
@@ -111,10 +102,12 @@ class View
     /**
      * @return string
      */
-    public function render()
+    public function render(array $data)
     {
         global $pth;
 
+        $this->data = $data;
+        unset($data);
         include "{$pth['folder']['plugins']}forum/views/{$this->template}.php";
     }
 

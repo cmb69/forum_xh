@@ -80,9 +80,9 @@ class MainController
             || ($tid = $this->contents->cleanId($_GET['forum_topic'])) === false
             || !file_exists($this->contents->dataFolder($this->forum) . $tid . '.dat')
         ) {
-            $this->prepareTopicsView($this->forum)->render();
+            $this->renderTopicsView($this->forum);
         } else {
-            $this->prepareTopicView($this->forum, $tid)->render();
+            $this->renderTopicView($this->forum, $tid);
         }
         if (is_file("{$this->pluginFolder}forum.min.js")) {
             $this->addScript("{$this->pluginFolder}forum.min.js");
@@ -93,9 +93,9 @@ class MainController
 
     /**
      * @param string $forum
-     * @return View
+     * @return void
      */
-    private function prepareTopicsView($forum)
+    private function renderTopicsView($forum)
     {
         global $su;
 
@@ -105,18 +105,20 @@ class MainController
             $topic['date'] = XH_formatDate($topic['time']);
         }
         $view = new View('topics');
-        $view->isUser = $this->user() !== false;
-        $view->href = "?$su&forum_actn=new";
-        $view->topics = $topics;
-        return $view;
+        $data = [
+            'isUser' => $this->user() !== false,
+            'href' => "?$su&forum_actn=new",
+            'topics' => $topics,
+        ];
+        $view->render($data);
     }
 
     /**
      * @param string $forum
      * @param string $tid
-     * @return View
+     * @return void
      */
-    private function prepareTopicView($forum, $tid)
+    private function renderTopicView($forum, $tid)
     {
         global $sn, $su;
 
@@ -135,23 +137,25 @@ class MainController
 
         $csrfProtector = $this->getCSRFProtector();
         $view = new View('topic');
-        $view->title = $title;
-        $view->topic = $topic;
-        $view->tid = $tid;
-        $view->su = $su;
-        $view->deleteImg = "{$this->pluginFolder}images/delete.png";
-        $view->editImg = "{$this->pluginFolder}images/edit.png";
-        $view->csrfTokenInput = new HtmlString($csrfProtector->tokenInput());
-        $view->isUser = $this->user() !== false;
-        $view->replyUrl = "$sn?$su&forum_actn=reply&forum_topic=$tid";
-        $view->href = "?$su";
+        $data = [
+            'title' => $title,
+            'topic' => $topic,
+            'tid' => $tid,
+            'su' => $su,
+            'deleteImg' => "{$this->pluginFolder}images/delete.png",
+            'editImg' => "{$this->pluginFolder}images/edit.png",
+            'csrfTokenInput' => new HtmlString($csrfProtector->tokenInput()),
+            'isUser' => $this->user() !== false,
+            'replyUrl' => "$sn?$su&forum_actn=reply&forum_topic=$tid",
+            'href' => "?$su",
+        ];
         $csrfProtector->store();
-        return $view;
+        $view->render($data);
     }
 
     public function newAction()
     {
-        $this->prepareCommentForm($this->forum)->render();
+        $this->renderCommentForm($this->forum);
         if (is_file("{$this->pluginFolder}forum.min.js")) {
             $this->addScript("{$this->pluginFolder}forum.min.js");
         } else {
@@ -228,7 +232,7 @@ class MainController
         $tid = $this->contents->cleanId($_GET['forum_topic']);
         $cid = $this->contents->cleanId($_GET['forum_comment']);
         if ($tid && $cid) {
-            $this->prepareCommentForm($this->forum, $tid, $cid)->render();
+            $this->renderCommentForm($this->forum, $tid, $cid);
         } else {
             echo ''; // should display error
         }
@@ -258,9 +262,9 @@ class MainController
      * @param string $forum
      * @param string $tid
      * @param string $cid
-     * @return View
+     * @return void
      */
-    private function prepareCommentForm($forum, $tid = null, $cid = null)
+    private function renderCommentForm($forum, $tid = null, $cid = null)
     {
         global $sn, $su;
 
@@ -285,24 +289,21 @@ class MainController
         }
         $csrfProtector = $this->getCSRFProtector();
         $view = new View('form');
-        $view->newTopic = $newTopic;
-        $view->tid = $tid;
-        $view->cid = $cid;
-        $view->action = "?$su&forum_actn=post";
-        $view->previewUrl = "$sn?$su&forum_actn=preview";
-        if ($newTopic) {
-            $view->backUrl = "?$su";
-            $view->headingKey = 'msg_new_topic';
-        } else {
-            $view->backUrl = "$sn?$su&forum_topic=$tid";
-            $view->headingKey = isset($cid) ? 'msg_edit_comment' : 'msg_add_comment';
-        }
-        $view->comment = $comment;
-        $view->csrfTokenInput = new HtmlString($csrfProtector->tokenInput());
-        $view->i18n = json_encode($this->jsTexts());
-        $view->emoticons = $emoticons;
+        $data = [
+            'newTopic' => $newTopic,
+            'tid' => $tid,
+            'cid' => $cid,
+            'action' => "?$su&forum_actn=post",
+            'previewUrl' => "$sn?$su&forum_actn=preview",
+            'backUrl' => $newTopic ? "?$su" : "$sn?$su&forum_topic=$tid",
+            'headingKey' => $newTopic ? 'msg_new_topic' : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment'),
+            'comment' => $comment,
+            'csrfTokenInput' => new HtmlString($csrfProtector->tokenInput()),
+            'i18n' => json_encode($this->jsTexts()),
+            'emoticons' => $emoticons,
+        ];
         $csrfProtector->store();
-        return $view;
+        $view->render($data);
     }
 
     private function addScript($filename)
@@ -357,7 +358,7 @@ class MainController
     {
         if (isset($_GET['forum_topic'])) {
             $tid = $this->contents->cleanId($_GET['forum_topic']);
-            $this->prepareCommentForm($this->forum, $tid)->render();
+            $this->renderCommentForm($this->forum, $tid);
         }
         if (is_file("{$this->pluginFolder}forum.min.js")) {
             $this->addScript("{$this->pluginFolder}forum.min.js");

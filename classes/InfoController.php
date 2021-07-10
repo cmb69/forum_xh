@@ -28,9 +28,11 @@ class InfoController
         global $pth;
 
         $view = new View('info');
-        $view->logo = $pth['folder']['plugins'] . 'forum/forum.png';
-        $view->version = Plugin::VERSION;
-        $view->checks = (new SystemCheckService)->getChecks();
-        $view->render();
+        $data = [
+            'logo' => $pth['folder']['plugins'] . 'forum/forum.png',
+            'version' => Plugin::VERSION,
+            'checks' => (new SystemCheckService)->getChecks(),
+        ];
+        $view->render($data);
     }
 }
