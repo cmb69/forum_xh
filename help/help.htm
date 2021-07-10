@@ -1,236 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<meta http-equiv="content-type" content="text/html;charset=utf-8">
-<title>Forum_XH – User Manual</title>
-<link rel="stylesheet" type="text/css" href="./stylesheet.css">
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Forum_XH – User Manual</title>
+  <style type="text/css">
+    body {
+        font-family: Georgia, serif;
+        line-height: 1.5;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        background: #ffffe1;
+        max-width: 40em;
+    }
+    p {
+        text-align: justify;
+    }
+    pre {
+        color: black;
+        background: #ffe;
+        overflow: auto;
+        padding: 0.2em 0.5em;
+        border: 1px solid silver;
+    }
+  </style>
 </head>
-
 <body>
-
-<article>
-<h1>Forum_XH – User Manual</h1>
-<img src="../forum.png" style="float: left; margin: 0.5em 1.5em 0.5em 0" alt="Stylized People">
-<p>
-    Forum_XH facilitates the embedding of simple forums on a CMSimple_XH site.
-    The user management relies on <a
-    href="http://frankziesing.de/cmsimple/en/?Welcome:Memberpages">Memberpages</a>
-    or <a href="http://3-magi.net/?CMSimple_XH/Register_XH">Register_XH</a>.
-    Posting requires to be logged in as member, though the forums can be viewed
-    publicly. This way no further provisions are necessary to avoid spam, and
-    posting doesn't require any additional input such as user name, email
-    address etc. Forum_XH features a markup editor allowing basic <a
-    href="http://en.wikipedia.org/wiki/BBCode">BBCode</a> markup. All data are
-    stored in flat files which are protected from concurrent access by
-    pessimistic locking of the whole forum, so Forum_XH is not suitable for
-    heavily frequented forums. Furthermore common advanced forum features such
-    as user signatures, PMs, subscribing to topics etc. are not available.
-</p>
-
-<nav id="nav">
-<h2>Table of Contents</h2>
+<h1 id="forum_xh">Forum_XH</h1>
+<p>Forum_XH facilitates the embedding of simple forums on a CMSimple_XH site. The user management relies on <a href="https://github.com/cmsimple-xh/memberpages">Memberpages</a> or <a href="https://github.com/cmb69/register_xh">Register_XH</a>.</p>
+<p>Posting requires to be logged in as member, though the forums can be viewed publicly. This way no further provisions are necessary to avoid spam, and posting does not require any additional input such as user name, email address etc.</p>
+<p>Forum_XH features a markup editor allowing basic <a href="https://en.wikipedia.org/wiki/BBCode">BBCode</a> markup. All data are stored in flat files which are protected from concurrent access by pessimistic locking of the whole forum, so Forum_XH is not suitable for heavily frequented forums. Furthermore common advanced forum features such as user signatures, PMs, subscribing to topics etc. are not available.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
 <ul>
-<li><a href="#notice">Important Notice</a></li>
 <li><a href="#requirements">Requirements</a></li>
+<li><a href="#download">Download</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#settings">Settings</a></li>
 <li><a href="#usage">Usage</a>
 <ul>
-    <li><a href="#usage-bbcode">BBCode</a></li>
-</ul>
-</li>
-<!--<li><a href="#limitations">Limitations</a></li>-->
+<li><a href="#bbcode">BBCode</a></li>
+</ul></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
 <li><a href="#license">License</a></li>
 <li><a href="#credits">Credits</a></li>
 </ul>
-</nav>
-
-<section id="notice">
-<h2>Important Notice</h2>
-<p class="important">
-    Forum_XH couldn't be tested so far in various environments. It is a so
-    called beta version. Use with caution!
-</p>
-</section>
-
-<section id="requirements">
-<h2>Requirements</h2>
-<p>
-    Forum_XH requires CMSimple_XH ≥ 1.7.0 with the <a
-    href="http://3-magi.net/?CMSimple_XH/Fa_XH">Fa_XH plugin</a> and PHP ≥ 5.4.0
-    with the JSON and Session extensions.
-</p>
-</section>
-
-<section id="installation">
-<h2>Installation</h2>
-<p>
-    The installation is done as with many other CMSimple_XH plugins. See the <a
-    href="http://www.cmsimple-xh.org/wiki/doku.php/installation"> CMSimple_XH
-    wiki</a> for further details.
-</p>
-<ol>
-<li class="important">
-    Backup the data on your server.
-</li>
-<li>
-    Unzip the distribution on your computer.
-</li>
-<li>
-    Upload the whole directory <code>forum/</code> to your server into
-    CMSimple_XH's plugins directory.
-</li>
-<li>
-    Set write permissions to the subdirectories <code>css/</code>,
-    <code>config/</code> and <code>languages/</code>.
-</li>
-<li class="important">
-    Navigate to <i>Plugins</i> → <i>Forum</i> in the back-end to check if all
-    requirements are fulfilled.
-</li>
+<h2 id="requirements">Requirements</h2>
+<p>Forum_XH is a plugin for CMSimple_XH ≥ 1.7.0 with the <a href="https://github.com/cmb69/fa_xh">Fa_XH plugin</a>. It requires PHP ≥ 5.4.0 with the JSON and Session extensions.</p>
+<h2 id="download">Download</h2>
+<p>The <a href="https://github.com/cmb69/forum_xh/releases/latest">lastest release</a> is available for download on Github.</p>
+<h2 id="installation">Installation</h2>
+<p>The installation is done as with many other CMSimple_XH plugins. See the <a href="https://wiki.cmsimple-xh.org/doku.php/installation">CMSimple_XH wiki</a> for further details.</p>
+<ol type="1">
+<li>Backup the data on your server.</li>
+<li>Unzip the distribution on your computer.</li>
+<li>Upload the whole directory <code>forum/</code> to your server into the <code>plugins/</code> directory of CMSimple_XH.</li>
+<li>Set write permissions for the subdirectories <code>config/</code>, <code>css/</code>, and <code>languages/</code>.</li>
+<li>Navigate to <code>Plugins</code> → <code>Forum</code> in the back-end to check if all requirements are fulfilled.</li>
 </ol>
-</section>
-
-<section id="settings">
-<h2>Settings</h2>
-<p>
-    The plugin's configuration is done as with many other CMSimple_XH plugins in
-    the website's back-end. Select <i>Plugins</i> → <i>Forum</i>.
-</p>
-<p>
-    You can change the default settings of Forum_XH under <i>Config</i>. Hints
-    for the options will be displayed when hovering over the help icons with
-    your mouse.
-</p>
-<p>
-    Localization is done under <i>Language</i>. You can translate the character
-    strings to your own language if there is no appropriate language file
-    available, or customize them according to your needs.
-</p>
-<p>
-    The look of Forum_XH can be customized under <i>Stylesheet</i>.
-</p>
-</section>
-
-<section id="usage">
-<h2>Usage</h2>
-<p>
-    Inserting of a forum on a page is done with the following plugin call:
-</p>
-<pre>{{{forum('name-of-the-forum')}}}</pre>
-<p>
-    You can have as many forums as you like, but only one per CMSimple page. The
-    forums are distinguished by their name, which may contain lowercase letters
-    (<code>a</code>-<code>z</code>), digits (<code>0</code>-<code>9</code>) and
-    hyphens (<code>-</code>) only.
-</p>
-<p>
-    After switching to view mode you'll see the forum, and if it already
-    contains topics, you can navigate through them. Posting new comments
-    requires that you're logged in via <a
-    href="http://frankziesing.de/cmsimple/en/?Welcome:Memberpages">Memberpages</a>
-    or <a href="http://3-magi.net/?CMSimple_XH/Register_XH">Register_XH</a>.
-    Then you can also edit and delete your own posts. The CMSimple_XH
-    administrator can edit and delete the posts from all users, but in order to
-    post new comments he has to log in additionally as member. No additional
-    admin functionality is provided in the back-end.
-</p>
-</section>
-
-<section id="usage-bbcode">
-<h3>BBCode</h3>
-<p>
-    To allow users to markup their comments, basic BBCode is available. The
-    following elements are supported:
-</p>
-<dl>
-<dt><code>[b]bolded text[/b]</code></dt>
-<dd><strong>bolded text</strong></dd>
-<dt><code>[i]italicized text[/i]</code></dt>
-<dd><em>italicized text</em></dd>
-<dt><code>[u]underlined text[/u]</code></dt>
-<dd><u>underlined text</u></dd>
-<dt><code>[s]strikethrough text[/s]</code></dt>
-<dd><s>strikethrough text</s></dd>
-<dt><code>[url]http://cmsimple-xh.org/[/url]</code></dt>
-<dd><a href="http://cmsimple-xh.org/" rel="nofollow">http://cmsimple-xh.org</a></dd>
-<dt><code>[url=http://cmsimple-xh.org/]CMSimple_XH[/url]</code></dt>
-<dd><a href="http://cmsimple-xh.org/" rel="nofollow">CMSimple_XH</a></dd>
-<dt><code>[img]http://cmsimple-xh.org/userfiles/images/flags/en.gif[/img]</code></dt>
-<dd><img src="http://cmsimple-xh.org/userfiles/images/flags/en.gif" alt=""></dd>
-<dt><code>[size=150]large text[/size]</code></dt>
-<dd><span style="font-size:150%">large text</span></dd>
-<dt><code>[list][*]One [*]Two[/list]</code></dt>
-<dd><ul><li>One</li><li>Two</li></ul></dd>
-<dt><code>[list=1][*]One [*]Two[/list]</code></dt>
-<dd><ol start="1"><li>One</li><li>Two</li></ol></dd>
-<dt><code>[quote]quoted text[/quote]</code></dt>
-<dd><blockquote>quoted text</blockquote></dd>
-<dt><code>[code]monospaced text[/code]</code></dt>
-<dd><pre>monospaced text</pre></dd>
-</dl>
-<p>
-    Note that nesting of the same kind of elements is not allowed (e.g. nested
-    lists are not possible). The HTML created by the BBCode converter is always
-    valid and secure (i.e. no script injection is possible). If any nesting of
-    BBCode elements would result in invalid HTML, the offending elements will
-    simply be ignored.
-</p>
-<p>
-    The usage of the markup editor should be pretty much self explaining. Please
-    note that a simple preview is available via the right most button. If
-    JavaScript is not available in the user's browsers, the editor is not
-    available, but using BBCode in the textarea is still possible.
-</p>
-</section>
-
-<!--
-<section id="limitations">
-<h2>Limitations</h2>
-</section>
--->
-
-<section id="license">
-<h2>License</h2>
-<p>
-    Forum_XH is licensed under <a
-    href="http://www.gnu.org/licenses/gpl.html">GPLv3</a>.
-</p>
-<p>Copyright © 2012-2021 Christoph M. Becker</p>
-<p>
-    Danish translation © 2012 Jens Maegard<br>
-    Russian translation © 2012 Lybomyr Kydray
-</p>
-</section>
-
-<section id="credits">
-<h2>Credits</h2>
-<p>
-    The plugin logo is designed by <a
-    href="http://www.dezinerfolio.com/">Dezinerfolio</a>. Many thanks for
-    publishing this icon as freeware.
-</p>
-<p>
-    The emoticons were taken from the <a href="http://led24.de/">LED icon
-    pack</a>. Many thanks for publishing these icons under CC BY-SA.
-</p>
-<p>
-    Many thanks to the community at the <a
-    href="https://www.cmsimpleforum.com/">CMSimple_XH forum</a> for tips,
-    suggestions and testing. Especially I want to thank <i>Traktorist</i> and
-    <i>Old</i> for many good suggestions.
-</p>
-<p>
-    And last but not least many thanks to <a href="http://www.harteg.dk/">Peter
-    Harteg</a>, the "father" of CMSimple, and all developers of <a
-    href="http://www.cmsimple-xh.org/">CMSimple_XH</a> without whom this amazing
-    CMS wouldn't exist.
-</p>
-</section>
-
-</article>
-
+<h2 id="settings">Settings</h2>
+<p>The configuration of the plugin is done as with many other CMSimple_XH plugins in the back-end of the website. Select <code>Plugins</code> → <code>Forum</code>.</p>
+<p>You can change the default settings of Forum_XH under <code>Config</code>. Hints for the options will be displayed when hovering over the help icon with your mouse.</p>
+<p>Localization is done under <code>Language</code>. You can translate the character strings to your own language if there is no appropriate language file available, or customize them according to your needs.</p>
+<p>The look of Forum_XH can be customized under <code>Stylesheet</code>.</p>
+<h2 id="usage">Usage</h2>
+<p>Inserting a forum on a page is done with the following plugin call:</p>
+<pre><code>{{{forum(&#39;name-of-the-forum&#39;)}}}</code></pre>
+<p>You can have as many forums as you like, but at most one per CMSimple_XH page. The forums are distinguished by their name, which may contain lowercase letters (<code>a</code>-<code>z</code>), digits (<code>0</code>-<code>9</code>) and hyphens (<code>-</code>) only.</p>
+<p>After switching to view mode you will see the forum, and if it already contains topics, you can navigate through them. Posting new comments requires that you are logged in via <a href="https://github.com/cmsimple-xh/memberpages">Memberpages</a> or <a href="https://github.com/cmb69/register_xh">Register_XH</a>. Then you can also edit and delete your own posts. The CMSimple_XH administrator can edit and delete the posts from all users, but in order to post new comments, the administrator has to log in additionally as member. No additional admin functionality is provided in the back-end.</p>
+<h3 id="bbcode">BBCode</h3>
+<p>To allow users to markup their comments, basic BBCode is available. The following elements are supported:</p>
+<ul>
+<li><code>[b]bolded text[/b]</code>: <strong>bolded text</strong></li>
+<li><code>[i]italicized text[/i]</code>: <em>italicized text</em></li>
+<li><code>[u]underlined text[/u]</code>: <ins>underlined text</ins></li>
+<li><code>[s]strikethrough text[/s]</code>: <del>strikethrough text</del></li>
+<li><code>[url]https://cmsimple-xh.org/[/url]</code>: <a href="https://cmsimple-xh.org/" class="uri">https://cmsimple-xh.org/</a></li>
+<li><code>[url=https://cmsimple-xh.org/]CMSimple\_XH[/url]</code>: <a href="https://cmsimple-xh.org/">CMSimple_XH</a></li>
+<li><code>[img]https://cmsimple-xh.org/userfiles/images/flags/en.gif[/img]</code>: <img src="https://cmsimple-xh.org/userfiles/images/flags/en.gif" /></li>
+<li><code>[size=150]large text[/size]</code>: <span style="font-size:150%">large text</span></li>
+<li><code>[list][*]One [*]Two[/list]</code>:
+<ul>
+<li>One</li>
+<li>Two</li>
+</ul></li>
+<li><code>[list=1][*]One [*]Two[/list]</code>:
+<ol type="1">
+<li>One</li>
+<li>Two</li>
+</ol></li>
+<li><code>[quote]quoted text[/quote]</code>:
+<blockquote>
+quoted text
+</blockquote></li>
+<li><code>[code]monospaced text[/code]</code>: <code>monospaced text</code></li>
+</ul>
+<p>Note that nesting of the same kind of elements is not allowed (for instance, nested lists are not possible). The HTML created by the BBCode converter is always valid and secure (i.e. no script injection is possible). If any nesting of BBCode elements would result in invalid HTML, the offending elements will simply be ignored.</p>
+<p>The usage of the markup editor should be pretty much self explaining. Please note that a simple preview is available via the rightmost button. If JavaScript is not available in the browser of the user, the editor is not available, but using BBCode in the textarea is still possible.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p>Report bugs and ask for support either on <a href="https://github.com/cmb69/forum_xh/issues">Github</a> or in the <a href="https://cmsimpleforum.com/">CMSimple_XH Forum</a>.</p>
+<h2 id="license">License</h2>
+<p>Forum_XH is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
+<p>Forum_XH is distributed in the hope that it will be useful, but <em>without any warranty</em>; without even the implied warranty of <em>merchantibility</em> or <em>fitness for a particular purpose</em>. See the GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License along with Forum_XH. If not, see <a href="https://www.gnu.org/licenses/" class="uri">https://www.gnu.org/licenses/</a>.</p>
+<p>© 2012-2021 Christoph M. Becker</p>
+<p>Danish translation © 2012 Jens Maegard<br />
+Russian translation © 2012 Lybomyr Kydray</p>
+<h2 id="credits">Credits</h2>
+<p>The plugin logo is designed by <a href="https://www.dezinerfolio.com/">Dezinerfolio</a>. Many thanks for publishing this icon as freeware.</p>
+<p>The emoticons were taken from the <a href="http://led24.de/">LED icon pack</a>. Many thanks for publishing these icons under CC BY-SA.</p>
+<p>Many thanks to the community at the <a href="https://www.cmsimpleforum.com/">CMSimple_XH forum</a> for tips, suggestions and testing. Especially I want to thank <em>Traktorist</em> and <em>Old</em> for many good suggestions.</p>
+<p>And last but not least many thanks to <a href="https://www.harteg.dk/">Peter Harteg</a>, the “father” of CMSimple, and all developers of <a href="https://www.cmsimple-xh.org/">CMSimple_XH</a> without whom this amazing CMS would not exist.</p>
 </body>
-
 </html>

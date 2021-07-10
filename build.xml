@@ -36,6 +36,31 @@
         <exec command="phpcompatinfo analyser:run --alias current" logoutput="true"/>
     </target>
 
+    <target name="gen-help" description="builds help.htm from README.md">
+        <exec executable="pandoc" passthru="true" checkreturn="true">
+            <arg value="-s"/>
+            <arg value="--eol=lf"/>
+            <arg value="--template=help/template.htm"/>
+            <arg value="-Vlang=en"/>
+            <arg line="-Vpagetitle=&quot;User Manual&quot;"/>
+            <arg value="-o"/>
+            <arg file="help/help.htm"/>
+            <arg file="README.md"/>
+            <arg line="-t html"/>
+        </exec>
+        <exec executable="pandoc" passthru="true" checkreturn="true">
+            <arg value="-s"/>
+            <arg value="--eol=lf"/>
+            <arg value="--template=help/template.htm"/>
+            <arg value="-Vlang=de"/>
+            <arg line="-Vpagetitle=&quot;Benutzerhandbuch&quot;"/>
+            <arg value="-o"/>
+            <arg file="help/help_de.htm"/>
+            <arg file="README_DE.md"/>
+            <arg line="-t html"/>
+        </exec>
+    </target>
+
     <target name="unit-tests" description="runs all unit tests">
         <exec executable="phpunit" passthru="true" checkreturn="true">
             <arg value="--bootstrap"/>
@@ -80,6 +105,7 @@
         <move todir="dist">
             <fileset dir="export">
                 <exclude name=".phive/**"/>
+                <exclude name="help/template.htm"/>
                 <exclude name="build.xml"/>
                 <exclude name="composer.*"/>
                 <exclude name="coverage.xml"/>
@@ -87,7 +113,6 @@
                 <exclude name="phpcompatinfo.*"/>
                 <exclude name="phpstan.bootstrap.php"/>
                 <exclude name="phpstan.neon"/>
-                <exclude name="README.md"/>
                 <exclude name="teplad.xml"/>
                 <exclude name="tests/**"/>
             </fileset>
