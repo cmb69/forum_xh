@@ -338,7 +338,7 @@ class MainController
     }
 
     /**
-     * @return XH_CSRFProtection
+     * @return CSRFProtection
      */
     private function getCSRFProtector()
     {

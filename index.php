@@ -23,7 +23,7 @@
 
 /**
  * @param string $forum
- * @return ?string
+ * @return string|void
  */
 function forum($forum)
 {
