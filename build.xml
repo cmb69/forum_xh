@@ -53,11 +53,13 @@
         <exec command="git archive -o export.zip HEAD" checkreturn="true"/>
         <unzip file="export.zip" todir="export"/>
         <delete file="export.zip"/>
-        <jsMin targetDir="dist" suffix="" failOnError="false">
-            <fileset dir="export">
-                <include name="*.js"/>
-            </fileset>
-        </jsMin>
+        <exec executable="uglifyjs" checkreturn="true">
+            <arg file="export/forum.min.js"/>
+            <arg value="--compress"/>
+            <arg value="--mangle"/>
+            <arg value="--output"/>
+            <arg file="export/forum.min.js"/>
+        </exec>
         <move todir="dist">
             <fileset dir="export">
                 <exclude name="build.xml"/>
