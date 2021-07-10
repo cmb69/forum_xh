@@ -4,3 +4,4 @@ vendor
 /composer.lock
 /tools
 /.phpunit.result.cache
+/forum.min.js

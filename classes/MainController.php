@@ -81,7 +81,11 @@ class MainController
         } else {
             $this->prepareTopicView($this->forum, $tid)->render();
         }
-        $this->addScript("{$this->pluginFolder}forum.min.js");
+        if (is_file("{$this->pluginFolder}forum.min.js")) {
+            $this->addScript("{$this->pluginFolder}forum.min.js");
+        } else {
+            $this->addScript("{$this->pluginFolder}forum.js");
+        }
     }
 
     /**
@@ -145,7 +149,11 @@ class MainController
     public function newAction()
     {
         $this->prepareCommentForm($this->forum)->render();
-        $this->addScript("{$this->pluginFolder}forum.min.js");
+        if (is_file("{$this->pluginFolder}forum.min.js")) {
+            $this->addScript("{$this->pluginFolder}forum.min.js");
+        } else {
+            $this->addScript("{$this->pluginFolder}forum.js");
+        }
     }
 
     public function postAction()
@@ -221,7 +229,11 @@ class MainController
         } else {
             echo ''; // should display error
         }
-        $this->addScript("{$this->pluginFolder}forum.min.js");
+        if (is_file("{$this->pluginFolder}forum.min.js")) {
+            $this->addScript("{$this->pluginFolder}forum.min.js");
+        } else {
+            $this->addScript("{$this->pluginFolder}forum.js");
+        }
     }
 
     public function deleteAction()
@@ -344,7 +356,11 @@ class MainController
             $tid = $this->contents->cleanId($_GET['forum_topic']);
             $this->prepareCommentForm($this->forum, $tid)->render();
         }
-        $this->addScript("{$this->pluginFolder}forum.min.js");
+        if (is_file("{$this->pluginFolder}forum.min.js")) {
+            $this->addScript("{$this->pluginFolder}forum.min.js");
+        } else {
+            $this->addScript("{$this->pluginFolder}forum.js");
+        }
     }
 
     public function previewAction()
