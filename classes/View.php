@@ -24,22 +24,9 @@ namespace Forum;
 class View
 {
     /**
-     * @var string
-     */
-    private $template;
-
-    /**
      * @var array<string,mixed>
      */
     private $data = array();
-
-    /**
-     * @param string $template
-     */
-    public function __construct($template)
-    {
-        $this->template = $template;
-    }
 
     /**
      * @param string $name
@@ -102,16 +89,17 @@ class View
     }
 
     /**
+     * @param string $_template
      * @param array<string,mixed> $data
      * @return void
      */
-    public function render(array $data)
+    public function render($_template, array $data)
     {
         global $pth;
 
         $this->data = $data;
         unset($data);
-        include "{$pth['folder']['plugins']}forum/views/{$this->template}.php";
+        include "{$pth['folder']['plugins']}forum/views/{$_template}.php";
     }
 
     /**

@@ -36,11 +36,11 @@ class InfoController
      */
     public function defaultAction()
     {
-        $view = new View('info');
+        $view = new View();
         $data = [
             'version' => Plugin::VERSION,
             'checks' => $this->systemCheckService->getChecks(),
         ];
-        $view->render($data);
+        $view->render('info', $data);
     }
 }

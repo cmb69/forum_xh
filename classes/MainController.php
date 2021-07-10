@@ -107,13 +107,13 @@ class MainController
             $topic['href'] = "?$su&forum_topic=$tid";
             $topic['date'] = XH_formatDate($topic['time']);
         }
-        $view = new View('topics');
+        $view = new View();
         $data = [
             'isUser' => $this->user() !== false,
             'href' => "?$su&forum_actn=new",
             'topics' => $topics,
         ];
-        $view->render($data);
+        $view->render('topics', $data);
     }
 
     /**
@@ -139,7 +139,7 @@ class MainController
         }
 
         $csrfProtector = $this->getCSRFProtector();
-        $view = new View('topic');
+        $view = new View();
         $data = [
             'title' => $title,
             'topic' => $topic,
@@ -153,7 +153,7 @@ class MainController
             'href' => "?$su",
         ];
         $csrfProtector->store();
-        $view->render($data);
+        $view->render('topic', $data);
     }
 
     /**
@@ -304,7 +304,7 @@ class MainController
             $emoticons[$emotion] = "{$this->pluginFolder}images/emoticon_$emotion.png";
         }
         $csrfProtector = $this->getCSRFProtector();
-        $view = new View('form');
+        $view = new View();
         $data = [
             'newTopic' => $newTopic,
             'tid' => $tid,
@@ -319,7 +319,7 @@ class MainController
             'emoticons' => $emoticons,
         ];
         $csrfProtector->store();
-        $view->render($data);
+        $view->render('form', $data);
     }
 
     /**
