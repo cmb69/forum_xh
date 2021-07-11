@@ -21,6 +21,8 @@
 
 namespace Forum;
 
+use function XH_hsc;
+
 class BBCode
 {
     /**

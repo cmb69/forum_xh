@@ -21,6 +21,9 @@
 
 namespace Forum;
 
+use function XH_hsc;
+use function XH_numberSuffix;
+
 class View
 {
     /** @var string */
@@ -33,23 +36,23 @@ class View
 
     /**
      * @param string $key
+     * @param mixed $args
      * @return string
      */
-    protected function text($key)
+    protected function text($key, ...$args)
     {
         global $plugin_tx;
 
-        $args = func_get_args();
-        array_shift($args);
-        return $this->esc(vsprintf($plugin_tx['forum'][$key], $args));
+        return $this->esc(sprintf($plugin_tx['forum'][$key], ...$args));
     }
 
     /**
      * @param string $key
      * @param int $count
+     * @param mixed $args
      * @return string
      */
-    protected function plural($key, $count)
+    protected function plural($key, $count, ...$args)
     {
         global $plugin_tx;
 
@@ -58,9 +61,7 @@ class View
         } else {
             $key .= XH_numberSuffix($count);
         }
-        $args = func_get_args();
-        array_shift($args);
-        return $this->esc(vsprintf($plugin_tx['forum'][$key], $args));
+        return $this->esc(sprintf($plugin_tx['forum'][$key], $count, ...$args));
     }
 
     /**

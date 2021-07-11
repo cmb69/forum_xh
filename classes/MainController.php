@@ -23,6 +23,10 @@ namespace Forum;
 
 use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
+use const CMSIMPLE_URL;
+use function XH_formatDate;
+use function XH_hsc;
+use function XH_startSession;
 
 class MainController
 {

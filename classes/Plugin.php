@@ -21,6 +21,11 @@
 
 namespace Forum;
 
+use function XH_message;
+use const CMSIMPLE_URL;
+use function XH_registerStandardPluginMenuItems;
+use function XH_wantsPluginAdministration;
+
 class Plugin
 {
     const VERSION = '1.0beta5';
