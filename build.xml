@@ -21,7 +21,7 @@
   </target>
 
   <target name="mess" description="detects code flaws">
-    <exec executable="phpmd" passthru="true" checkreturn="true">
+    <exec executable="phpmd" passthru="true">
       <arg line="classes,index.php,tests/unit,tests/attack ansi codesize,unusedcode"/>
     </exec>
   </target>
