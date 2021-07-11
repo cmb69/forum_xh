@@ -18,7 +18,7 @@ jobs:
         with:
           path: 'cmsimplexh/plugins/forum'
       - name: phive install
-        run: cd cmsimplexh/plugins/forum && phive --no-progress install --trust-gpg-keys 0x0F9684B8B16B7AB0,0x2420BAE0A3BE25C6,0x31C7E470E2138192,0x4AA394086372C20A,0xCF1A108D0E7AE720
+        run: cd cmsimplexh/plugins/forum && phive --no-progress install --trust-gpg-keys 0x0F9684B8B16B7AB0,0x2420BAE0A3BE25C6,0x31C7E470E2138192,0x4AA394086372C20A,0xCF1A108D0E7AE720,0xD5F0CB76E2DD74F8
       - name: composer install
         run: cd cmsimplexh/plugins/forum && composer install
       - name: phing sniff
