@@ -145,8 +145,6 @@ class MainController
             'topic' => $topic,
             'tid' => $tid,
             'su' => $su,
-            'deleteImg' => "{$this->pluginFolder}images/delete.png",
-            'editImg' => "{$this->pluginFolder}images/edit.png",
             'csrfTokenInput' => new HtmlString($csrfProtector->tokenInput()),
             'isUser' => $this->user() !== false,
             'replyUrl' => "$sn?$su&forum_actn=reply&forum_topic=$tid",

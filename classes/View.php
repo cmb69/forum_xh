@@ -23,38 +23,13 @@ namespace Forum;
 
 class View
 {
+    /** @var string */
+    private $template;
+
     /**
      * @var array<string,mixed>
      */
-    private $data = array();
-
-    /**
-     * @param string $name
-     * @return string
-     */
-    public function __get($name)
-    {
-        return $this->data[$name];
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function __isset($name)
-    {
-        return isset($this->data[$name]);
-    }
-
-    /**
-     * @param string $name
-     * @param array<int,mixed> $args
-     * @return string
-     */
-    public function __call($name, array $args)
-    {
-        return $this->escape($this->data[$name]);
-    }
+    private $data;
 
     /**
      * @param string $key
@@ -66,7 +41,7 @@ class View
 
         $args = func_get_args();
         array_shift($args);
-        return $this->escape(vsprintf($plugin_tx['forum'][$key], $args));
+        return $this->esc(vsprintf($plugin_tx['forum'][$key], $args));
     }
 
     /**
@@ -85,28 +60,30 @@ class View
         }
         $args = func_get_args();
         array_shift($args);
-        return $this->escape(vsprintf($plugin_tx['forum'][$key], $args));
+        return $this->esc(vsprintf($plugin_tx['forum'][$key], $args));
     }
 
     /**
-     * @param string $_template
+     * @param string $template
      * @param array<string,mixed> $data
      * @return void
      */
-    public function render($_template, array $data)
+    public function render($template, array $data)
     {
         global $pth;
 
+        $this->template = "{$pth['folder']['plugins']}forum/views/{$template}.php";
         $this->data = $data;
-        unset($data);
-        include "{$pth['folder']['plugins']}forum/views/{$_template}.php";
+        unset($template, $data, $pth);
+        extract($this->data);
+        include $this->template;
     }
 
     /**
      * @param mixed $value
      * @return mixed
      */
-    protected function escape($value)
+    protected function esc($value)
     {
         if ($value instanceof HtmlString) {
             return $value;

@@ -2,6 +2,7 @@ parameters:
   level: 6
   paths:
     - classes/
+    - views/
     - index.php
   bootstrapFiles:
     - phpstan.bootstrap.php
@@ -10,3 +11,6 @@ parameters:
     - ../../cmsimple/adminfuncs.php
     - ../../cmsimple/functions.php
     - ../fa/classes/RequireCommand.php
+  ignoreErrors:
+    - message: '/Call to protected method [a-zA-Z0-9\\_]+\(\) of class Forum\\View\./'
+      path: views/
