@@ -43,7 +43,7 @@ class BBCodeTest extends TestCase
             'lbl_surprised' => 'surprised',
             'lbl_unhappy' => 'unhappy'
         );
-        $this->bbcode = new BBCode('./', "External content");
+        $this->bbcode = new BBCode('./', "External <content>");
     }
 
     /**
@@ -89,9 +89,13 @@ class BBCodeTest extends TestCase
                 '<img src="https://example.com/image.jpg" alt="image.jpg">'
             ),
             array(
+                '[img]https://example.com/me&you.jpg[/img]',
+                '<img src="https://example.com/me&amp;you.jpg" alt="me&amp;you.jpg">'
+            ),
+            array(
                 '[iframe]https://example.com/image.jpg[/iframe]',
                 '<div class="iframe_container"><iframe src="https://example.com/image.jpg"'
-                . ' title="External content"></iframe></div>'
+                . ' title="External &lt;content&gt;"></iframe></div>'
             ),
             array(
                 '[size=150]large text[/size]',

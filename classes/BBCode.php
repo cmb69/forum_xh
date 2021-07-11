@@ -162,7 +162,7 @@ class BBCode
         return sprintf(
             '<div class="iframe_container"><iframe src="%s" title="%s"></iframe></div>',
             $url,
-            $this->iframeTitle
+            XH_hsc($this->iframeTitle)
         );
     }
 
