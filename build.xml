@@ -2,133 +2,133 @@
 
 <project name="Forum" default="help">
 
-    <target name="help" description="lists available targets">
-        <exec executable="phing" outputProperty="help">
-            <arg value="-l"/>
-        </exec>
-        <echo>${help}</echo>
-    </target>
+  <target name="help" description="lists available targets">
+    <exec executable="phing" outputProperty="help">
+      <arg value="-l"/>
+    </exec>
+    <echo>${help}</echo>
+  </target>
 
-    <target name="sniff" description="checks adherence to the coding standards">
-        <exec executable="phpcs" passthru="true" checkreturn="true">
-            <arg value="--standard=PSR2"/>
-            <arg line="--runtime-set ignore_warnings_on_exit true"/>
-            <arg file="classes"/>
-            <arg file="index.php"/>
-            <arg file="tests/unit"/>
-            <arg file="tests/attack"/>
-        </exec>
-    </target>
+  <target name="sniff" description="checks adherence to the coding standards">
+    <exec executable="phpcs" passthru="true" checkreturn="true">
+      <arg value="--standard=PSR2"/>
+      <arg line="--runtime-set ignore_warnings_on_exit true"/>
+      <arg file="classes"/>
+      <arg file="index.php"/>
+      <arg file="tests/unit"/>
+      <arg file="tests/attack"/>
+    </exec>
+  </target>
 
-    <target name="mess" description="detects code flaws">
-        <exec executable="phpmd" passthru="true" checkreturn="true">
-            <arg line="classes,index.php,tests/unit,tests/attack ansi codesize,unusedcode"/>
-        </exec>
-    </target>
+  <target name="mess" description="detects code flaws">
+    <exec executable="phpmd" passthru="true" checkreturn="true">
+      <arg line="classes,index.php,tests/unit,tests/attack ansi codesize,unusedcode"/>
+    </exec>
+  </target>
 
-    <target name="stan" description="run static analysis">
-        <exec executable="phpstan" passthru="true" checkreturn="true">
-            <arg value="--ansi"/>
-            <arg value="analyze"/>
-        </exec>
-    </target>
+  <target name="stan" description="run static analysis">
+    <exec executable="phpstan" passthru="true" checkreturn="true">
+      <arg value="--ansi"/>
+      <arg value="analyze"/>
+    </exec>
+  </target>
 
-    <target name="compat"
-            description="checks compatibility with PHP_CompatInfo">
-        <exec executable="phpcompatinfo" passthru="true" checkreturn="true">
-            <arg line="--ansi analyser:run classes"/>
-        </exec>
-    </target>
+  <target name="compat"
+      description="checks compatibility with PHP_CompatInfo">
+    <exec executable="phpcompatinfo" passthru="true" checkreturn="true">
+      <arg line="--ansi analyser:run classes"/>
+    </exec>
+  </target>
 
-    <target name="gen-help" description="builds help.htm from README.md">
-        <exec executable="pandoc" passthru="true" checkreturn="true">
-            <arg value="-s"/>
-            <arg value="--eol=lf"/>
-            <arg value="--template=help/template.htm"/>
-            <arg value="-Vlang=en"/>
-            <arg line="-Vpagetitle=&quot;User Manual&quot;"/>
-            <arg value="-o"/>
-            <arg file="help/help.htm"/>
-            <arg file="README.md"/>
-            <arg line="-t html"/>
-        </exec>
-        <exec executable="pandoc" passthru="true" checkreturn="true">
-            <arg value="-s"/>
-            <arg value="--eol=lf"/>
-            <arg value="--template=help/template.htm"/>
-            <arg value="-Vlang=de"/>
-            <arg line="-Vpagetitle=&quot;Benutzerhandbuch&quot;"/>
-            <arg value="-o"/>
-            <arg file="help/help_de.htm"/>
-            <arg file="README_DE.md"/>
-            <arg line="-t html"/>
-        </exec>
-    </target>
+  <target name="gen-help" description="builds help.htm from README.md">
+    <exec executable="pandoc" passthru="true" checkreturn="true">
+      <arg value="-s"/>
+      <arg value="--eol=lf"/>
+      <arg value="--template=help/template.htm"/>
+      <arg value="-Vlang=en"/>
+      <arg line="-Vpagetitle=&quot;User Manual&quot;"/>
+      <arg value="-o"/>
+      <arg file="help/help.htm"/>
+      <arg file="README.md"/>
+      <arg line="-t html"/>
+    </exec>
+    <exec executable="pandoc" passthru="true" checkreturn="true">
+      <arg value="-s"/>
+      <arg value="--eol=lf"/>
+      <arg value="--template=help/template.htm"/>
+      <arg value="-Vlang=de"/>
+      <arg line="-Vpagetitle=&quot;Benutzerhandbuch&quot;"/>
+      <arg value="-o"/>
+      <arg file="help/help_de.htm"/>
+      <arg file="README_DE.md"/>
+      <arg line="-t html"/>
+    </exec>
+  </target>
 
-    <target name="unit-tests" description="runs all unit tests">
-        <exec executable="phpunit" passthru="true" checkreturn="true">
-            <arg value="--bootstrap"/>
-            <arg file="tests/unit/bootstrap.php"/>
-            <arg file="tests/unit"/>
-        </exec>
-    </target>
+  <target name="unit-tests" description="runs all unit tests">
+    <exec executable="phpunit" passthru="true" checkreturn="true">
+      <arg value="--bootstrap"/>
+      <arg file="tests/unit/bootstrap.php"/>
+      <arg file="tests/unit"/>
+    </exec>
+  </target>
 
-    <target name="attack-tests" description="runs all attack tests">
-        <fail unless="env.CMSIMPLEDIR" message="CMSIMPLEDIR undefined!"/>
-        <exec executable="phpunit" passthru="true" checkreturn="true">
-            <arg file="tests/attack"/>
-        </exec>
-    </target>
+  <target name="attack-tests" description="runs all attack tests">
+    <fail unless="env.CMSIMPLEDIR" message="CMSIMPLEDIR undefined!"/>
+    <exec executable="phpunit" passthru="true" checkreturn="true">
+      <arg file="tests/attack"/>
+    </exec>
+  </target>
 
-    <target name="coverage" description="generates coverage report">
-        <exec executable="phpunit" logoutput="true">
-            <arg line="--configuration coverage.xml"/>
-        </exec>
-    </target>
+  <target name="coverage" description="generates coverage report">
+    <exec executable="phpunit" logoutput="true">
+      <arg line="--configuration coverage.xml"/>
+    </exec>
+  </target>
 
-    <target name="minify" description="minifies JS files">
-        <condition property="dir" value=".">
-            <not>
-                <isset property="dir"/>
-            </not>
-        </condition>
-        <exec executable="uglifyjs" checkreturn="true">
-            <arg file="${dir}/forum.js"/>
-            <arg value="--compress"/>
-            <arg value="--mangle"/>
-            <arg value="--output"/>
-            <arg file="${dir}/forum.min.js"/>
-        </exec>
-    </target>
+  <target name="minify" description="minifies JS files">
+    <condition property="dir" value=".">
+      <not>
+        <isset property="dir"/>
+      </not>
+    </condition>
+    <exec executable="uglifyjs" checkreturn="true">
+      <arg file="${dir}/forum.js"/>
+      <arg value="--compress"/>
+      <arg value="--mangle"/>
+      <arg value="--output"/>
+      <arg file="${dir}/forum.min.js"/>
+    </exec>
+  </target>
 
-    <target name="build" description="builds a distributable ZIP archive">
-        <exec executable="git" checkreturn="true">
-            <arg line="archive -o export.zip HEAD"/>
-        </exec>
-        <unzip file="export.zip" todir="export"/>
-        <delete file="export.zip"/>
-        <phingcall target="minify">
-            <property name="dir" value="export"/>
-        </phingcall>
-        <move todir="dist">
-            <fileset dir="export">
-                <exclude name=".phive/**"/>
-                <exclude name="help/template.htm"/>
-                <exclude name="build.xml"/>
-                <exclude name="composer.*"/>
-                <exclude name="coverage.xml"/>
-                <exclude name="phpstan.bootstrap.php"/>
-                <exclude name="phpstan.neon"/>
-                <exclude name="teplad.xml"/>
-                <exclude name="tests/**"/>
-            </fileset>
-        </move>
-        <delete dir="export"/>
-        <copy file="dist/config/config.php" tofile="dist/config/defaultconfig.php"/>
-        <copy file="dist/languages/en.php" tofile="dist/languages/default.php"/>
-        <zip destfile="Forum_XH-1.0beta5.zip" basedir="dist"
-             prefix="forum/"/>
-        <delete dir="dist"/>
-    </target>
+  <target name="build" description="builds a distributable ZIP archive">
+    <exec executable="git" checkreturn="true">
+      <arg line="archive -o export.zip HEAD"/>
+    </exec>
+    <unzip file="export.zip" todir="export"/>
+    <delete file="export.zip"/>
+    <phingcall target="minify">
+      <property name="dir" value="export"/>
+    </phingcall>
+    <move todir="dist">
+      <fileset dir="export">
+        <exclude name=".phive/**"/>
+        <exclude name="help/template.htm"/>
+        <exclude name="build.xml"/>
+        <exclude name="composer.*"/>
+        <exclude name="coverage.xml"/>
+        <exclude name="phpstan.bootstrap.php"/>
+        <exclude name="phpstan.neon"/>
+        <exclude name="teplad.xml"/>
+        <exclude name="tests/**"/>
+      </fileset>
+    </move>
+    <delete dir="export"/>
+    <copy file="dist/config/config.php" tofile="dist/config/defaultconfig.php"/>
+    <copy file="dist/languages/en.php" tofile="dist/languages/default.php"/>
+    <zip destfile="Forum_XH-1.0beta5.zip" basedir="dist"
+       prefix="forum/"/>
+    <delete dir="dist"/>
+  </target>
 
 </project>
