@@ -35,8 +35,8 @@
 
     <target name="compat"
             description="checks compatibility with PHP_CompatInfo">
-        <exec executable="phpcompatinfo" logoutput="true">
-            <arg line="analyser:run --alias current"/>
+        <exec executable="phpcompatinfo" passthru="true" checkreturn="true">
+            <arg line="--ansi analyser:run classes"/>
         </exec>
     </target>
 
@@ -118,7 +118,6 @@
                 <exclude name="composer.*"/>
                 <exclude name="coverage.xml"/>
                 <exclude name="pax_global_header"/>
-                <exclude name="phpcompatinfo.*"/>
                 <exclude name="phpstan.bootstrap.php"/>
                 <exclude name="phpstan.neon"/>
                 <exclude name="teplad.xml"/>
