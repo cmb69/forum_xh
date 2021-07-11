@@ -146,7 +146,7 @@ class BBCode
         if (!preg_match('/^http(s)?:/', $url)) {
             return $matches[0];
         }
-        return '<img src="' . $url . '" alt="' . basename($url) . '">';
+        return '<img src="' . $url . '" alt="' . pathinfo($url, PATHINFO_FILENAME) . '">';
     }
 
     /**

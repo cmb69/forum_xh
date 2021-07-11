@@ -82,15 +82,15 @@ class BBCodeTest extends TestCase
             ),
             array(
                 '[img]http://example.com/image.jpg[/img]',
-                '<img src="http://example.com/image.jpg" alt="image.jpg">'
+                '<img src="http://example.com/image.jpg" alt="image">'
             ),
             array(
                 '[img]https://example.com/image.jpg[/img]',
-                '<img src="https://example.com/image.jpg" alt="image.jpg">'
+                '<img src="https://example.com/image.jpg" alt="image">'
             ),
             array(
                 '[img]https://example.com/me&you.jpg[/img]',
-                '<img src="https://example.com/me&amp;you.jpg" alt="me&amp;you.jpg">'
+                '<img src="https://example.com/me&amp;you.jpg" alt="me&amp;you">'
             ),
             array(
                 '[iframe]https://example.com/image.jpg[/iframe]',
