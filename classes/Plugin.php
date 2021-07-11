@@ -28,12 +28,13 @@ class Plugin
     /**
      * @return void
      */
-    public function run()
+    public static function run()
     {
+        eval('function forum($forum) {return \Forum\Plugin::forum($forum);}');
         if (defined('XH_ADM') && XH_ADM) {
             XH_registerStandardPluginMenuItems(false);
             if (XH_wantsPluginAdministration('forum')) {
-                $this->handleAdministration();
+                self::handleAdministration();
             }
         }
     }
@@ -41,7 +42,7 @@ class Plugin
     /**
      * @return void
      */
-    private function handleAdministration()
+    private static function handleAdministration()
     {
         global $admin, $o;
 
@@ -55,5 +56,37 @@ class Plugin
             default:
                 $o .= plugin_admin_common();
         }
+    }
+
+    /**
+     * @param string $forum
+     * @return string|never
+     */
+    public static function forum($forum)
+    {
+        global $plugin_tx;
+
+        $ptx = $plugin_tx['forum'];
+        if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
+            return XH_message('fail', $ptx['msg_invalid_name'], $forum);
+        }
+        $controller = new MainController($forum);
+        $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'default';
+        $action .= 'Action';
+        if (method_exists($controller, $action)) {
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+                header('X-Location: ' . CMSIMPLE_URL . "?{$_SERVER['QUERY_STRING']}");
+                while (ob_get_level()) {
+                    ob_end_clean();
+                }
+                $controller->{$action}();
+                exit;
+            } else {
+                ob_start();
+                $controller->{$action}();
+                return ob_get_clean();
+            }
+        }
+        return "";
     }
 }
