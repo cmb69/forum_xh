@@ -35,6 +35,12 @@ class MainController
      */
     private $forum;
 
+    /** @var string */
+    private $scriptName;
+
+    /** @var string */
+    private $selectedUrl;
+
     /**
      * @var array<string,string>
      */
@@ -48,11 +54,6 @@ class MainController
     /**
      * @var string
      */
-    private $pluginsFolder;
-
-    /**
-     * @var string
-     */
     private $pluginFolder;
 
     /**
@@ -60,22 +61,53 @@ class MainController
      */
     private $contents;
 
+    /** @var BBCode */
+    private $bbcode;
+
     /** @var CSRFProtection|null */
     private $csrfProtector = null;
 
+    /** @var View */
+    private $view;
+
+    /** @var FaRequireCommand */
+    private $faRequireCommand;
+
+    /** @var MailService */
+    private $mailService;
+
     /**
      * @param string $forum
+     * @param string $scriptName
+     * @param string $selectedUrl
+     * @param array<string,string> $config
+     * @param array<string,string> $lang
+     * @param string $pluginFolder
      */
-    public function __construct($forum)
-    {
-        global $pth, $plugin_cf, $plugin_tx;
-
+    public function __construct(
+        $forum,
+        $scriptName,
+        $selectedUrl,
+        array $config,
+        array $lang,
+        $pluginFolder,
+        Contents $contents,
+        BBCode $bbcode,
+        View $view,
+        FaRequireCommand $faRequireCommand,
+        MailService $mailService
+    ) {
         $this->forum = $forum;
-        $this->config = $plugin_cf['forum'];
-        $this->lang = $plugin_tx['forum'];
-        $this->pluginsFolder = $pth['folder']['plugins'];
-        $this->pluginFolder = "{$this->pluginsFolder}forum/";
-        $this->contents = new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/");
+        $this->scriptName = $scriptName;
+        $this->selectedUrl = $selectedUrl;
+        $this->config = $config;
+        $this->lang = $lang;
+        $this->pluginFolder = $pluginFolder;
+        $this->contents = $contents;
+        $this->bbcode = $bbcode;
+        $this->view = $view;
+        $this->faRequireCommand = $faRequireCommand;
+        $this->mailService = $mailService;
     }
 
     /**
@@ -104,20 +136,16 @@ class MainController
      */
     private function renderTopicsView($forum)
     {
-        global $su;
-
         $topics = $this->contents->getSortedTopics($forum);
         foreach ($topics as $tid => &$topic) {
-            $topic['href'] = "?$su&forum_topic=$tid";
+            $topic['href'] = "?$this->selectedUrl&forum_topic=$tid";
             $topic['date'] = XH_formatDate($topic['time']);
         }
-        $view = new View();
-        $data = [
+        $this->view->render('topics', [
             'isUser' => $this->user() !== false,
-            'href' => "?$su&forum_actn=new",
+            'href' => "?$this->selectedUrl&forum_actn=new",
             'topics' => $topics,
-        ];
-        $view->render('topics', $data);
+        ]);
     }
 
     /**
@@ -127,35 +155,30 @@ class MainController
      */
     private function renderTopicView($forum, $tid)
     {
-        global $sn, $su;
-
-        (new FaRequireCommand)->execute();
-        $bbcode = new BBCode("{$this->pluginFolder}images/", $this->lang['title_iframe']);
+        $this->faRequireCommand->execute();
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
-        $editUrl = $sn . '?' . $su . '&forum_actn=edit&forum_topic=' . $tid
+        $editUrl = $this->scriptName . '?' . $this->selectedUrl . '&forum_actn=edit&forum_topic=' . $tid
             . '&forum_comment=';
         foreach ($topic as $cid => &$comment) {
             $mayDelete = defined('XH_ADM') && XH_ADM || $comment['user'] == $this->user();
             $comment['mayDelete'] = $mayDelete;
             $comment['date'] = XH_formatDate($comment['time']);
-            $comment['comment'] = new HtmlString($bbcode->convert($comment['comment']));
+            $comment['comment'] = new HtmlString($this->bbcode->convert($comment['comment']));
             $comment['editUrl'] = $editUrl . $cid;
         }
 
         $csrfProtector = $this->getCSRFProtector();
-        $view = new View();
-        $data = [
+        $csrfProtector->store();
+        $this->view->render('topic', [
             'title' => $title,
             'topic' => $topic,
             'tid' => $tid,
-            'su' => $su,
+            'su' => $this->selectedUrl,
             'csrfTokenInput' => new HtmlString($csrfProtector->tokenInput()),
             'isUser' => $this->user() !== false,
-            'replyUrl' => "$sn?$su&forum_actn=reply&forum_topic=$tid",
-            'href' => "?$su",
-        ];
-        $csrfProtector->store();
-        $view->render('topic', $data);
+            'replyUrl' => "$this->scriptName?$this->selectedUrl&forum_actn=reply&forum_topic=$tid",
+            'href' => "?$this->selectedUrl",
+        ]);
     }
 
     /**
@@ -176,8 +199,6 @@ class MainController
      */
     public function postAction()
     {
-        global $su;
-
         $this->getCSRFProtector()->check();
         $forumtopic = isset($_POST['forum_topic']) ? $_POST['forum_topic'] : null;
         if (!empty($_POST['forum_comment'])) {
@@ -185,7 +206,7 @@ class MainController
         } else {
             $tid = $this->postComment($this->forum, $forumtopic);
         }
-        $params = $tid ? "?$su&forum_topic=$tid" : "?$su";
+        $params = $tid ? "?$this->selectedUrl&forum_topic=$tid" : "?$this->selectedUrl";
         header('Location: ' . CMSIMPLE_URL . $params, true, 303);
         exit;
     }
@@ -198,8 +219,6 @@ class MainController
      */
     private function postComment($forum, $tid = null, $cid = null)
     {
-        global $su;
-
         if (!isset($tid) && empty($_POST['forum_title'])
             || $this->user() === false || empty($_POST['forum_text'])
         ) {
@@ -228,12 +247,12 @@ class MainController
         }
 
         if (!defined('XH_ADM') || !XH_ADM && $this->config['mail_address']) {
-            $url = CMSIMPLE_URL . "?$su&forum_topic=$tid";
+            $url = CMSIMPLE_URL . "?$this->selectedUrl&forum_topic=$tid";
             $date = XH_formatDate($comment['time']);
             $attribution = sprintf($this->lang['mail_attribution'], $comment['user'], $date);
             $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment['comment']);
             $message = "$attribution\n\n> $content\n\n<$url>";
-            (new MailService)->sendMail($subject, $message, $url);
+            $this->mailService->sendMail($subject, $message, $url);
         }
 
         return $tid;
@@ -263,15 +282,13 @@ class MainController
      */
     public function deleteAction()
     {
-        global $su;
-
         $this->getCSRFProtector()->check();
         $tid = $this->contents->cleanId($_POST['forum_topic']);
         $cid = $this->contents->cleanId($_POST['forum_comment']);
         $user = defined('XH_ADM') && XH_ADM ? true : $this->user();
         $queryString = $this->contents->deleteComment($this->forum, $tid, $cid, $user)
-            ? '?' . $su . '&forum_topic=' . $tid
-            : '?' . $su ;
+            ? '?' . $this->selectedUrl . '&forum_topic=' . $tid
+            : '?' . $this->selectedUrl ;
         header('Location: ' . CMSIMPLE_URL . $queryString, true, 303);
         exit;
     }
@@ -284,12 +301,10 @@ class MainController
      */
     private function renderCommentForm($forum, $tid = null, $cid = null)
     {
-        global $sn, $su;
-
         if ($this->user() === false && (!defined('XH_ADM') || !XH_ADM)) {
             return;
         }
-        (new FaRequireCommand)->execute();
+        $this->faRequireCommand->execute();
 
         $newTopic = !isset($tid);
         $comment = '';
@@ -306,22 +321,20 @@ class MainController
             $emoticons[$emotion] = "{$this->pluginFolder}images/emoticon_$emotion.png";
         }
         $csrfProtector = $this->getCSRFProtector();
-        $view = new View();
-        $data = [
+        $csrfProtector->store();
+        $this->view->render('form', [
             'newTopic' => $newTopic,
             'tid' => $tid,
             'cid' => $cid,
-            'action' => "?$su&forum_actn=post",
-            'previewUrl' => "$sn?$su&forum_actn=preview",
-            'backUrl' => $newTopic ? "?$su" : "$sn?$su&forum_topic=$tid",
+            'action' => "?$this->selectedUrl&forum_actn=post",
+            'previewUrl' => "$this->scriptName?$this->selectedUrl&forum_actn=preview",
+            'backUrl' => $newTopic ? "?$this->selectedUrl" : "$this->scriptName?$this->selectedUrl&forum_topic=$tid",
             'headingKey' => $newTopic ? 'msg_new_topic' : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment'),
             'comment' => $comment,
             'csrfTokenInput' => new HtmlString($csrfProtector->tokenInput()),
             'i18n' => json_encode($this->jsTexts()),
             'emoticons' => $emoticons,
-        ];
-        $csrfProtector->store();
-        $view->render('form', $data);
+        ]);
     }
 
     /**
@@ -397,8 +410,7 @@ class MainController
      */
     public function previewAction()
     {
-        $bbcode = new BBCode("{$this->pluginFolder}images/", $this->lang['title_iframe']);
-        echo $bbcode->convert($_POST['data']);
+        echo $this->bbcode->convert($_POST['data']);
         exit;
     }
 }

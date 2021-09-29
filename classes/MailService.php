@@ -28,11 +28,12 @@ class MailService
      */
     private $config;
 
-    public function __construct()
+    /**
+     * @param array<string,string> $config
+     */
+    public function __construct(array $config)
     {
-        global $plugin_cf;
-
-        $this->config = $plugin_cf['forum'];
+        $this->config = $config;
     }
 
     /**

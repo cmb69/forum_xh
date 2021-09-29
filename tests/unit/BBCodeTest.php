@@ -32,9 +32,7 @@ class BBCodeTest extends TestCase
 
     protected function setUp(): void
     {
-        global $plugin_tx;
-
-        $plugin_tx['forum'] = array(
+        $lang = array(
             'lbl_happy' => 'happy',
             'lbl_smile' => 'smile',
             'lbl_wink' => 'wink',
@@ -43,7 +41,7 @@ class BBCodeTest extends TestCase
             'lbl_surprised' => 'surprised',
             'lbl_unhappy' => 'unhappy'
         );
-        $this->bbcode = new BBCode('./', "External <content>");
+        $this->bbcode = new BBCode($lang, './', "External <content>");
     }
 
     /**

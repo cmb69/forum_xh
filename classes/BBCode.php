@@ -25,6 +25,9 @@ use function XH_hsc;
 
 class BBCode
 {
+    /** @var array<string,string> */
+    private $lang;
+
     /**
      * @var string
      */
@@ -44,14 +47,16 @@ class BBCode
     private $iframeTitle;
 
     /**
+     * @param array<string,string> $lang
      * @param string $emoticonDir
      * @param string $iframeTitle
      */
-    public function __construct($emoticonDir, $iframeTitle)
+    public function __construct(array $lang, $emoticonDir, $iframeTitle)
     {
         $this->pattern = '/\[(i|b|u|s|url|img|iframe|size|list|quote|code)(=.*?)?]'
             . '(.*?)\[\/\1]/su';
         $this->context = array();
+        $this->lang = $lang;
         $this->emoticonDir = rtrim($emoticonDir, '/') . '/';
         $this->iframeTitle = $iframeTitle;
     }
@@ -259,9 +264,6 @@ class BBCode
      */
     private function convertEmoticons($text)
     {
-        global $plugin_tx;
-
-        $ptx = $plugin_tx['forum'];
         $emotions = array(
             'happy', 'smile', 'wink', 'grin', 'tongue', 'surprised', 'unhappy'
         );
@@ -269,7 +271,7 @@ class BBCode
         $images = array();
         foreach ($emotions as $emotion) {
             $src = $this->emoticonDir . 'emoticon_' . $emotion . '.png';
-            $alt = $ptx['lbl_' . $emotion];
+            $alt = $this->lang['lbl_' . $emotion];
             $images[] = '<img src="' . $src . '" alt="' . $alt . '">';
         }
         return str_replace($emoticons, $images, $text);

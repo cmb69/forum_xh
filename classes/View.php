@@ -27,6 +27,12 @@ use function XH_numberSuffix;
 class View
 {
     /** @var string */
+    private $templateFolder;
+
+    /** @var array<string,string> */
+    private $lang;
+
+    /** @var string */
     private $template;
 
     /**
@@ -35,15 +41,23 @@ class View
     private $data;
 
     /**
+     * @param string $templateFolder
+     * @param array<string,string> $lang
+     */
+    public function __construct($templateFolder, array $lang)
+    {
+        $this->lang = $lang;
+        $this->templateFolder = $templateFolder;
+    }
+
+    /**
      * @param string $key
      * @param mixed $args
      * @return string
      */
     protected function text($key, ...$args)
     {
-        global $plugin_tx;
-
-        return $this->esc(sprintf($plugin_tx['forum'][$key], ...$args));
+        return $this->esc(sprintf($this->lang[$key], ...$args));
     }
 
     /**
@@ -54,14 +68,12 @@ class View
      */
     protected function plural($key, $count, ...$args)
     {
-        global $plugin_tx;
-
         if ($count == 0) {
             $key .= '_0';
         } else {
             $key .= XH_numberSuffix($count);
         }
-        return $this->esc(sprintf($plugin_tx['forum'][$key], $count, ...$args));
+        return $this->esc(sprintf($this->lang[$key], $count, ...$args));
     }
 
     /**
@@ -71,11 +83,9 @@ class View
      */
     public function render($template, array $data)
     {
-        global $pth;
-
-        $this->template = "{$pth['folder']['plugins']}forum/views/{$template}.php";
+        $this->template = "{$this->templateFolder}/{$template}.php";
         $this->data = $data;
-        unset($template, $data, $pth);
+        unset($template, $data);
         extract($this->data);
         include $this->template;
     }

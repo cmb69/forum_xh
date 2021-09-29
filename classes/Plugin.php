@@ -21,6 +21,7 @@
 
 namespace Forum;
 
+use Fa\RequireCommand as FaRequireCommand;
 use function XH_message;
 use const CMSIMPLE_URL;
 use function XH_registerStandardPluginMenuItems;
@@ -49,13 +50,21 @@ class Plugin
      */
     private static function handleAdministration()
     {
-        global $admin, $o;
+        global $pth, $plugin_tx, $admin, $o;
 
         $o .= print_plugin_admin('off');
         switch ($admin) {
             case '':
+                $controller = new InfoController(
+                    new SystemCheckService(
+                        $pth['folder']['plugins'],
+                        "{$pth['folder']['content']}{$pth['folder']['base']}forum/",
+                        $plugin_tx['forum']
+                    ),
+                    new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum'])
+                );
                 ob_start();
-                (new InfoController(new SystemCheckService()))->defaultAction();
+                $controller->defaultAction();
                 $o .= ob_get_clean();
                 break;
             default:
@@ -69,13 +78,29 @@ class Plugin
      */
     public static function forum($forum)
     {
-        global $plugin_tx;
+        global $sn, $su, $pth, $plugin_cf, $plugin_tx;
 
         $ptx = $plugin_tx['forum'];
         if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
             return XH_message('fail', $ptx['msg_invalid_name'], $forum);
         }
-        $controller = new MainController($forum);
+        $controller = new MainController(
+            $forum,
+            $sn,
+            $su,
+            $plugin_cf['forum'],
+            $plugin_tx['forum'],
+            "{$pth['folder']['plugins']}forum/",
+            new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
+            new BBCode(
+                $plugin_tx['forum'],
+                "{$pth['folder']['plugins']}forum/images/",
+                $plugin_tx['forum']['title_iframe']
+            ),
+            new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
+            new FaRequireCommand(),
+            new MailService($plugin_cf['forum'])
+        );
         $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'default';
         $action .= 'Action';
         if (method_exists($controller, $action)) {

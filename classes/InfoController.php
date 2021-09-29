@@ -26,9 +26,13 @@ class InfoController
     /** @var SystemCheckService */
     private $systemCheckService;
 
-    public function __construct(SystemCheckService $systemCheckService)
+    /** @var View */
+    private $view;
+
+    public function __construct(SystemCheckService $systemCheckService, View $view)
     {
         $this->systemCheckService = $systemCheckService;
+        $this->view = $view;
     }
 
     /**
@@ -36,11 +40,9 @@ class InfoController
      */
     public function defaultAction()
     {
-        $view = new View();
-        $data = [
+        $this->view->render('info', [
             'version' => Plugin::VERSION,
             'checks' => $this->systemCheckService->getChecks(),
-        ];
-        $view->render('info', $data);
+        ]);
     }
 }
