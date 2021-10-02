@@ -94,7 +94,7 @@ class View
      * @param mixed $value
      * @return mixed
      */
-    protected function esc($value)
+    public function esc($value)
     {
         if ($value instanceof HtmlString) {
             return $value;

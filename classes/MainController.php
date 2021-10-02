@@ -24,7 +24,6 @@ namespace Forum;
 use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
 use function XH_formatDate;
-use function XH_hsc;
 use function XH_startSession;
 
 class MainController
@@ -335,7 +334,7 @@ class MainController
     {
         global $bjs;
 
-        $bjs .= sprintf('<script type="text/javascript" src="%s"></script>', XH_hsc($filename));
+        $bjs .= sprintf('<script type="text/javascript" src="%s"></script>', $this->view->esc($filename));
     }
 
     /**
