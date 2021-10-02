@@ -2,7 +2,7 @@
 /**
  * @var \Forum\View $this
  * @var string $title
- * @var array<string,mixed> $topic
+ * @var array<string,array{user:string,time:int,comment:string,mayDelete:bool,editUrl:string,date:string}> $topic
  * @var string $tid
  * @var string $su
  * @var \Forum\HtmlString $csrfTokenInput

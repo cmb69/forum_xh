@@ -3,7 +3,7 @@
  * @var \Forum\View $this
  * @var bool $isUser
  * @var string $href
- * @var array<int,array> $topics
+ * @var array<string,array{title:string,comments:int,user:string,time:int,href:string,date:string}> $topics
  */
 ?>
 <div class="forum_container">

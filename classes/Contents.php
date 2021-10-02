@@ -93,7 +93,7 @@ class Contents
 
     /**
      * @param string $forum
-     * @return array<string,mixed>
+     * @return array<string,array{title:string,comments:int,user:string,time:int}>
      */
     private function getTopics($forum)
     {
@@ -110,7 +110,7 @@ class Contents
 
     /**
      * @param string $forum
-     * @param array<string,array> $data
+     * @param array<string,array{title:string,comments:int,user:string,time:int}> $data
      * @return void
      */
     private function setTopics($forum, $data)
@@ -124,7 +124,7 @@ class Contents
     /**
      * @param string $forum
      * @param string $tid
-     * @return array<string,array>
+     * @return array<string,array{user:string,time:int,comment:string}>
      */
     public function getTopic($forum, $tid)
     {
@@ -142,7 +142,7 @@ class Contents
     /**
      * @param string $forum
      * @param string $tid
-     * @param array<string,array> $data
+     * @param array<string,array{user:string,time:int,comment:string}> $data
      * @return void
      */
     private function setTopic($forum, $tid, $data)
@@ -173,7 +173,7 @@ class Contents
 
     /**
      * @param string $forum
-     * @return array<string,mixed>
+     * @return array<string,array{title:string,comments:int,user:string,time:int}>
      */
     public function getSortedTopics($forum)
     {
@@ -189,7 +189,7 @@ class Contents
     /**
      * @param string $forum
      * @param string $tid
-     * @return array{0:string,1:array}
+     * @return array{0:string,1:array<string,array{user:string,time:int,comment:string}>}
      */
     public function getTopicWithTitle($forum, $tid)
     {
@@ -205,7 +205,7 @@ class Contents
      * @param string $tid
      * @param string|null $title
      * @param string $cid
-     * @param array<string,mixed> $comment
+     * @param array{user:string,time:int,comment:string} $comment
      * @return void
      */
     public function createComment($forum, $tid, $title, $cid, $comment)
@@ -231,7 +231,7 @@ class Contents
      * @param string $forum
      * @param string $tid
      * @param string $cid
-     * @param array<string,mixed> $comment
+     * @param array{user:string,time:int,comment:string} $comment
      * @return void
      */
     public function updateComment($forum, $tid, $cid, $comment)

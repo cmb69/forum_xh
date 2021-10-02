@@ -59,7 +59,7 @@ class SystemCheckService
     }
 
     /**
-     * @return array<int,array>string,mixed>>
+     * @return array<int,array{state:string,label:string,stateLabel:string}>
      */
     public function getChecks()
     {
@@ -78,7 +78,7 @@ class SystemCheckService
 
     /**
      * @param string $version
-     * @return array<string,mixed>
+     * @return array{state:string,label:string,stateLabel:string}
      */
     private function checkPhpVersion($version)
     {
@@ -91,7 +91,7 @@ class SystemCheckService
     /**
      * @param string $extension
      * @param bool $isMandatory
-     * @return array<string,mixed>
+     * @return array{state:string,label:string,stateLabel:string}
      */
     private function checkExtension($extension, $isMandatory = true)
     {
@@ -103,7 +103,7 @@ class SystemCheckService
 
     /**
      * @param string $version
-     * @return array<string,mixed>
+     * @return array{state:string,label:string,stateLabel:string}
      */
     private function checkXhVersion($version)
     {
@@ -115,7 +115,7 @@ class SystemCheckService
 
     /**
      * @param string $plugin
-     * @return array<string,mixed>
+     * @return array{state:string,label:string,stateLabel:string}
      */
     private function checkPlugin($plugin)
     {
@@ -127,7 +127,7 @@ class SystemCheckService
 
     /**
      * @param string $folder
-     * @return array<string,mixed>
+     * @return array{state:string,label:string,stateLabel:string}
      */
     private function checkWritability($folder)
     {
