@@ -23,7 +23,6 @@ namespace Forum;
 
 use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
-use const CMSIMPLE_URL;
 use function XH_formatDate;
 use function XH_hsc;
 use function XH_startSession;
@@ -35,11 +34,8 @@ class MainController
      */
     private $forum;
 
-    /** @var string */
-    private $scriptName;
-
-    /** @var string */
-    private $selectedUrl;
+    /** @var Url */
+    private $url;
 
     /**
      * @var array<string,string>
@@ -78,16 +74,13 @@ class MainController
 
     /**
      * @param string $forum
-     * @param string $scriptName
-     * @param string $selectedUrl
      * @param array<string,string> $config
      * @param array<string,string> $lang
      * @param string $pluginFolder
      */
     public function __construct(
         $forum,
-        $scriptName,
-        $selectedUrl,
+        Url $url,
         array $config,
         array $lang,
         $pluginFolder,
@@ -98,8 +91,7 @@ class MainController
         MailService $mailService
     ) {
         $this->forum = $forum;
-        $this->scriptName = $scriptName;
-        $this->selectedUrl = $selectedUrl;
+        $this->url = $url;
         $this->config = $config;
         $this->lang = $lang;
         $this->pluginFolder = $pluginFolder;
@@ -138,12 +130,12 @@ class MainController
     {
         $topics = $this->contents->getSortedTopics($forum);
         foreach ($topics as $tid => &$topic) {
-            $topic['href'] = "?$this->selectedUrl&forum_topic=$tid";
+            $topic['href'] = $this->url->withParam("forum_topic", $tid)->relative();
             $topic['date'] = XH_formatDate($topic['time']);
         }
         $this->view->render('topics', [
             'isUser' => $this->user() !== false,
-            'href' => "?$this->selectedUrl&forum_actn=new",
+            'href' => $this->url->withParam("forum_actn", "new")->relative(),
             'topics' => $topics,
         ]);
     }
@@ -157,14 +149,13 @@ class MainController
     {
         $this->faRequireCommand->execute();
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
-        $editUrl = $this->scriptName . '?' . $this->selectedUrl . '&forum_actn=edit&forum_topic=' . $tid
-            . '&forum_comment=';
+        $editUrl = $this->url->withParam("forum_actn", "edit")->withParam("forum_topic", $tid);
         foreach ($topic as $cid => &$comment) {
             $mayDelete = defined('XH_ADM') && XH_ADM || $comment['user'] == $this->user();
             $comment['mayDelete'] = $mayDelete;
             $comment['date'] = XH_formatDate($comment['time']);
             $comment['comment'] = new HtmlString($this->bbcode->convert($comment['comment']));
-            $comment['editUrl'] = $editUrl . $cid;
+            $comment['editUrl'] = $editUrl->withParam("forum_comment", $cid)->relative();
         }
 
         $csrfProtector = $this->getCSRFProtector();
@@ -173,11 +164,10 @@ class MainController
             'title' => $title,
             'topic' => $topic,
             'tid' => $tid,
-            'su' => $this->selectedUrl,
             'csrfTokenInput' => new HtmlString($csrfProtector->tokenInput()),
             'isUser' => $this->user() !== false,
-            'replyUrl' => "$this->scriptName?$this->selectedUrl&forum_actn=reply&forum_topic=$tid",
-            'href' => "?$this->selectedUrl",
+            'replyUrl' => $this->url->withParam("forum_actn", "reply")->withParam("forum_topic", $tid)->relative(),
+            'href' => $this->url->relative(),
         ]);
     }
 
@@ -206,8 +196,8 @@ class MainController
         } else {
             $tid = $this->postComment($this->forum, $forumtopic);
         }
-        $params = $tid ? "?$this->selectedUrl&forum_topic=$tid" : "?$this->selectedUrl";
-        header('Location: ' . CMSIMPLE_URL . $params, true, 303);
+        $url = $tid ? $this->url->withParam("forum_topic", $tid) : $this->url;
+        header("Location: {$url->absolute()}", true, 303);
         exit;
     }
 
@@ -247,7 +237,7 @@ class MainController
         }
 
         if (!defined('XH_ADM') || !XH_ADM && $this->config['mail_address']) {
-            $url = CMSIMPLE_URL . "?$this->selectedUrl&forum_topic=$tid";
+            $url = $this->url->withParam("forum_topic", $tid)->absolute();
             $date = XH_formatDate($comment['time']);
             $attribution = sprintf($this->lang['mail_attribution'], $comment['user'], $date);
             $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment['comment']);
@@ -286,10 +276,10 @@ class MainController
         $tid = $this->contents->cleanId($_POST['forum_topic']);
         $cid = $this->contents->cleanId($_POST['forum_comment']);
         $user = defined('XH_ADM') && XH_ADM ? true : $this->user();
-        $queryString = $this->contents->deleteComment($this->forum, $tid, $cid, $user)
-            ? '?' . $this->selectedUrl . '&forum_topic=' . $tid
-            : '?' . $this->selectedUrl ;
-        header('Location: ' . CMSIMPLE_URL . $queryString, true, 303);
+        $url = $this->contents->deleteComment($this->forum, $tid, $cid, $user)
+            ? $this->url->withParam("forum_topic", $tid)
+            : $this->url;
+        header("Location: {$url->absolute()}", true, 303);
         exit;
     }
 
@@ -326,9 +316,9 @@ class MainController
             'newTopic' => $newTopic,
             'tid' => $tid,
             'cid' => $cid,
-            'action' => "?$this->selectedUrl&forum_actn=post",
-            'previewUrl' => "$this->scriptName?$this->selectedUrl&forum_actn=preview",
-            'backUrl' => $newTopic ? "?$this->selectedUrl" : "$this->scriptName?$this->selectedUrl&forum_topic=$tid",
+            'action' => $this->url->withParam("forum_actn", "post")->relative(),
+            'previewUrl' => $this->url->withParam("forum_actn", "preview")->relative(),
+            'backUrl' => $newTopic ? $this->url->relative() : $this->url->withParam("forum_topic", $tid)->relative(),
             'headingKey' => $newTopic ? 'msg_new_topic' : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment'),
             'comment' => $comment,
             'csrfTokenInput' => new HtmlString($csrfProtector->tokenInput()),

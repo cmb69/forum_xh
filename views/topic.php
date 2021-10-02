@@ -4,7 +4,6 @@
  * @var string $title
  * @var array<string,array{user:string,time:int,comment:string,mayDelete:bool,editUrl:string,date:string}> $topic
  * @var string $tid
- * @var string $su
  * @var \Forum\HtmlString $csrfTokenInput
  * @var bool $isUser
  * @var string $replyUrl
@@ -17,9 +16,8 @@
 <?php foreach ($topic as $cid => $comment):?>
         <div>
 <?php   if ($comment['mayDelete']):?>
-            <form class="forum_delete" action="." method="POST" data-message="<?=$this->text('msg_confirm_delete')?>">
+            <form class="forum_delete" action="<?=$this->esc($href)?>" method="POST" data-message="<?=$this->text('msg_confirm_delete')?>">
             <?=$this->esc($csrfTokenInput)?>
-                <input type="hidden" name="selected" value="<?=$this->esc($su)?>">
                 <input type="hidden" name="forum_actn" value="delete">
                 <input type="hidden" name="forum_topic" value="<?=$this->esc($tid)?>">
                 <input type="hidden" name="forum_comment" value="<?=$this->esc($cid)?>">

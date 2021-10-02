@@ -86,8 +86,7 @@ class Plugin
         }
         $controller = new MainController(
             $forum,
-            $sn,
-            $su,
+            new Url($sn, $su),
             $plugin_cf['forum'],
             $plugin_tx['forum'],
             "{$pth['folder']['plugins']}forum/",
