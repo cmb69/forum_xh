@@ -2,12 +2,16 @@
 /**
  * @var \Forum\View $this
  * @var string $title
- * @var array<string,array{user:string,time:int,comment:string,mayDelete:bool,editUrl:string,date:string}> $topic
+ * @var array<string,array{user:string,time:int,comment:string}> $topic
  * @var string $tid
  * @var \Forum\HtmlString $csrfTokenInput
  * @var bool $isUser
  * @var string $replyUrl
  * @var string $href
+ * @var callable $mayDeleteComment
+ * @var callable $commentDate
+ * @var callable $html#
+ * @var callable $commentEditUrl
  */
 ?>
 <div class="forum_container">
@@ -15,7 +19,7 @@
     <div class="forum_topic">
 <?php foreach ($topic as $cid => $comment):?>
         <div>
-<?php   if ($comment['mayDelete']):?>
+<?php   if ($mayDeleteComment($comment)):?>
             <form class="forum_delete" action="<?=$this->esc($href)?>" method="POST" data-message="<?=$this->text('msg_confirm_delete')?>">
             <?=$this->esc($csrfTokenInput)?>
                 <input type="hidden" name="forum_actn" value="delete">
@@ -23,16 +27,16 @@
                 <input type="hidden" name="forum_comment" value="<?=$this->esc($cid)?>">
                 <button title="<?=$this->text('lbl_delete')?>"><i class="fa fa-trash"></i></button>
             </form>
-            <a class="forum_edit" href="<?=$this->esc($comment['editUrl'])?>">
+            <a class="forum_edit" href="<?=$this->esc($commentEditUrl($cid))?>">
                 <button title="<?=$this->text('lbl_edit')?>"><i class="fa fa-pencil"></i></button>
             </a>
 <?php   endif?>
             <div class="forum_details">
 				<span class="forum_user"><?=$this->esc($comment['user'])?></span>
                 <span class="forum_separator"><?=$this->text('lbl_separator')?></span>
-                <span class="forum_date"><?=$this->esc($comment['date'])?></span>
+                <span class="forum_date"><?=$this->esc($commentDate($comment))?></span>
             </div>
-            <div class="forum_comment"><?=$this->esc($comment['comment'])?></div>
+            <div class="forum_comment"><?=$this->esc($html($comment))?></div>
         </div>
 <?php endforeach?>
     </div>

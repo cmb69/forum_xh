@@ -124,14 +124,16 @@ class MainController
     private function renderTopicsView($forum)
     {
         $topics = $this->contents->getSortedTopics($forum);
-        foreach ($topics as $tid => &$topic) {
-            $topic['href'] = $this->url->withParam("forum_topic", $tid)->relative();
-            $topic['date'] = XH_formatDate($topic['time']);
-        }
         $this->view->render('topics', [
             'isUser' => $this->user() !== false,
             'href' => $this->url->withParam("forum_actn", "new")->relative(),
             'topics' => $topics,
+            'topicUrl' => function ($tid) {
+                return $this->url->withParam("forum_topic", $tid)->relative();
+            },
+            'topicDate' => function ($topic) {
+                return XH_formatDate($topic['time']);
+            },
         ]);
     }
 
@@ -145,13 +147,6 @@ class MainController
         $this->faRequireCommand->execute();
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
         $editUrl = $this->url->withParam("forum_actn", "edit")->withParam("forum_topic", $tid);
-        foreach ($topic as $cid => &$comment) {
-            $mayDelete = defined('XH_ADM') && XH_ADM || $comment['user'] == $this->user();
-            $comment['mayDelete'] = $mayDelete;
-            $comment['date'] = XH_formatDate($comment['time']);
-            $comment['comment'] = new HtmlString($this->bbcode->convert($comment['comment']));
-            $comment['editUrl'] = $editUrl->withParam("forum_comment", $cid)->relative();
-        }
 
         $csrfProtector = $this->getCSRFProtector();
         $csrfProtector->store();
@@ -163,6 +158,18 @@ class MainController
             'isUser' => $this->user() !== false,
             'replyUrl' => $this->url->withParam("forum_actn", "reply")->withParam("forum_topic", $tid)->relative(),
             'href' => $this->url->relative(),
+            'mayDeleteComment' => function ($comment) {
+                return defined('XH_ADM') && XH_ADM || $comment['user'] == $this->user();
+            },
+            'commentDate' => function ($comment) {
+                return XH_formatDate($comment['time']);
+            },
+            'html' => function ($comment) {
+                return new HtmlString($this->bbcode->convert($comment['comment']));
+            },
+            'commentEditUrl' => function ($cid) use ($editUrl) {
+                return $editUrl->withParam("forum_comment", $cid)->relative();
+            },
         ]);
     }
 
