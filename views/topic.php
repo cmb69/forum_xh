@@ -1,8 +1,11 @@
 <?php
+
+use Forum\Comment;
+
 /**
  * @var \Forum\View $this
  * @var string $title
- * @var array<string,array{user:string,time:int,comment:string}> $topic
+ * @var array<string,Comment> $topic
  * @var string $tid
  * @var \Forum\HtmlString $csrfTokenInput
  * @var bool $isUser
@@ -32,7 +35,7 @@
             </a>
 <?php   endif?>
             <div class="forum_details">
-				<span class="forum_user"><?=$this->esc($comment['user'])?></span>
+				<span class="forum_user"><?=$this->esc($comment->user())?></span>
                 <span class="forum_separator"><?=$this->text('lbl_separator')?></span>
                 <span class="forum_date"><?=$this->esc($commentDate($comment))?></span>
             </div>

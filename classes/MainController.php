@@ -133,8 +133,8 @@ class MainController
             'topicUrl' => function ($tid) {
                 return $this->url->withParam("forum_topic", $tid)->relative();
             },
-            'topicDate' => function ($topic) {
-                return XH_formatDate($topic['time']);
+            'topicDate' => function (Topic $topic) {
+                return XH_formatDate($topic->time());
             },
         ]);
     }
@@ -159,14 +159,14 @@ class MainController
             'isUser' => $this->user() !== false,
             'replyUrl' => $this->url->withParam("forum_actn", "reply")->withParam("forum_topic", $tid)->relative(),
             'href' => $this->url->relative(),
-            'mayDeleteComment' => function ($comment) {
-                return defined('XH_ADM') && XH_ADM || $comment['user'] == $this->user();
+            'mayDeleteComment' => function (Comment $comment) {
+                return defined('XH_ADM') && XH_ADM || $comment->user() == $this->user();
             },
-            'commentDate' => function ($comment) {
-                return XH_formatDate($comment['time']);
+            'commentDate' => function (Comment $comment) {
+                return XH_formatDate($comment->time());
             },
-            'html' => function ($comment) {
-                return new HtmlString($this->bbcode->convert($comment['comment']));
+            'html' => function (Comment $comment) {
+                return new HtmlString($this->bbcode->convert($comment->comment()));
             },
             'commentEditUrl' => function ($cid) use ($editUrl) {
                 return $editUrl->withParam("forum_comment", $cid)->relative();
@@ -220,10 +220,7 @@ class MainController
             return false;
         }
 
-        $comment = array(
-                'user' => $this->user(),
-                'time' => time(),
-                'comment' => $_POST['forum_text']);
+        $comment = new Comment($this->user(), time(), $_POST['forum_text']);
         if (!isset($cid)) {
             $cid = $this->contents->getId();
             $title = isset($_POST['forum_title'])
@@ -237,9 +234,9 @@ class MainController
 
         if (!defined('XH_ADM') || !XH_ADM && $this->config['mail_address']) {
             $url = $this->url->withParam("forum_topic", $tid)->absolute();
-            $date = XH_formatDate($comment['time']);
-            $attribution = sprintf($this->lang['mail_attribution'], $comment['user'], $date);
-            $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment['comment']);
+            $date = XH_formatDate($comment->time());
+            $attribution = sprintf($this->lang['mail_attribution'], $comment->user(), $date);
+            $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment->comment());
             assert(is_string($content));
             $message = "$attribution\n\n> $content\n\n<$url>";
             $this->mailService->sendMail($subject, $message, $url);
@@ -295,8 +292,8 @@ class MainController
         $comment = '';
         if ($tid !== null && $cid !== null) {
             $topics = $this->contents->getTopic($forum, $tid);
-            if ($topics[$cid]['user'] == $this->user() || (defined('XH_ADM') && XH_ADM)) {
-                $comment = $topics[$cid]['comment'];
+            if ($topics[$cid]->user() == $this->user() || (defined('XH_ADM') && XH_ADM)) {
+                $comment = $topics[$cid]->comment();
             }
             //$newTopic = true; // FIXME: hack to force overview link to be shown
         }

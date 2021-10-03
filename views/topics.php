@@ -1,11 +1,14 @@
 <?php
+
+use Forum\Topic;
+
 /**
  * @var \Forum\View $this
  * @var bool $isUser
  * @var string $href
  * @var callable $topicUrl
  * @var callable $topicDate
- * @var array<string,array{title:string,comments:int,user:string,time:int}> $topics
+ * @var array<string,Topic> $topics
  */
 ?>
 <div class="forum_container">
@@ -14,12 +17,12 @@
 <?php foreach ($topics as $tid => $topic):?>
     <div>
         <div class="forum_title">
-            <a href="<?=$this->esc($topicUrl($tid))?>"><?=$this->esc($topic['title'])?></a>
+            <a href="<?=$this->esc($topicUrl($tid))?>"><?=$this->esc($topic->title())?></a>
         </div>
         <div class="forum_details">
-            <span><?=$this->plural('msg_comments', $topic['comments'])?></span>
+            <span><?=$this->plural('msg_comments', $topic->comments())?></span>
             <span class="forum_separator"><?=$this->text('lbl_separator')?></span>
-            <span><?=$this->text('msg_topic_details', $topic['user'])?></span>
+            <span><?=$this->text('msg_topic_details', $topic->user())?></span>
             <span class="forum_separator"><?=$this->text('lbl_separator')?></span>
             <span class="forum_date"><?=$this->esc($topicDate($topic))?></span>
         </div>

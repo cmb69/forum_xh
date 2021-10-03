@@ -93,7 +93,7 @@ class Contents
 
     /**
      * @param string $forum
-     * @return array<string,array{title:string,comments:int,user:string,time:int}>
+     * @return array<string,Topic>
      */
     private function getTopics($forum)
     {
@@ -105,16 +105,25 @@ class Contents
         } else {
             $data = array();
         }
-        return $data;
+        $topics = [];
+        foreach ($data as $tid => $topic) {
+            assert(is_string($tid));
+            $topics[$tid] = new Topic(...array_values($topic));
+        }
+        return $topics;
     }
 
     /**
      * @param string $forum
-     * @param array<string,array{title:string,comments:int,user:string,time:int}> $data
+     * @param array<string,Topic> $topics
      * @return void
      */
-    private function setTopics($forum, $data)
+    private function setTopics($forum, $topics)
     {
+        $data = [];
+        foreach ($topics as $tid => $topic) {
+            $data[$tid] = $topic->toArray();
+        }
         $filename = $this->dataFolder($forum) . 'topics.dat';
         if (!file_put_contents($filename, serialize($data))) {
             e('cntsave', 'file', $filename); // throw exeption
@@ -124,7 +133,7 @@ class Contents
     /**
      * @param string $forum
      * @param string $tid
-     * @return array<string,array{user:string,time:int,comment:string}>
+     * @return array<string,Comment>
      */
     public function getTopic($forum, $tid)
     {
@@ -136,17 +145,26 @@ class Contents
         } else {
             $data = array();
         }
-        return $data;
+        $topic = [];
+        foreach ($data as $cid => $comment) {
+            assert(is_string($cid));
+            $topic[$cid] = new Comment(...array_values($comment));
+        }
+        return $topic;
     }
 
     /**
      * @param string $forum
      * @param string $tid
-     * @param array<string,array{user:string,time:int,comment:string}> $data
+     * @param array<string,Comment> $topic
      * @return void
      */
-    private function setTopic($forum, $tid, $data)
+    private function setTopic($forum, $tid, $topic)
     {
+        $data = [];
+        foreach ($topic as $cid => $comment) {
+            $data[$cid] = $comment->toArray();
+        }
         $filename = $this->dataFolder($forum) . $tid . '.dat';
         $contents = serialize($data);
         if (!file_put_contents($filename, $contents)) {
@@ -173,7 +191,7 @@ class Contents
 
     /**
      * @param string $forum
-     * @return array<string,array{title:string,comments:int,user:string,time:int}>
+     * @return array<string,Topic>
      */
     public function getSortedTopics($forum)
     {
@@ -181,7 +199,7 @@ class Contents
         $topics = $this->getTopics($forum);
         $this->lock($forum, LOCK_UN);
         uasort($topics, function ($a, $b) {
-            return $b['time'] - $a['time'];
+            return $b->time() - $a->time();
         });
         return $topics;
     }
@@ -189,7 +207,7 @@ class Contents
     /**
      * @param string $forum
      * @param string $tid
-     * @return array{0:string,1:array<string,array{user:string,time:int,comment:string}>}
+     * @return array{0:string,1:array<string,Comment>}
      */
     public function getTopicWithTitle($forum, $tid)
     {
@@ -197,7 +215,7 @@ class Contents
         $topics = $this->getTopics($forum);
         $topic = $this->getTopic($forum, $tid);
         $this->lock($forum, LOCK_UN);
-        return array($topics[$tid]['title'], $topic);
+        return array($topics[$tid]->title(), $topic);
     }
 
     /**
@@ -205,7 +223,7 @@ class Contents
      * @param string $tid
      * @param string|null $title
      * @param string $cid
-     * @param array{user:string,time:int,comment:string} $comment
+     * @param Comment $comment
      * @return void
      */
     public function createComment($forum, $tid, $title, $cid, $comment)
@@ -217,11 +235,12 @@ class Contents
         $this->setTopic($forum, $tid, $comments);
 
         $topics = $this->getTopics($forum);
-        $topics[$tid] = array(
-            'title' => $title !== null ? $title : $topics[$tid]['title'],
-            'comments' => count($comments),
-            'user' => $comment['user'],
-            'time' => $comment['time']);
+        $topics[$tid] = new Topic(
+            $title !== null ? $title : $topics[$tid]->title(),
+            count($comments),
+            $comment->user(),
+            $comment->time()
+        );
         $this->setTopics($forum, $topics);
 
         $this->lock($forum, LOCK_UN);
@@ -231,7 +250,7 @@ class Contents
      * @param string $forum
      * @param string $tid
      * @param string $cid
-     * @param array{user:string,time:int,comment:string} $comment
+     * @param Comment $comment
      * @return void
      */
     public function updateComment($forum, $tid, $cid, $comment)
@@ -239,12 +258,12 @@ class Contents
         $this->lock($forum, LOCK_EX);
 
         $comments = $this->getTopic($forum, $tid);
-        if ($comment['user'] != $comments[$cid]['user']) {
+        if ($comment->user() != $comments[$cid]->user()) {
             $this->lock($forum, LOCK_UN);
             return; // TODO throw exception
         }
-        $comment['time'] = $comments[$cid]['time'];
-        $comments[$cid] = $comment;
+        $newComment = new Comment($comment->user(), $comments[$cid]->time(), $comment->comment());
+        $comments[$cid] = $newComment;
         $this->setTopic($forum, $tid, $comments);
 
         $this->lock($forum, LOCK_UN);
@@ -265,16 +284,15 @@ class Contents
         $this->lock($forum, LOCK_EX);
         $topics = $this->getTopics($forum);
         $comments = $this->getTopic($forum, $tid);
-        if (!($user === true || $user == $comments[$cid]['user'])) {
+        if (!($user === true || $user == $comments[$cid]->user())) {
             return false;
         }
         unset($comments[$cid]);
         if (count($comments) > 0) {
             $this->setTopic($forum, $tid, $comments);
             $comment = array_pop($comments);
-            $topics[$tid]['comments'] = count($comments) + 1;
-            $topics[$tid]['user'] = $comment['user'];
-            $topics[$tid]['time'] = $comment['time'];
+            $topic = new Topic($topics[$tid]->title(), count($comments) + 1, $comment->user(), $comment->time());
+            $topics[$tid] = $topic;
         } else {
             unlink($this->dataFolder($forum) . $tid . '.dat');
             unset($topics[$tid]);

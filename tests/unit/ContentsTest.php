@@ -70,9 +70,7 @@ class ContentsTest extends TestCase
         $title = 'hallo';
         $cid = $this->contents->getId();
         $user = 'cmb';
-        $comment = array(
-            'user' => $user, 'time' => time(), 'comment' => 'foo bar baz'
-        );
+        $comment = new Comment($user, time(), 'foo bar baz');
         $this->contents->createComment($this->forum, $tid, $title, $cid, $comment);
 
         $actual = $this->getComment($this->forum, $tid, $cid);
@@ -91,26 +89,17 @@ class ContentsTest extends TestCase
 
         $cid1 = $this->contents->getId();
         $user1 = 'cmb';
-        $comment1 = array(
-            'user' => $user1, 'time' => 1, 'comment' => 'foo'
-        );
+        $comment1 = new Comment($user1, 1, 'foo');
         $this->contents->createComment($this->forum, $tid, $title, $cid1, $comment1);
 
         $cid2 = $this->contents->getId();
         $user2 = 'admin';
-        $comment2 = array(
-            'user' => $user2, 'time' => 2, 'comment' => 'bar'
-        );
+        $comment2 = new Comment($user2, 2, 'bar');
         $this->contents->createComment($this->forum, $tid, $title, $cid2, $comment2);
 
         $this->contents->deleteComment($this->forum, $tid, $cid1, $user1);
 
-        $expected = array(
-            'title' => $title,
-            'comments' => 1,
-            'user' => $user2,
-            'time' => 2
-        );
+        $expected = new Topic($title, 1, $user2, 2);
         $this->assertEquals($expected, $this->contents->getSortedTopics($this->forum)[$tid]);
     }
 }
