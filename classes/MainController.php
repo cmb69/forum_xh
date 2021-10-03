@@ -114,11 +114,7 @@ class MainController
         } else {
             $this->renderTopicView($this->forum, $tid);
         }
-        if (is_file("{$this->pluginFolder}forum.min.js")) {
-            $this->addScript("{$this->pluginFolder}forum.min.js");
-        } else {
-            $this->addScript("{$this->pluginFolder}forum.js");
-        }
+        $this->addScript();
     }
 
     /**
@@ -176,11 +172,7 @@ class MainController
     public function newAction()
     {
         $this->renderCommentForm($this->forum);
-        if (is_file("{$this->pluginFolder}forum.min.js")) {
-            $this->addScript("{$this->pluginFolder}forum.min.js");
-        } else {
-            $this->addScript("{$this->pluginFolder}forum.js");
-        }
+        $this->addScript();
     }
 
     /**
@@ -259,11 +251,7 @@ class MainController
         } else {
             echo ''; // should display error
         }
-        if (is_file("{$this->pluginFolder}forum.min.js")) {
-            $this->addScript("{$this->pluginFolder}forum.min.js");
-        } else {
-            $this->addScript("{$this->pluginFolder}forum.js");
-        }
+        $this->addScript();
     }
 
     /**
@@ -327,13 +315,17 @@ class MainController
     }
 
     /**
-     * @param string $filename
      * @return void
      */
-    private function addScript($filename)
+    private function addScript()
     {
         global $bjs;
 
+        if (is_file("{$this->pluginFolder}forum.min.js")) {
+            $filename = "{$this->pluginFolder}forum.min.js";
+        } else {
+            $filename = "{$this->pluginFolder}forum.js";
+        }
         $bjs .= sprintf('<script type="text/javascript" src="%s"></script>', $this->view->esc($filename));
     }
 
@@ -387,11 +379,7 @@ class MainController
             $tid = $this->contents->cleanId($_GET['forum_topic']);
             $this->renderCommentForm($this->forum, $tid);
         }
-        if (is_file("{$this->pluginFolder}forum.min.js")) {
-            $this->addScript("{$this->pluginFolder}forum.min.js");
-        } else {
-            $this->addScript("{$this->pluginFolder}forum.js");
-        }
+        $this->addScript();
     }
 
     /**
