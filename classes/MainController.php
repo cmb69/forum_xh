@@ -240,6 +240,7 @@ class MainController
             $date = XH_formatDate($comment['time']);
             $attribution = sprintf($this->lang['mail_attribution'], $comment['user'], $date);
             $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment['comment']);
+            assert(is_string($content));
             $message = "$attribution\n\n> $content\n\n<$url>";
             $this->mailService->sendMail($subject, $message, $url);
         }
@@ -271,7 +272,7 @@ class MainController
         $tid = $this->contents->cleanId($_POST['forum_topic']);
         $cid = $this->contents->cleanId($_POST['forum_comment']);
         $user = defined('XH_ADM') && XH_ADM ? true : $this->user();
-        $url = $this->contents->deleteComment($this->forum, $tid, $cid, $user)
+        $url = $tid && $cid && $this->contents->deleteComment($this->forum, $tid, $cid, $user)
             ? $this->url->withParam("forum_topic", $tid)
             : $this->url;
         header("Location: {$url->absolute()}", true, 303);
@@ -291,9 +292,8 @@ class MainController
         }
         $this->faRequireCommand->execute();
 
-        $newTopic = !isset($tid);
         $comment = '';
-        if (isset($cid)) {
+        if ($tid !== null && $cid !== null) {
             $topics = $this->contents->getTopic($forum, $tid);
             if ($topics[$cid]['user'] == $this->user() || (defined('XH_ADM') && XH_ADM)) {
                 $comment = $topics[$cid]['comment'];
@@ -307,13 +307,15 @@ class MainController
         }
         $this->csrfProtector->store();
         $this->view->render('form', [
-            'newTopic' => $newTopic,
+            'newTopic' => $tid === null,
             'tid' => $tid,
             'cid' => $cid,
             'action' => $this->url->withParam("forum_actn", "post")->relative(),
             'previewUrl' => $this->url->withParam("forum_actn", "preview")->relative(),
-            'backUrl' => $newTopic ? $this->url->relative() : $this->url->withParam("forum_topic", $tid)->relative(),
-            'headingKey' => $newTopic ? 'msg_new_topic' : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment'),
+            'backUrl' => $tid === null
+                ? $this->url->relative()
+                : $this->url->withParam("forum_topic", $tid)->relative(),
+            'headingKey' => $tid === null ? 'msg_new_topic' : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment'),
             'comment' => $comment,
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
             'i18n' => json_encode($this->jsTexts()),
@@ -367,7 +369,7 @@ class MainController
     {
         if (isset($_GET['forum_topic'])) {
             $tid = $this->contents->cleanId($_GET['forum_topic']);
-            $this->renderCommentForm($this->forum, $tid);
+            $this->renderCommentForm($this->forum, $tid ? $tid : null);
         }
         $this->addScript();
     }

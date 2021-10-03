@@ -57,7 +57,7 @@ class MailService
         return mail(
             $this->config['mail_address'],
             '=?UTF-8?B?' . base64_encode($subject) . '?=',
-            preg_replace('/\r\n|\n|\r/', $sep, $message),
+            (string) preg_replace('/\r\n|\n|\r/', $sep, $message),
             implode($sep, $headers)
         );
     }

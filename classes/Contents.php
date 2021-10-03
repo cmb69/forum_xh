@@ -255,7 +255,7 @@ class Contents
      * @param string $tid
      * @param string $cid
      * @param string|bool $user
-     * @return string|false
+     * @return string|null|false
      */
     public function deleteComment($forum, $tid, $cid, $user)
     {

@@ -71,7 +71,7 @@ class BBCode
         $this->context = array();
         $text = $this->doConvert(array($text, '', '', $text));
         $text = $this->convertEmoticons($text);
-        $text = preg_replace('/\r\n|\r|\n/', '<br>', $text);
+        $text = (string) preg_replace('/\r\n|\r|\n/', '<br>', $text);
         $text = str_replace("\x0B", "\n", $text);
         return $text;
     }
@@ -90,7 +90,7 @@ class BBCode
         $matches[3] = trim($matches[3]);
         switch ($matches[1]) {
             case '':
-                $result = preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
+                $result = (string) preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
                 break;
             case 'url':
                 $result = $this->convertUrl($matches);
