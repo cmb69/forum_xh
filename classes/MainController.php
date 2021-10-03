@@ -59,8 +59,8 @@ class MainController
     /** @var BBCode */
     private $bbcode;
 
-    /** @var CSRFProtection|null */
-    private $csrfProtector = null;
+    /** @var CSRFProtection */
+    private $csrfProtector;
 
     /** @var View */
     private $view;
@@ -85,6 +85,7 @@ class MainController
         $pluginFolder,
         Contents $contents,
         BBCode $bbcode,
+        CSRFProtection $csrfProtector,
         View $view,
         FaRequireCommand $faRequireCommand,
         MailService $mailService
@@ -96,6 +97,7 @@ class MainController
         $this->pluginFolder = $pluginFolder;
         $this->contents = $contents;
         $this->bbcode = $bbcode;
+        $this->csrfProtector = $csrfProtector;
         $this->view = $view;
         $this->faRequireCommand = $faRequireCommand;
         $this->mailService = $mailService;
@@ -148,13 +150,12 @@ class MainController
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
         $editUrl = $this->url->withParam("forum_actn", "edit")->withParam("forum_topic", $tid);
 
-        $csrfProtector = $this->getCSRFProtector();
-        $csrfProtector->store();
+        $this->csrfProtector->store();
         $this->view->render('topic', [
             'title' => $title,
             'topic' => $topic,
             'tid' => $tid,
-            'csrfTokenInput' => new HtmlString($csrfProtector->tokenInput()),
+            'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
             'isUser' => $this->user() !== false,
             'replyUrl' => $this->url->withParam("forum_actn", "reply")->withParam("forum_topic", $tid)->relative(),
             'href' => $this->url->relative(),
@@ -187,7 +188,7 @@ class MainController
      */
     public function postAction()
     {
-        $this->getCSRFProtector()->check();
+        $this->csrfProtector->check();
         $forumtopic = isset($_POST['forum_topic']) ? $_POST['forum_topic'] : null;
         if (!empty($_POST['forum_comment'])) {
             $tid = $this->postComment($this->forum, $forumtopic, $_POST['forum_comment']);
@@ -266,7 +267,7 @@ class MainController
      */
     public function deleteAction()
     {
-        $this->getCSRFProtector()->check();
+        $this->csrfProtector->check();
         $tid = $this->contents->cleanId($_POST['forum_topic']);
         $cid = $this->contents->cleanId($_POST['forum_comment']);
         $user = defined('XH_ADM') && XH_ADM ? true : $this->user();
@@ -304,8 +305,7 @@ class MainController
         foreach ($emotions as $emotion) {
             $emoticons[$emotion] = "{$this->pluginFolder}images/emoticon_$emotion.png";
         }
-        $csrfProtector = $this->getCSRFProtector();
-        $csrfProtector->store();
+        $this->csrfProtector->store();
         $this->view->render('form', [
             'newTopic' => $newTopic,
             'tid' => $tid,
@@ -315,7 +315,7 @@ class MainController
             'backUrl' => $newTopic ? $this->url->relative() : $this->url->withParam("forum_topic", $tid)->relative(),
             'headingKey' => $newTopic ? 'msg_new_topic' : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment'),
             'comment' => $comment,
-            'csrfTokenInput' => new HtmlString($csrfProtector->tokenInput()),
+            'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
             'i18n' => json_encode($this->jsTexts()),
             'emoticons' => $emoticons,
         ]);
@@ -358,23 +358,6 @@ class MainController
         return isset($_SESSION['Name'])
             ? $_SESSION['Name']
             : (isset($_SESSION['username']) ? $_SESSION['username'] : false);
-    }
-
-    /**
-     * @return CSRFProtection
-     */
-    private function getCSRFProtector()
-    {
-        global $_XH_csrfProtection;
-
-        if (isset($_XH_csrfProtection)) {
-            return $_XH_csrfProtection;
-        } else {
-            if (!isset($this->csrfProtector)) {
-                $this->csrfProtector = new CSRFProtection('forum_token');
-            }
-            return $this->csrfProtector;
-        }
     }
 
     /**

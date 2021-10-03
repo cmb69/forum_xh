@@ -21,6 +21,7 @@
 
 namespace Forum;
 
+use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
 use function XH_message;
 use const CMSIMPLE_URL;
@@ -96,6 +97,7 @@ class Plugin
                 "{$pth['folder']['plugins']}forum/images/",
                 $plugin_tx['forum']['title_iframe']
             ),
+            self::getCSRFProtector(),
             new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
             new FaRequireCommand(),
             new MailService($plugin_cf['forum'])
@@ -117,5 +119,18 @@ class Plugin
             }
         }
         return "";
+    }
+
+    /**
+     * @return CSRFProtection
+     */
+    private static function getCSRFProtector()
+    {
+        global $_XH_csrfProtection;
+
+        if (isset($_XH_csrfProtection)) {
+            return $_XH_csrfProtection;
+        }
+        return new CSRFProtection('forum_token');
     }
 }
