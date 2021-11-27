@@ -55,7 +55,7 @@ class View
      * @param mixed $args
      * @return string
      */
-    protected function text($key, ...$args)
+    public function text($key, ...$args)
     {
         return $this->esc(sprintf($this->lang[$key], ...$args));
     }
@@ -66,7 +66,7 @@ class View
      * @param mixed $args
      * @return string
      */
-    protected function plural($key, $count, ...$args)
+    public function plural($key, $count, ...$args)
     {
         if ($count == 0) {
             $key .= '_0';

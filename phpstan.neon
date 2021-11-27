@@ -11,6 +11,3 @@ parameters:
     - ../../cmsimple/adminfuncs.php
     - ../../cmsimple/functions.php
     - ../fa/classes/RequireCommand.php
-  ignoreErrors:
-    - message: '/Call to protected method [a-zA-Z0-9\\_]+\(\) of class Forum\\View\./'
-      path: views/
