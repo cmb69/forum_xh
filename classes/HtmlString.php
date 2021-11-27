@@ -23,23 +23,15 @@ namespace Forum;
 
 class HtmlString
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $value;
 
-    /**
-     * @param string $string
-     */
-    public function __construct($string)
+    public function __construct(string $string)
     {
-        $this->value = (string) $string;
+        $this->value = $string;
     }
 
-    /**
-     * @return string
-     */
-    public function asString()
+    public function asString(): string
     {
         return $this->value;
     }

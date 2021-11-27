@@ -27,39 +27,33 @@ use function XH_numberSuffix;
 class View
 {
     /** @var string */
-    private $templateFolder;
+    private $templateDir;
 
     /** @var array<string,string> */
     private $lang;
 
     /**
-     * @param string $templateFolder
      * @param array<string,string> $lang
      */
-    public function __construct($templateFolder, array $lang)
+    public function __construct(string $templateDir, array $lang)
     {
+        $this->templateDir = $templateDir;
         $this->lang = $lang;
-        $this->templateFolder = $templateFolder;
     }
 
     /**
-     * @param string $key
      * @param string|HtmlString $args
-     * @return string
      */
-    public function text($key, ...$args)
+    public function text(string $key, ...$args): string
     {
         $args = array_map([$this, "esc"], $args);
         return sprintf($this->esc($this->lang[$key]), ...$args);
     }
 
     /**
-     * @param string $key
-     * @param int $count
      * @param string|HtmlString $args
-     * @return string
      */
-    public function plural($key, $count, ...$args)
+    public function plural(string $key, int $count, ...$args): string
     {
         if ($count == 0) {
             $key .= '_0';
@@ -71,14 +65,13 @@ class View
     }
 
     /**
-     * @param string $_template
      * @param array<string,mixed> $_data
      */
-    public function render($_template, array $_data): string
+    public function render(string $_template, array $_data): string
     {
         extract($_data);
         ob_start();
-        include "{$this->templateFolder}/{$_template}.php";
+        include "{$this->templateDir}/{$_template}.php";
         $result = ob_get_clean();
         assert($result !== false);
         return $result;
@@ -86,9 +79,8 @@ class View
 
     /**
      * @param string|HtmlString $value
-     * @return string
      */
-    public function esc($value)
+    public function esc($value): string
     {
         if ($value instanceof HtmlString) {
             return $value->asString();
