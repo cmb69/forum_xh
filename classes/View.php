@@ -44,18 +44,19 @@ class View
 
     /**
      * @param string $key
-     * @param mixed $args
+     * @param string|HtmlString $args
      * @return string
      */
     public function text($key, ...$args)
     {
-        return $this->esc(sprintf($this->lang[$key], ...$args));
+        $args = array_map([$this, "esc"], $args);
+        return sprintf($this->esc($this->lang[$key]), ...$args);
     }
 
     /**
      * @param string $key
      * @param int $count
-     * @param mixed $args
+     * @param string|HtmlString $args
      * @return string
      */
     public function plural($key, $count, ...$args)
@@ -65,7 +66,8 @@ class View
         } else {
             $key .= XH_numberSuffix($count);
         }
-        return $this->esc(sprintf($this->lang[$key], $count, ...$args));
+        $args = array_map([$this, "esc"], $args);
+        return sprintf($this->esc($this->lang[$key]), $count, ...$args);
     }
 
     /**
@@ -80,8 +82,8 @@ class View
     }
 
     /**
-     * @param mixed $value
-     * @return mixed
+     * @param string|HtmlString $value
+     * @return string
      */
     public function esc($value)
     {
