@@ -33,7 +33,7 @@ available.
 ## Requirements
 Forum\_XH is a plugin for CMSimple\_XH ≥ 1.7.0
 with the [Fa\_XH plugin](https://github.com/cmb69/fa_xh).
-It requires PHP ≥ 5.6.0 with the JSON and Session extensions.
+It requires PHP ≥ 7.0.0 with the JSON and Session extensions.
 
 ## Download
 
