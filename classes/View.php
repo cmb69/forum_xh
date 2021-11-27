@@ -21,6 +21,11 @@
 
 namespace Forum;
 
+use function array_map;
+use function extract;
+use function ob_get_clean;
+use function ob_start;
+use function sprintf;
 use function XH_hsc;
 use function XH_numberSuffix;
 
