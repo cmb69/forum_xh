@@ -21,7 +21,7 @@
 
 namespace Forum;
 
-class HtmlString
+final class HtmlString
 {
     /** @var string */
     private $value;

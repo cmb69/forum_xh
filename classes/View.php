@@ -29,7 +29,7 @@ use function sprintf;
 use function XH_hsc;
 use function XH_numberSuffix;
 
-class View
+final class View
 {
     /** @var string */
     private $templateDir;
