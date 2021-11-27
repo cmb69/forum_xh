@@ -32,14 +32,6 @@ class View
     /** @var array<string,string> */
     private $lang;
 
-    /** @var string */
-    private $template;
-
-    /**
-     * @var array<string,mixed>
-     */
-    private $data;
-
     /**
      * @param string $templateFolder
      * @param array<string,string> $lang
@@ -77,17 +69,14 @@ class View
     }
 
     /**
-     * @param string $template
-     * @param array<string,mixed> $data
+     * @param string $_template
+     * @param array<string,mixed> $_data
      * @return void
      */
-    public function render($template, array $data)
+    public function render($_template, array $_data)
     {
-        $this->template = "{$this->templateFolder}/{$template}.php";
-        $this->data = $data;
-        unset($template, $data);
-        extract($this->data);
-        include $this->template;
+        extract($_data);
+        include "{$this->templateFolder}/{$_template}.php";
     }
 
     /**
