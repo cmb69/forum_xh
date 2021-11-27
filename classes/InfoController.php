@@ -40,7 +40,7 @@ class InfoController
      */
     public function defaultAction()
     {
-        $this->view->render('info', [
+        echo $this->view->render('info', [
             'version' => Plugin::VERSION,
             'checks' => $this->systemCheckService->getChecks(),
         ]);

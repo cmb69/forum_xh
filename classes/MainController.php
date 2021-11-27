@@ -126,7 +126,7 @@ class MainController
     private function renderTopicsView($forum)
     {
         $topics = $this->contents->getSortedTopics($forum);
-        $this->view->render('topics', [
+        echo $this->view->render('topics', [
             'isUser' => $this->user() !== false,
             'href' => $this->url->withParam("forum_actn", "new")->relative(),
             'topics' => $topics,
@@ -151,7 +151,7 @@ class MainController
         $editUrl = $this->url->withParam("forum_actn", "edit")->withParam("forum_topic", $tid);
 
         $this->csrfProtector->store();
-        $this->view->render('topic', [
+        echo $this->view->render('topic', [
             'title' => $title,
             'topic' => $topic,
             'tid' => $tid,
@@ -303,7 +303,7 @@ class MainController
             $emoticons[$emotion] = "{$this->pluginFolder}images/emoticon_$emotion.png";
         }
         $this->csrfProtector->store();
-        $this->view->render('form', [
+        echo $this->view->render('form', [
             'newTopic' => $tid === null,
             'tid' => $tid,
             'cid' => $cid,
