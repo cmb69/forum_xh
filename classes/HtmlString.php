@@ -39,7 +39,7 @@ class HtmlString
     /**
      * @return string
      */
-    public function __toString()
+    public function asString()
     {
         return $this->value;
     }

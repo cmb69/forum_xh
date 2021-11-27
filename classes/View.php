@@ -86,7 +86,7 @@ class View
     public function esc($value)
     {
         if ($value instanceof HtmlString) {
-            return $value;
+            return $value->asString();
         } else {
             return XH_hsc($value);
         }
