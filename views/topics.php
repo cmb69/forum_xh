@@ -1,9 +1,10 @@
 <?php
 
 use Forum\Topic;
+use Plib\HtmlView as View;
 
 /**
- * @var \Forum\View $this
+ * @var View $this
  * @var bool $isUser
  * @var string $href
  * @var callable $topicUrl

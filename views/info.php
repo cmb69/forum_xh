@@ -1,6 +1,9 @@
 <?php
+
+use Plib\HtmlView as View;
+
 /**
- * @var \Forum\View $this
+ * @var View $this
  * @var string $version
  * @var array<int,array{state:string,label:string,stateLabel:string}> $checks
  */

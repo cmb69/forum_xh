@@ -1,13 +1,15 @@
 <?php
 
 use Forum\Comment;
+use Plib\HtmlString;
+use Plib\HtmlView as View;
 
 /**
- * @var \Forum\View $this
+ * @var View $this
  * @var string $title
  * @var array<string,Comment> $topic
  * @var string $tid
- * @var \Forum\HtmlString $csrfTokenInput
+ * @var HtmlString $csrfTokenInput
  * @var bool $isUser
  * @var string $replyUrl
  * @var string $href

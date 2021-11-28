@@ -23,6 +23,9 @@ namespace Forum;
 
 use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
+use Plib\HtmlString;
+use Plib\HtmlView as View;
+
 use function XH_formatDate;
 use function XH_startSession;
 

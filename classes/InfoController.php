@@ -21,6 +21,8 @@
 
 namespace Forum;
 
+use Plib\HtmlView as View;
+
 class InfoController
 {
     /** @var SystemCheckService */

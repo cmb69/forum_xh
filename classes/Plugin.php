@@ -23,6 +23,7 @@ namespace Forum;
 
 use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
+use Plib\HtmlView as View;
 use function XH_message;
 use const CMSIMPLE_URL;
 use function XH_registerStandardPluginMenuItems;

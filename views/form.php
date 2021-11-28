@@ -1,6 +1,10 @@
 <?php
+
+use Plib\HtmlString;
+use Plib\HtmlView as View;
+
 /**
- * @var \Forum\View $this
+ * @var View $this
  * @var bool $newTopic
  * @var string|null $tid
  * @var string|null $cid
@@ -9,7 +13,7 @@
  * @var string $backUrl
  * @var string $headingKey
  * @var mixed $comment
- * @var \Forum\HtmlString $csrfTokenInput
+ * @var HtmlString $csrfTokenInput
  * @var string|false $i18n
  * @var array<string,string> $emoticons
  */
