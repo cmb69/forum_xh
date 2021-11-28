@@ -16,6 +16,7 @@ jobs:
       - name: Checkout Plib_XH
         uses: actions/checkout@v2
         with:
+          repository: cmb69/plib_xh
           path: cmsimplexh/plugins/plib
       - name: Checkout Forum_XH
         uses: actions/checkout@v2
