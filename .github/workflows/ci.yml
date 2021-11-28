@@ -13,6 +13,10 @@ jobs:
         run: |
           curl -fsSL -o CMSimple_XH-1.7.4.zip https://github.com/cmsimple-xh/cmsimple-xh/releases/download/1.7.4/CMSimple_XH-1.7.4.zip
           unzip -q CMSimple_XH-1.7.4.zip
+      - name: Checkout Plib_XH
+        uses: actions/checkout@v2
+        with:
+          path: cmsimplexh/plugins/plib
       - name: Checkout Forum_XH
         uses: actions/checkout@v2
         with:
