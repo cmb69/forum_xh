@@ -80,7 +80,7 @@ class Plugin
      */
     public static function forum($forum)
     {
-        global $sn, $su, $pth, $plugin_cf, $plugin_tx;
+        global $pth, $plugin_cf, $plugin_tx;
 
         $ptx = $plugin_tx['forum'];
         if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
@@ -88,7 +88,7 @@ class Plugin
         }
         $controller = new MainController(
             $forum,
-            new Url($sn, $su),
+            self::url(),
             $plugin_cf['forum'],
             $plugin_tx['forum'],
             "{$pth['folder']['plugins']}forum/",
@@ -133,5 +133,14 @@ class Plugin
             return $_XH_csrfProtection;
         }
         return new CSRFProtection('forum_token');
+    }
+
+    private static function url(): Url
+    {
+        global $sl, $cf, $su;
+
+        $base = preg_replace(['/index\.php$/', "/(?<=\\/)$sl\\/$/"], "", CMSIMPLE_URL);
+        assert($base !== null);
+        return new Url($base, $sl === $cf["language"]["default"] ? "" : $sl, $su);
     }
 }
