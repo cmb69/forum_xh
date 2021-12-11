@@ -34,41 +34,26 @@ final class Url
     /** @var array<string,string> */
     private $params = [];
 
-    /**
-     * @param string $scriptName
-     * @param string $selectedUrl
-     */
-    public function __construct($scriptName, $selectedUrl)
+    public function __construct(string $scriptName, string $selectedUrl)
     {
         $this->scriptName = $scriptName;
         $this->selectedUrl = $selectedUrl;
     }
 
-    /**
-     * @param string $key
-     * @param string $value
-     * @return self
-     */
-    public function withParam($key, $value)
+    public function withParam(string $key, string $value): self
     {
         $url = clone $this;
         $url->params[$key] = $value;
         return $url;
     }
 
-    /**
-     * @return string
-     */
-    public function relative()
+    public function relative(): string
     {
         $query = http_build_query($this->params, "", "&");
         return "$this->scriptName?$this->selectedUrl" . ($query ? "&$query" : "");
     }
 
-    /**
-     * @return string
-     */
-    public function absolute()
+    public function absolute(): string
     {
         $query = http_build_query($this->params, "", "&");
         return CMSIMPLE_URL . "?$this->selectedUrl" . ($query ? "&$query" : "");
