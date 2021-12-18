@@ -306,7 +306,6 @@ class MainController
         foreach ($emotions as $emotion) {
             $emoticons[$emotion] = "{$this->pluginFolder}images/emoticon_$emotion.png";
         }
-        $this->csrfProtector->store();
         echo $this->view->render('form', [
             'newTopic' => $tid === null,
             'tid' => $tid,
@@ -322,6 +321,7 @@ class MainController
             'i18n' => json_encode($this->jsTexts()),
             'emoticons' => $emoticons,
         ]);
+        $this->csrfProtector->store();
     }
 
     /**
