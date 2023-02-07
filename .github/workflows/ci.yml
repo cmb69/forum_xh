@@ -2,12 +2,15 @@ name: checks
 on: [push, pull_request]
 jobs:
   checks:
+    strategy:
+      matrix:
+        version: ['7.3', '7.4', '8.0', '8.1', '8.2']
     runs-on: ubuntu-20.04
     steps:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: ${{matrix.version}}
           tools: composer
       - name: Install CMSimple_XH
         run: |
