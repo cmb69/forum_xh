@@ -33,13 +33,6 @@
     </exec>
   </target>
 
-  <target name="compat"
-      description="checks compatibility with PHP_CompatInfo">
-    <exec executable="phpcompatinfo" passthru="true" checkreturn="true">
-      <arg line="--ansi analyser:run classes"/>
-    </exec>
-  </target>
-
   <target name="gen-help" description="builds help.htm from README.md">
     <exec executable="pandoc" passthru="true" checkreturn="true">
       <arg value="-s"/>
