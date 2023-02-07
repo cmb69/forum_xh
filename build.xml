@@ -105,7 +105,6 @@
     </phingcall>
     <move todir="dist">
       <fileset dir="export">
-        <exclude name=".phive/**"/>
         <exclude name="help/template.htm"/>
         <exclude name="build.xml"/>
         <exclude name="composer.*"/>
