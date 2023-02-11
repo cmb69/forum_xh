@@ -23,6 +23,8 @@ namespace Forum;
 
 use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
+use Forum\Infra\DateFormatter;
+use Forum\Infra\Session;
 use Forum\Infra\View;
 use Forum\Infra\SystemChecker;
 
@@ -100,7 +102,9 @@ class Plugin
             self::getCSRFProtector(),
             new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
             new FaRequireCommand(),
-            new MailService($plugin_cf['forum'])
+            new MailService($plugin_cf['forum']),
+            new Session(),
+            new DateFormatter()
         );
         $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'default';
         $action .= 'Action';
@@ -110,11 +114,11 @@ class Plugin
                 while (ob_get_level()) {
                     ob_end_clean();
                 }
-                $controller->{$action}();
+                $controller->{$action}()->fire();
                 exit;
             } else {
                 ob_start();
-                $controller->{$action}();
+                $controller->{$action}()->fire();
                 return (string) ob_get_clean();
             }
         }

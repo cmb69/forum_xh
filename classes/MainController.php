@@ -23,10 +23,9 @@ namespace Forum;
 
 use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
+use Forum\Infra\DateFormatter;
+use Forum\Infra\Session;
 use Forum\Infra\View;
-
-use function XH_formatDate;
-use function XH_startSession;
 
 class MainController
 {
@@ -73,6 +72,12 @@ class MainController
     /** @var MailService */
     private $mailService;
 
+    /** @var Session */
+    private $session;
+
+    /** @var DateFormatter */
+    private $dateFormatter;
+
     /**
      * @param string $forum
      * @param array<string,string> $config
@@ -90,7 +95,9 @@ class MainController
         CSRFProtection $csrfProtector,
         View $view,
         FaRequireCommand $faRequireCommand,
-        MailService $mailService
+        MailService $mailService,
+        Session $session,
+        DateFormatter $dateFormatter
     ) {
         $this->forum = $forum;
         $this->url = $url;
@@ -103,22 +110,26 @@ class MainController
         $this->view = $view;
         $this->faRequireCommand = $faRequireCommand;
         $this->mailService = $mailService;
+        $this->session = $session;
+        $this->dateFormatter = $dateFormatter;
     }
 
-    /**
-     * @return void
-     */
-    public function defaultAction()
+    public function defaultAction(): Response
     {
         if (empty($_GET['forum_topic'])
             || ($tid = $this->contents->cleanId($_GET['forum_topic'])) === false
-            || !file_exists($this->contents->dataFolder($this->forum) . $tid . '.dat')
+            || !$this->contents->hasTopic($this->forum, $tid)
         ) {
+            ob_start();
             $this->renderTopicsView($this->forum);
+            $response = new Response(ob_get_clean());
         } else {
+            ob_start();
             $this->renderTopicView($this->forum, $tid);
+            $response = new Response(ob_get_clean());
         }
         $this->addScript();
+        return $response;
     }
 
     /**
@@ -136,7 +147,7 @@ class MainController
                 return $this->url->replace(["forum_topic" => $tid])->relative();
             },
             'topicDate' => function (Topic $topic) {
-                return XH_formatDate($topic->time());
+                return $this->dateFormatter->format($topic->time());
             },
         ]);
     }
@@ -165,7 +176,7 @@ class MainController
                 return defined('XH_ADM') && XH_ADM || $comment->user() == $this->user();
             },
             'commentDate' => function (Comment $comment) {
-                return XH_formatDate($comment->time());
+                return $this->dateFormatter->format($comment->time());
             },
             'html' => function (Comment $comment) {
                 return $this->bbcode->convert($comment->comment());
@@ -176,19 +187,16 @@ class MainController
         ]);
     }
 
-    /**
-     * @return void
-     */
-    public function newAction()
+    public function newAction(): Response
     {
+        ob_start();
         $this->renderCommentForm($this->forum);
+        $output = ob_get_clean();
         $this->addScript();
+        return new Response($output);
     }
 
-    /**
-     * @return never
-     */
-    public function postAction()
+    public function postAction(): Response
     {
         $this->csrfProtector->check();
         $forumtopic = isset($_POST['forum_topic']) ? $_POST['forum_topic'] : null;
@@ -198,8 +206,7 @@ class MainController
             $tid = $this->postComment($this->forum, $forumtopic);
         }
         $url = $tid ? $this->url->replace(["forum_topic" => $tid]) : $this->url;
-        header("Location: {$url->absolute()}", true, 303);
-        exit;
+        return new Response("", $url->absolute());
     }
 
     /**
@@ -236,7 +243,7 @@ class MainController
 
         if (!(defined('XH_ADM') && XH_ADM) && $this->config['mail_address']) {
             $url = $this->url->replace(["forum_topic" => $tid])->absolute();
-            $date = XH_formatDate($comment->time());
+            $date = $this->dateFormatter->format($comment->time());
             $attribution = sprintf($this->lang['mail_attribution'], $comment->user(), $date);
             $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment->comment());
             assert(is_string($content));
@@ -247,25 +254,22 @@ class MainController
         return $tid;
     }
 
-    /**
-     * @return void
-     */
-    public function editAction()
+    public function editAction(): Response
     {
         $tid = $this->contents->cleanId($_GET['forum_topic']);
         $cid = $this->contents->cleanId($_GET['forum_comment']);
         if ($tid && $cid) {
+            ob_start();
             $this->renderCommentForm($this->forum, $tid, $cid);
+            $output = ob_get_clean();
         } else {
-            echo ''; // should display error
+            $output = ''; // should display error
         }
         $this->addScript();
+        return new Response($output);
     }
 
-    /**
-     * @return never
-     */
-    public function deleteAction()
+    public function deleteAction(): Response
     {
         $this->csrfProtector->check();
         $tid = $this->contents->cleanId($_POST['forum_topic']);
@@ -274,8 +278,7 @@ class MainController
         $url = $tid && $cid && $this->contents->deleteComment($this->forum, $tid, $cid, $user)
             ? $this->url->replace(["forum_topic" => $tid])
             : $this->url;
-        header("Location: {$url->absolute()}", true, 303);
-        exit;
+        return new Response("", $url->absolute());
     }
 
     /**
@@ -355,30 +358,32 @@ class MainController
      */
     private function user()
     {
-        XH_startSession();
-        return isset($_SESSION['Name'])
-            ? $_SESSION['Name']
-            : (isset($_SESSION['username']) ? $_SESSION['username'] : false);
+        $name = $this->session->get('Name');
+        if ($name !== null) {
+            return $name;
+        }
+        $name = $this->session->get('username');
+        if ($name !== null) {
+            return $name;
+        }
+        return false;
     }
 
-    /**
-     * @return void
-     */
-    public function replyAction()
+    public function replyAction(): Response
     {
+        $output = "";
         if (isset($_GET['forum_topic'])) {
             $tid = $this->contents->cleanId($_GET['forum_topic']);
+            ob_start();
             $this->renderCommentForm($this->forum, $tid ? $tid : null);
+            $output = ob_get_clean();
         }
         $this->addScript();
+        return new Response($output);
     }
 
-    /**
-     * @return never
-     */
-    public function previewAction()
+    public function previewAction(): Response
     {
-        echo $this->bbcode->convert($_POST['data']);
-        exit;
+        return new Response($this->bbcode->convert($_POST['data']), null, true);
     }
 }

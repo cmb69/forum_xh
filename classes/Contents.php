@@ -130,6 +130,12 @@ class Contents
         }
     }
 
+    public function hasTopic(string $forum, string $tid): bool
+    {
+        $filename = $this->dataFolder($forum) . $tid . '.dat';
+        return file_exists($filename);
+    }
+
     /**
      * @param string $forum
      * @param string $tid

@@ -1,0 +1,49 @@
+<div class="forum_container">
+    <form class="forum_comment" action="/?Forum&amp;forum_actn=post" method="post" accept-charset="UTF-8" data-i18n="{&quot;TITLE_MISSING&quot;:&quot;Enter a topic title!&quot;,&quot;COMMENT_MISSING&quot;:&quot;Enter your comment!&quot;,&quot;ENTER_URL&quot;:&quot;Enter URL:&quot;}">
+        <div class="forum_preview_container"></div>
+                <h6 class="forum_heading">New Topic</h6>
+        <div class="forum_title">
+            <label for="forum_title">Title</label>
+            <input type="text" id="forum_title" name="forum_title">
+        </div>
+        <script type="text/x-template" id="forum_toolbar">
+            <div>
+                <button type="button" class="forum_bold_button" title="Bold" accesskey="b"><i class="fa fa-bold"></i></button>
+                <button type="button" class="forum_italic_button" title="Italic" accesskey="i"><i class="fa fa-italic"></i></button>
+                <button type="button" class="forum_underline_button" title="Underline"><i class="fa fa-underline"></i></button>
+                <button type="button" class="forum_strikethrough_button" title="Strikethrough"><i class="fa fa-strikethrough"></i></button>
+                <button type="button" class="forum_emoticon_button" title="Emoticon"><i class="fa fa-smile-o"></i></button>
+                <div class="forum_emoticons">
+                    <button type="button" class="forum_smile_button" title="Smile"><img src="./images/emoticon_smile.png" alt="Smile"></button>
+                    <button type="button" class="forum_wink_button" title="Wink"><img src="./images/emoticon_wink.png" alt="Wink"></button>
+                    <button type="button" class="forum_happy_button" title="Happy"><img src="./images/emoticon_happy.png" alt="Happy"></button>
+                    <button type="button" class="forum_grin_button" title="Grin"><img src="./images/emoticon_grin.png" alt="Grin"></button>
+                    <button type="button" class="forum_tongue_button" title="Tongue"><img src="./images/emoticon_tongue.png" alt="Tongue"></button>
+                    <button type="button" class="forum_surprised_button" title="Surprised"><img src="./images/emoticon_surprised.png" alt="Surprised"></button>
+                    <button type="button" class="forum_unhappy_button" title="Unhappy"><img src="./images/emoticon_unhappy.png" alt="Unhappy"></button>
+                </div>
+                <button type="button" class="forum_picture_button" title="Picture"><i class="fa fa-picture-o"></i></button>
+                <button type="button" class="forum_iframe_button" title="Iframe (e.g. for Youtube video)"><i class="fa fa-hand-rock-o"></i></button>
+                <button type="button" class="forum_link_button" title="Link"><i class="fa fa-link"></i></button>
+                <button type="button" class="forum_font_button" title="size"><i class="fa fa-font"></i></button>
+                <div class="forum_font_sizes">
+                    <button type="button" class="forum_big_button">Big</button>
+                    <button type="button" class="forum_small_button">Small</button>
+                </div>
+                <button type="button" class="forum_bulleted_list_button" title="Bulleted List"><i class="fa fa-list-ul"></i></button>
+                <button type="button" class="forum_numeric_list_button" title="Numeric List"><i class="fa fa-list-ol"></i></button>
+                <button type="button" class="forum_list_item_button" title="List Item"><i class="fa fa-asterisk"></i></button>
+                <button type="button" class="forum_quotes_button" title="Quotes"><i class="fa fa-quote-right"></i></button>
+                <button type="button" class="forum_code_button" title="Code"><i class="fa fa-code"></i></button>
+                <button type="button" class="forum_preview_button" title="Preview" data-url="/?Forum&amp;forum_actn=preview"><i class="fa fa-eye"></i></button>
+            </div>
+        </script>
+        <textarea name="forum_text" cols="80" rows="10"></textarea>
+        <p class="forum_submit">
+            <input type="submit" class="submit" value="Submit">
+        </p>
+    </form>
+    <div class="forum_navlink">
+        <a href="/?Forum">Back to overview</a>
+    </div>
+</div>
