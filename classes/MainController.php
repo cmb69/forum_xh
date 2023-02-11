@@ -307,7 +307,7 @@ class MainController
         echo $this->view->render('form', [
             'newTopic' => $tid === null,
             'tid' => $tid,
-            'cid' => $cid,
+            'cid' => $cid !== null ? $cid : "",
             'action' => $this->url->replace(["forum_actn" => "post"])->relative(),
             'previewUrl' => $this->url->replace(["forum_actn" => "preview"])->relative(),
             'backUrl' => $tid === null
