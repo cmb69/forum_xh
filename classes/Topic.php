@@ -63,9 +63,7 @@ class Topic
         return $this->time;
     }
 
-    /**
-     * @return array{title:string,comments:int,user:string,time:int}
-     */
+    /** @return array{title:string,comments:int,user:string,time:int} */
     public function toArray(): array
     {
         return [

@@ -28,27 +28,19 @@ class BBCode
     /** @var array<string,string> */
     private $lang;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $pattern;
 
-    /**
-     * @var array<int,string>
-     */
+    /** @var array<int,string> */
     private $context;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $emoticonDir;
 
     /** @var string */
     private $iframeTitle;
 
-    /**
-     * @param array<string,string> $lang
-     */
+    /** @param array<string,string> $lang */
     public function __construct(array $lang, string $emoticonDir, string $iframeTitle)
     {
         $this->pattern = '/\[(i|b|u|s|url|img|iframe|size|list|quote|code)(=.*?)?]'
@@ -70,9 +62,7 @@ class BBCode
         return $text;
     }
 
-    /**
-     * @param array<int,string> $matches
-     */
+    /** @param array<int,string> $matches */
     private function doConvert(array $matches): string
     {
         $inlines = array('i', 'b', 'u', 's', 'url', 'img', 'iframe', 'size');
@@ -113,9 +103,7 @@ class BBCode
         return $result;
     }
     
-    /**
-     * @param array<int,string> $matches
-     */
+    /** @param array<int,string> $matches */
     private function convertUrl(array $matches): string
     {
         if (empty($matches[2])) {
@@ -133,9 +121,7 @@ class BBCode
         return $start . $inner . $end;
     }
 
-    /**
-     * @param array<int,string> $matches
-     */
+    /** @param array<int,string> $matches */
     private function convertImg(array $matches): string
     {
         $url = $matches[3];
@@ -145,9 +131,7 @@ class BBCode
         return '<img src="' . $url . '" alt="' . pathinfo($url, PATHINFO_FILENAME) . '">';
     }
 
-    /**
-     * @param array<int,string> $matches
-     */
+    /** @param array<int,string> $matches */
     private function convertIframe(array $matches): string
     {
         $url = $matches[3];
@@ -161,9 +145,7 @@ class BBCode
         );
     }
 
-    /**
-     * @param array<int,string> $matches
-     */
+    /** @param array<int,string> $matches */
     private function convertSize(array $matches): string
     {
         $size = substr($matches[2], 1);
@@ -174,9 +156,7 @@ class BBCode
         return $start . $inner . $end;
     }
     
-    /**
-     * @param array<int,string> $matches
-     */
+    /** @param array<int,string> $matches */
     private function convertList(array $matches): string
     {
         if (in_array('inline', $this->context)) {
@@ -204,9 +184,7 @@ class BBCode
         return $start . $inner . $end;
     }
 
-    /**
-     * @param array<int,string> $matches
-     */
+    /** @param array<int,string> $matches */
     private function convertQuote(array $matches): string
     {
         if (in_array('inline', $this->context)) {
@@ -218,9 +196,7 @@ class BBCode
         return $start . $inner . $end;
     }
     
-    /**
-     * @param array<int,string> $matches
-     */
+    /** @param array<int,string> $matches */
     private function convertCode(array $matches): string
     {
         if (in_array('inline', $this->context)) {
@@ -232,9 +208,7 @@ class BBCode
         return $start . $inner . $end;
     }
     
-    /**
-     * @param array<int,string> $matches
-     */
+    /** @param array<int,string> $matches */
     private function convertOther(array $matches): string
     {
         $start = '<' . $matches[1] . '>';

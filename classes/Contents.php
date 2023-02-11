@@ -23,14 +23,10 @@ namespace Forum;
 
 class Contents
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $dataFolder;
 
-    /**
-     * @var array<string,resource>
-     */
+    /** @var array<string,resource> */
     private $lockHandles = array();
 
     public function __construct(string $dataFolder)
@@ -61,9 +57,7 @@ class Contents
         return $filename;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     private function lock(string $forum, int $op)
     {
         $filename = $this->dataFolder($forum) . '.lock';
@@ -82,9 +76,7 @@ class Contents
         }
     }
 
-    /**
-     * @return array<string,Topic>
-     */
+    /** @return array<string,Topic> */
     private function getTopics(string $forum): array
     {
         $filename = $this->dataFolder($forum) . 'topics.dat';
@@ -125,9 +117,7 @@ class Contents
         return file_exists($filename);
     }
 
-    /**
-     * @return array<string,Comment>
-     */
+    /** @return array<string,Comment> */
     public function getTopic(string $forum, string $tid): array
     {
         $filename = $this->dataFolder($forum) . $tid . '.dat';
@@ -168,17 +158,13 @@ class Contents
         return uniqid();
     }
 
-    /**
-     * @return string|false
-     */
+    /** @return string|false */
     public function cleanId(string $id)
     {
         return preg_match('/^[a-f0-9]{13}+$/u', $id) ? $id : false;
     }
 
-    /**
-     * @return array<string,Topic>
-     */
+    /** @return array<string,Topic> */
     public function getSortedTopics(string $forum): array
     {
         $this->lock($forum, LOCK_SH);
@@ -190,9 +176,7 @@ class Contents
         return $topics;
     }
 
-    /**
-     * @return array{0:string,1:array<string,Comment>}
-     */
+    /** @return array{0:string,1:array<string,Comment>} */
     public function getTopicWithTitle(string $forum, string $tid): array
     {
         $this->lock($forum, LOCK_SH);
@@ -202,9 +186,7 @@ class Contents
         return array($topics[$tid]->title(), $topic);
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function createComment(string $forum, string $tid, ?string $title, string $cid, Comment $comment)
     {
         $this->lock($forum, LOCK_EX);
@@ -225,9 +207,7 @@ class Contents
         $this->lock($forum, LOCK_UN);
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function updateComment(string $forum, string $tid, string $cid, Comment $comment)
     {
         $this->lock($forum, LOCK_EX);

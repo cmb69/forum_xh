@@ -54,9 +54,7 @@ class Comment
         return $this->comment;
     }
 
-    /**
-     * @return array{user:string,time:int,comment:string}
-     */
+    /** @return array{user:string,time:int,comment:string} */
     public function toArray(): array
     {
         return [

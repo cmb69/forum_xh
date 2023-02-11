@@ -37,9 +37,7 @@ class Plugin
 {
     const VERSION = '1.0beta5';
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public static function run()
     {
         eval('function forum($forum) {return \Forum\Plugin::forum($forum);}');
@@ -51,9 +49,7 @@ class Plugin
         }
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     private static function handleAdministration()
     {
         global $pth, $plugin_tx, $admin, $o;
@@ -75,9 +71,7 @@ class Plugin
         }
     }
 
-    /**
-     * @return string|never
-     */
+    /** @return string|never */
     public static function forum(string $forum)
     {
         global $pth, $plugin_cf, $plugin_tx;

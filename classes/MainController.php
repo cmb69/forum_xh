@@ -29,32 +29,22 @@ use Forum\Infra\View;
 
 class MainController
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $forum;
 
     /** @var Url */
     private $url;
 
-    /**
-     * @var array<string,string>
-     */
+    /** @var array<string,string> */
     private $config;
 
-    /**
-     * @var array<string,string>
-     */
+    /** @var array<string,string> */
     private $lang;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $pluginFolder;
 
-    /**
-     * @var Contents
-     */
+    /** @var Contents */
     private $contents;
 
     /** @var BBCode */
@@ -79,17 +69,15 @@ class MainController
     private $dateFormatter;
 
     /**
-     * @param string $forum
      * @param array<string,string> $config
      * @param array<string,string> $lang
-     * @param string $pluginFolder
      */
     public function __construct(
-        $forum,
+        string $forum,
         Url $url,
         array $config,
         array $lang,
-        $pluginFolder,
+        string $pluginFolder,
         Contents $contents,
         BBCode $bbcode,
         CSRFProtection $csrfProtector,
@@ -132,11 +120,8 @@ class MainController
         return $response;
     }
 
-    /**
-     * @param string $forum
-     * @return void
-     */
-    private function renderTopicsView($forum)
+    /** @return void */
+    private function renderTopicsView(string $forum)
     {
         $topics = $this->contents->getSortedTopics($forum);
         echo $this->view->render('topics', [
@@ -152,12 +137,8 @@ class MainController
         ]);
     }
 
-    /**
-     * @param string $forum
-     * @param string $tid
-     * @return void
-     */
-    private function renderTopicView($forum, $tid)
+    /** @return void */
+    private function renderTopicView(string $forum, string $tid)
     {
         $this->faRequireCommand->execute();
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
@@ -209,13 +190,8 @@ class MainController
         return new Response("", $url->absolute());
     }
 
-    /**
-     * @param string $forum
-     * @param string $tid
-     * @param string $cid
-     * @return string|false
-     */
-    private function postComment($forum, $tid = null, $cid = null)
+    /** @return string|false */
+    private function postComment(string $forum, ?string $tid = null, ?string $cid = null)
     {
         if (!isset($tid) && empty($_POST['forum_title'])
             || ($this->user() === false && !(defined('XH_ADM') && XH_ADM)) || empty($_POST['forum_text'])
@@ -281,13 +257,8 @@ class MainController
         return new Response("", $url->absolute());
     }
 
-    /**
-     * @param string $forum
-     * @param string $tid
-     * @param string $cid
-     * @return void
-     */
-    private function renderCommentForm($forum, $tid = null, $cid = null)
+    /** @return void */
+    private function renderCommentForm(string $forum, ?string $tid = null, ?string $cid = null)
     {
         if ($this->user() === false && (!defined('XH_ADM') || !XH_ADM)) {
             return;
@@ -325,9 +296,7 @@ class MainController
         $this->csrfProtector->store();
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     private function addScript()
     {
         global $bjs;
@@ -340,9 +309,7 @@ class MainController
         $bjs .= sprintf('<script type="text/javascript" src="%s"></script>', $this->view->esc($filename));
     }
 
-    /**
-     * @return array<string,string>
-     */
+    /** @return array<string,string> */
     private function jsTexts()
     {
         $keys = ['title_missing', 'comment_missing', 'enter_url'];
@@ -353,9 +320,7 @@ class MainController
         return $texts;
     }
 
-    /**
-     * @return string|false
-     */
+    /** @return string|false */
     private function user()
     {
         $name = $this->session->get('Name');

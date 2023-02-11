@@ -37,27 +37,21 @@ final class View
     /** @var array<string,string> */
     private $lang;
 
-    /**
-     * @param array<string,string> $lang
-     */
+    /** @param array<string,string> $lang */
     public function __construct(string $templateDir, array $lang)
     {
         $this->templateDir = $templateDir;
         $this->lang = $lang;
     }
 
-    /**
-     * @param scalar $args
-     */
+    /** @param scalar $args */
     public function text(string $key, ...$args): string
     {
         $args = array_map([$this, "esc"], $args);
         return sprintf($this->esc($this->lang[$key]), ...$args);
     }
 
-    /**
-     * @param scalar $args
-     */
+    /** @param scalar $args */
     public function plural(string $key, int $count, ...$args): string
     {
         if ($count == 0) {
@@ -69,17 +63,13 @@ final class View
         return sprintf($this->esc($this->lang[$key]), $count, ...$args);
     }
 
-    /**
-     * @param scalar $args
-     */
+    /** @param scalar $args */
     public function message(string $type, string $key, ...$args): string
     {
         return sprintf('<p class="xh_%s">%s</p>', $type, $this->text($key, ...$args));
     }
 
-    /**
-     * @param array<string,mixed> $_data
-     */
+    /** @param array<string,mixed> $_data */
     public function render(string $_template, array $_data): string
     {
         extract($_data);
@@ -90,9 +80,7 @@ final class View
         return $result;
     }
 
-    /**
-     * @param scalar $value
-     */
+    /** @param scalar $value */
     public function esc($value): string
     {
         return XH_hsc($value);

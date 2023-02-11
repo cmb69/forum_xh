@@ -68,9 +68,7 @@ class InfoController
         ]);
     }
 
-    /**
-     * @return array<int,array{state:string,label:string,stateLabel:string}>
-     */
+    /** @return array<int,array{state:string,label:string,stateLabel:string}> */
     public function getChecks(): array
     {
         return array(
@@ -86,9 +84,7 @@ class InfoController
         );
     }
 
-    /**
-     * @return array{state:string,label:string,stateLabel:string}
-     */
+    /** @return array{state:string,label:string,stateLabel:string} */
     private function checkPhpVersion(string $version): array
     {
         $state = $this->systemChecker->checkPhpVersion($version) ? 'success' : 'fail';
@@ -97,9 +93,7 @@ class InfoController
         return compact('state', 'label', 'stateLabel');
     }
 
-    /**
-     * @return array{state:string,label:string,stateLabel:string}
-     */
+    /** @return array{state:string,label:string,stateLabel:string} */
     private function checkExtension(string $extension, bool $isMandatory = true): array
     {
         $state = $this->systemChecker->checkExtension($extension) ? 'success' : ($isMandatory ? 'fail' : 'warning');
@@ -108,9 +102,7 @@ class InfoController
         return compact('state', 'label', 'stateLabel');
     }
 
-    /**
-     * @return array{state:string,label:string,stateLabel:string}
-     */
+    /** @return array{state:string,label:string,stateLabel:string} */
     private function checkXhVersion(string $version): array
     {
         $state = $this->systemChecker->checkXhVersion($version) ? 'success' : 'fail';
@@ -119,9 +111,7 @@ class InfoController
         return compact('state', 'label', 'stateLabel');
     }
 
-    /**
-     * @return array{state:string,label:string,stateLabel:string}
-     */
+    /** @return array{state:string,label:string,stateLabel:string} */
     private function checkPlugin(string $plugin): array
     {
         $state = $this->systemChecker->checkPlugin($this->pluginsFolder) ? 'success' : 'fail';
@@ -130,9 +120,7 @@ class InfoController
         return compact('state', 'label', 'stateLabel');
     }
 
-    /**
-     * @return array{state:string,label:string,stateLabel:string}
-     */
+    /** @return array{state:string,label:string,stateLabel:string} */
     private function checkWritability(string $folder): array
     {
         $state = $this->systemChecker->checkWritability($folder) ? 'success' : 'warning';
