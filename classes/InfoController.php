@@ -74,7 +74,7 @@ class InfoController
     public function getChecks()
     {
         return array(
-            $this->checkPhpVersion('7.0.0'),
+            $this->checkPhpVersion('7.1.0'),
             $this->checkExtension('json'),
             $this->checkExtension('session'),
             $this->checkXhVersion('1.7.0'),
