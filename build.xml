@@ -53,11 +53,7 @@
   </target>
 
   <target name="unit-tests" description="runs all unit tests">
-    <exec executable="phpunit" passthru="true" checkreturn="true">
-      <arg value="--bootstrap"/>
-      <arg file="tests/unit/bootstrap.php"/>
-      <arg file="tests/unit"/>
-    </exec>
+    <exec executable="phpunit" passthru="true" checkreturn="true"/>
   </target>
 
   <target name="attack-tests" description="runs all attack tests">
@@ -68,8 +64,8 @@
   </target>
 
   <target name="coverage" description="generates coverage report">
-    <exec executable="phpunit" logoutput="true">
-      <arg line="--configuration coverage.xml"/>
+    <exec executable="phpunit" passthru="true" checkreturn="true">
+      <arg line="--coverage-html tests/coverage"/>
     </exec>
   </target>
 
@@ -102,9 +98,9 @@
         <exclude name="help/template.htm"/>
         <exclude name="build.xml"/>
         <exclude name="composer.*"/>
-        <exclude name="coverage.xml"/>
         <exclude name="phpstan.bootstrap.php"/>
         <exclude name="phpstan.neon"/>
+        <exclude name="phpunit.xml"/>
         <exclude name="teplad.xml"/>
         <exclude name="tests/**"/>
       </fileset>

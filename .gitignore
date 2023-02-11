@@ -5,3 +5,4 @@ vendor
 /tools
 /.phpunit.result.cache
 /forum.min.js
+/.phpunit.cache

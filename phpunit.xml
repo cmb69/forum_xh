@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" bootstrap="tests/unit/bootstrap.php" cacheResultFile=".phpunit.cache/test-results" executionOrder="depends,defects" forceCoversAnnotation="false" beStrictAboutCoversAnnotation="true" beStrictAboutOutputDuringTests="true" beStrictAboutTodoAnnotatedTests="true" beStrictAboutTestsThatDoNotTestAnything="false" convertDeprecationsToExceptions="true" backupGlobals="true" verbose="true">
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">classes</directory>
+      <file>index.php</file>
+    </include>
+  </coverage>
+  <testsuites>
+    <testsuite name="default">
+      <directory>tests/unit</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>
