@@ -56,13 +56,6 @@
     <exec executable="phpunit" passthru="true" checkreturn="true"/>
   </target>
 
-  <target name="attack-tests" description="runs all attack tests">
-    <fail unless="env.CMSIMPLEDIR" message="CMSIMPLEDIR undefined!"/>
-    <exec executable="phpunit" passthru="true" checkreturn="true">
-      <arg file="tests/attack"/>
-    </exec>
-  </target>
-
   <target name="coverage" description="generates coverage report">
     <exec executable="phpunit" passthru="true" checkreturn="true">
       <arg line="--coverage-html coverage"/>
