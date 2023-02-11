@@ -83,7 +83,7 @@ final class View
     /** @param scalar $value */
     public function esc($value): string
     {
-        return XH_hsc($value);
+        return XH_hsc((string) $value);
     }
 
     /** @param scalar $value */

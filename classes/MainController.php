@@ -110,11 +110,11 @@ class MainController
         ) {
             ob_start();
             $this->renderTopicsView($this->forum);
-            $response = new Response(ob_get_clean());
+            $response = new Response((string) ob_get_clean());
         } else {
             ob_start();
             $this->renderTopicView($this->forum, $tid);
-            $response = new Response(ob_get_clean());
+            $response = new Response((string) ob_get_clean());
         }
         $this->addScript();
         return $response;
@@ -172,7 +172,7 @@ class MainController
     {
         ob_start();
         $this->renderCommentForm($this->forum);
-        $output = ob_get_clean();
+        $output = (string) ob_get_clean();
         $this->addScript();
         return new Response($output);
     }
@@ -237,7 +237,7 @@ class MainController
         if ($tid && $cid) {
             ob_start();
             $this->renderCommentForm($this->forum, $tid, $cid);
-            $output = ob_get_clean();
+            $output = (string) ob_get_clean();
         } else {
             $output = ''; // should display error
         }
@@ -341,7 +341,7 @@ class MainController
             $tid = $this->contents->cleanId($_GET['forum_topic']);
             ob_start();
             $this->renderCommentForm($this->forum, $tid ? $tid : null);
-            $output = ob_get_clean();
+            $output = (string) ob_get_clean();
         }
         $this->addScript();
         return new Response($output);
