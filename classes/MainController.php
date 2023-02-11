@@ -24,7 +24,6 @@ namespace Forum;
 use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\View;
-use Plib\Url;
 
 use function XH_formatDate;
 use function XH_startSession;
@@ -131,10 +130,10 @@ class MainController
         $topics = $this->contents->getSortedTopics($forum);
         echo $this->view->render('topics', [
             'isUser' => $this->user() !== false,
-            'href' => $this->url->with("forum_actn", "new")->relative(),
+            'href' => $this->url->replace(["forum_actn" => "new"])->relative(),
             'topics' => $topics,
             'topicUrl' => function ($tid) {
-                return $this->url->with("forum_topic", $tid)->relative();
+                return $this->url->replace(["forum_topic" => $tid])->relative();
             },
             'topicDate' => function (Topic $topic) {
                 return XH_formatDate($topic->time());
@@ -151,7 +150,7 @@ class MainController
     {
         $this->faRequireCommand->execute();
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
-        $editUrl = $this->url->with("forum_actn", "edit")->with("forum_topic", $tid);
+        $editUrl = $this->url->replace(["forum_actn" => "edit", "forum_topic" => $tid]);
 
         $this->csrfProtector->store();
         echo $this->view->render('topic', [
@@ -160,7 +159,7 @@ class MainController
             'tid' => $tid,
             'csrfTokenInput' => $this->csrfProtector->tokenInput(),
             'isUser' => $this->user() !== false,
-            'replyUrl' => $this->url->with("forum_actn", "reply")->with("forum_topic", $tid)->relative(),
+            'replyUrl' => $this->url->replace(["forum_actn" => "reply", "forum_topic" => $tid])->relative(),
             'href' => $this->url->relative(),
             'mayDeleteComment' => function (Comment $comment) {
                 return defined('XH_ADM') && XH_ADM || $comment->user() == $this->user();
@@ -172,7 +171,7 @@ class MainController
                 return $this->bbcode->convert($comment->comment());
             },
             'commentEditUrl' => function ($cid) use ($editUrl) {
-                return $editUrl->with("forum_comment", $cid)->relative();
+                return $editUrl->replace(["forum_comment" => $cid])->relative();
             },
         ]);
     }
@@ -198,7 +197,7 @@ class MainController
         } else {
             $tid = $this->postComment($this->forum, $forumtopic);
         }
-        $url = $tid ? $this->url->with("forum_topic", $tid) : $this->url;
+        $url = $tid ? $this->url->replace(["forum_topic" => $tid]) : $this->url;
         header("Location: {$url->absolute()}", true, 303);
         exit;
     }
@@ -236,7 +235,7 @@ class MainController
         }
 
         if (!defined('XH_ADM') || !XH_ADM && $this->config['mail_address']) {
-            $url = $this->url->with("forum_topic", $tid)->absolute();
+            $url = $this->url->replace(["forum_topic" => $tid])->absolute();
             $date = XH_formatDate($comment->time());
             $attribution = sprintf($this->lang['mail_attribution'], $comment->user(), $date);
             $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment->comment());
@@ -273,7 +272,7 @@ class MainController
         $cid = $this->contents->cleanId($_POST['forum_comment']);
         $user = defined('XH_ADM') && XH_ADM ? true : $this->user();
         $url = $tid && $cid && $this->contents->deleteComment($this->forum, $tid, $cid, $user)
-            ? $this->url->with("forum_topic", $tid)
+            ? $this->url->replace(["forum_topic" => $tid])
             : $this->url;
         header("Location: {$url->absolute()}", true, 303);
         exit;
@@ -309,11 +308,11 @@ class MainController
             'newTopic' => $tid === null,
             'tid' => $tid,
             'cid' => $cid,
-            'action' => $this->url->with("forum_actn", "post")->relative(),
-            'previewUrl' => $this->url->with("forum_actn", "preview")->relative(),
+            'action' => $this->url->replace(["forum_actn" => "post"])->relative(),
+            'previewUrl' => $this->url->replace(["forum_actn" => "preview"])->relative(),
             'backUrl' => $tid === null
                 ? $this->url->relative()
-                : $this->url->with("forum_topic", $tid)->relative(),
+                : $this->url->replace(["forum_topic" => $tid])->relative(),
             'headingKey' => $tid === null ? 'msg_new_topic' : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment'),
             'comment' => $comment,
             'csrfTokenInput' => $this->csrfProtector->tokenInput(),
