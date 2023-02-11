@@ -22,29 +22,128 @@
 namespace Forum;
 
 use Plib\HtmlView as View;
+use Forum\Infra\SystemChecker;
 
 class InfoController
 {
-    /** @var SystemCheckService */
-    private $systemCheckService;
+    /** @var string */
+    private $pluginsFolder;
+
+    /** @var string */
+    private $pluginFolder;
+
+    /** @var string */
+    private $contentFolder;
+
+    /** @var array<string,string> */
+    private $lang;
+
+    /** @var SystemChecker */
+    private $systemChecker;
 
     /** @var View */
     private $view;
 
-    public function __construct(SystemCheckService $systemCheckService, View $view)
-    {
-        $this->systemCheckService = $systemCheckService;
+    /** @param array<string,string> $lang */
+    public function __construct(
+        string $pluginsFolder,
+        string $contentFolder,
+        array $lang,
+        SystemChecker $systemChecker,
+        View $view
+    ) {
+        $this->pluginsFolder = $pluginsFolder;
+        $this->pluginFolder = "{$pluginsFolder}forum/";
+        $this->contentFolder = $contentFolder;
+        $this->lang = $lang;
+        $this->systemChecker = $systemChecker;
         $this->view = $view;
     }
 
-    /**
-     * @return void
-     */
-    public function defaultAction()
+    public function defaultAction(): string
     {
-        echo $this->view->render('info', [
+        return $this->view->render('info', [
             'version' => Plugin::VERSION,
-            'checks' => $this->systemCheckService->getChecks(),
+            'checks' => $this->getChecks(),
         ]);
+    }
+
+    /**
+     * @return array<int,array{state:string,label:string,stateLabel:string}>
+     */
+    public function getChecks()
+    {
+        return array(
+            $this->checkPhpVersion('7.0.0'),
+            $this->checkExtension('json'),
+            $this->checkExtension('session'),
+            $this->checkXhVersion('1.7.0'),
+            $this->checkPlugin('fa'),
+            $this->checkWritability("{$this->pluginFolder}css/"),
+            $this->checkWritability("{$this->pluginFolder}config"),
+            $this->checkWritability("{$this->pluginFolder}languages/"),
+            $this->checkWritability($this->contentFolder)
+        );
+    }
+
+    /**
+     * @param string $version
+     * @return array{state:string,label:string,stateLabel:string}
+     */
+    private function checkPhpVersion($version)
+    {
+        $state = $this->systemChecker->checkPhpVersion($version) ? 'success' : 'fail';
+        $label = sprintf($this->lang['syscheck_phpversion'], $version);
+        $stateLabel = $this->lang["syscheck_$state"];
+        return compact('state', 'label', 'stateLabel');
+    }
+
+    /**
+     * @param string $extension
+     * @param bool $isMandatory
+     * @return array{state:string,label:string,stateLabel:string}
+     */
+    private function checkExtension($extension, $isMandatory = true)
+    {
+        $state = $this->systemChecker->checkExtension($extension) ? 'success' : ($isMandatory ? 'fail' : 'warning');
+        $label = sprintf($this->lang['syscheck_extension'], $extension);
+        $stateLabel = $this->lang["syscheck_$state"];
+        return compact('state', 'label', 'stateLabel');
+    }
+
+    /**
+     * @param string $version
+     * @return array{state:string,label:string,stateLabel:string}
+     */
+    private function checkXhVersion($version)
+    {
+        $state = $this->systemChecker->checkXhVersion($version) ? 'success' : 'fail';
+        $label = sprintf($this->lang['syscheck_xhversion'], $version);
+        $stateLabel = $this->lang["syscheck_$state"];
+        return compact('state', 'label', 'stateLabel');
+    }
+
+    /**
+     * @param string $plugin
+     * @return array{state:string,label:string,stateLabel:string}
+     */
+    private function checkPlugin($plugin)
+    {
+        $state = $this->systemChecker->checkPlugin($this->pluginsFolder) ? 'success' : 'fail';
+        $label = sprintf($this->lang['syscheck_plugin'], $plugin);
+        $stateLabel = $this->lang["syscheck_$state"];
+        return compact('state', 'label', 'stateLabel');
+    }
+
+    /**
+     * @param string $folder
+     * @return array{state:string,label:string,stateLabel:string}
+     */
+    private function checkWritability($folder)
+    {
+        $state = $this->systemChecker->checkWritability($folder) ? 'success' : 'warning';
+        $label = sprintf($this->lang['syscheck_writable'], $folder);
+        $stateLabel = $this->lang["syscheck_$state"];
+        return compact('state', 'label', 'stateLabel');
     }
 }

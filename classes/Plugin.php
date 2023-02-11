@@ -25,6 +25,7 @@ use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
 use Plib\HtmlView as View;
 use Plib\Url;
+use Forum\Infra\SystemChecker;
 
 use function XH_message;
 use const CMSIMPLE_URL;
@@ -60,16 +61,13 @@ class Plugin
         switch ($admin) {
             case '':
                 $controller = new InfoController(
-                    new SystemCheckService(
-                        $pth['folder']['plugins'],
-                        "{$pth['folder']['content']}{$pth['folder']['base']}forum/",
-                        $plugin_tx['forum']
-                    ),
+                    $pth['folder']['plugins'],
+                    "{$pth['folder']['content']}{$pth['folder']['base']}forum/",
+                    $plugin_tx['forum'],
+                    new SystemChecker(),
                     new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum'])
                 );
-                ob_start();
-                $controller->defaultAction();
-                $o .= ob_get_clean();
+                $o .= $controller->defaultAction();
                 break;
             default:
                 $o .= plugin_admin_common();
