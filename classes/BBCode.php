@@ -31,7 +31,7 @@ class BBCode
     /** @var string */
     private $pattern;
 
-    /** @var array<int,string> */
+    /** @var list<string> */
     private $context;
 
     /** @var string */

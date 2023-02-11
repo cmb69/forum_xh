@@ -5,7 +5,7 @@ use Forum\Infra\View;
 /**
  * @var View $this
  * @var string $version
- * @var array<int,array{state:string,label:string,stateLabel:string}> $checks
+ * @var list<array{state:string,label:string,stateLabel:string}> $checks
  */
 ?>
 <h1>Forum <?=$this->esc($version)?></h1>

@@ -68,7 +68,7 @@ class InfoController
         ]);
     }
 
-    /** @return array<int,array{state:string,label:string,stateLabel:string}> */
+    /** @return list<array{state:string,label:string,stateLabel:string}> */
     public function getChecks(): array
     {
         return array(
