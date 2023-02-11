@@ -1,15 +1,14 @@
 <?php
 
 use Forum\Comment;
-use Plib\HtmlString;
-use Plib\HtmlView as View;
+use Forum\Infra\View;
 
 /**
  * @var View $this
  * @var string $title
  * @var array<string,Comment> $topic
  * @var string $tid
- * @var HtmlString $csrfTokenInput
+ * @var string $csrfTokenInput
  * @var bool $isUser
  * @var string $replyUrl
  * @var string $href
@@ -26,7 +25,7 @@ use Plib\HtmlView as View;
         <div>
 <?php   if ($mayDeleteComment($comment)):?>
             <form class="forum_delete" action="<?=$this->esc($href)?>" method="POST" data-message="<?=$this->text('msg_confirm_delete')?>">
-            <?=$this->esc($csrfTokenInput)?>
+            <?=$this->raw($csrfTokenInput)?>
                 <input type="hidden" name="forum_actn" value="delete">
                 <input type="hidden" name="forum_topic" value="<?=$this->esc($tid)?>">
                 <input type="hidden" name="forum_comment" value="<?=$this->esc($cid)?>">
@@ -41,7 +40,7 @@ use Plib\HtmlView as View;
                 <span class="forum_separator"><?=$this->text('lbl_separator')?></span>
                 <span class="forum_date"><?=$this->esc($commentDate($comment))?></span>
             </div>
-            <div class="forum_comment"><?=$this->esc($html($comment))?></div>
+            <div class="forum_comment"><?=$this->raw($html($comment))?></div>
         </div>
 <?php endforeach?>
     </div>

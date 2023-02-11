@@ -23,8 +23,7 @@ namespace Forum;
 
 use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
-use Plib\HtmlView as View;
-use Plib\Url;
+use Forum\Infra\View;
 use Forum\Infra\SystemChecker;
 
 use function XH_message;
@@ -137,10 +136,8 @@ class Plugin
 
     private static function url(): Url
     {
-        global $sl, $cf, $su;
+        global $sn, $su;
 
-        $base = preg_replace(['/index\.php$/', "/(?<=\\/)$sl\\/$/"], "", CMSIMPLE_URL);
-        assert($base !== null);
-        return new Url($base, $sl === $cf["language"]["default"] ? "" : $sl, $su);
+        return new Url($sn, $su, []);
     }
 }

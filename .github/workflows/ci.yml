@@ -16,11 +16,6 @@ jobs:
         run: |
           curl -fsSL -o CMSimple_XH-1.7.5.zip https://github.com/cmsimple-xh/cmsimple-xh/releases/download/1.7.5/CMSimple_XH-1.7.5.zip
           unzip -q CMSimple_XH-1.7.5.zip
-      - name: Checkout Plib_XH
-        uses: actions/checkout@v3
-        with:
-          repository: cmb69/plib_xh
-          path: cmsimplexh/plugins/plib
       - name: Checkout Forum_XH
         uses: actions/checkout@v3
         with:

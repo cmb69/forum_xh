@@ -23,7 +23,7 @@ namespace Forum;
 
 use PHPUnit\Framework\TestCase;
 use ApprovalTests\Approvals;
-use Plib\HtmlView as View;
+use Forum\Infra\View;
 use Forum\Infra\SystemChecker;
 
 class InfoControllerTest extends TestCase

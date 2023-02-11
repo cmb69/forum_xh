@@ -1,7 +1,6 @@
 <?php
 
-use Plib\HtmlString;
-use Plib\HtmlView as View;
+use Forum\Infra\View;
 
 /**
  * @var View $this
@@ -13,7 +12,7 @@ use Plib\HtmlView as View;
  * @var string $backUrl
  * @var string $headingKey
  * @var mixed $comment
- * @var HtmlString $csrfTokenInput
+ * @var string $csrfTokenInput
  * @var string|false $i18n
  * @var array<string,string> $emoticons
  */
@@ -21,7 +20,7 @@ use Plib\HtmlView as View;
 <div class="forum_container">
     <form class="forum_comment" action="<?=$this->esc($action)?>" method="post" accept-charset="UTF-8" data-i18n="<?=$this->esc($i18n)?>">
         <div class="forum_preview_container"></div>
-        <?=$this->esc($csrfTokenInput)?>
+        <?=$this->raw($csrfTokenInput)?>
 <?php if ($newTopic):?>
         <h6 class="forum_heading"><?=$this->text($headingKey)?></h6>
         <div class="forum_title">
