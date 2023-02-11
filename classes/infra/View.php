@@ -47,7 +47,7 @@ final class View
     }
 
     /**
-     * @param string $args
+     * @param scalar $args
      */
     public function text(string $key, ...$args): string
     {
@@ -56,7 +56,7 @@ final class View
     }
 
     /**
-     * @param string $args
+     * @param scalar $args
      */
     public function plural(string $key, int $count, ...$args): string
     {
@@ -70,7 +70,7 @@ final class View
     }
 
     /**
-     * @param string $args
+     * @param scalar $args
      */
     public function message(string $type, string $key, ...$args): string
     {
@@ -91,7 +91,7 @@ final class View
     }
 
     /**
-     * @param string $value
+     * @param scalar $value
      */
     public function esc($value): string
     {

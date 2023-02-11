@@ -33,10 +33,7 @@ class Contents
      */
     private $lockHandles = array();
 
-    /**
-     * @param string $dataFolder
-     */
-    public function __construct($dataFolder)
+    public function __construct(string $dataFolder)
     {
         if (substr($dataFolder, -1) != '/') {
             $dataFolder .= '/';
@@ -44,11 +41,7 @@ class Contents
         $this->dataFolder = $dataFolder;
     }
 
-    /**
-     * @param string $forum
-     * @return string
-     */
-    public function dataFolder($forum = null)
+    public function dataFolder(?string $forum = null): string
     {
         $filename = $this->dataFolder;
         if (isset($forum)) {
@@ -69,11 +62,9 @@ class Contents
     }
 
     /**
-     * @param string $forum
-     * @param int $op
      * @return void
      */
-    private function lock($forum, $op)
+    private function lock(string $forum, int $op)
     {
         $filename = $this->dataFolder($forum) . '.lock';
         touch($filename);
@@ -92,10 +83,9 @@ class Contents
     }
 
     /**
-     * @param string $forum
      * @return array<string,Topic>
      */
-    private function getTopics($forum)
+    private function getTopics(string $forum): array
     {
         $filename = $this->dataFolder($forum) . 'topics.dat';
         if (is_readable($filename)
@@ -114,11 +104,10 @@ class Contents
     }
 
     /**
-     * @param string $forum
      * @param array<string,Topic> $topics
      * @return void
      */
-    private function setTopics($forum, $topics)
+    private function setTopics(string $forum, array $topics)
     {
         $data = [];
         foreach ($topics as $tid => $topic) {
@@ -137,11 +126,9 @@ class Contents
     }
 
     /**
-     * @param string $forum
-     * @param string $tid
      * @return array<string,Comment>
      */
-    public function getTopic($forum, $tid)
+    public function getTopic(string $forum, string $tid): array
     {
         $filename = $this->dataFolder($forum) . $tid . '.dat';
         if (is_readable($filename)
@@ -160,12 +147,10 @@ class Contents
     }
 
     /**
-     * @param string $forum
-     * @param string $tid
      * @param array<string,Comment> $topic
      * @return void
      */
-    private function setTopic($forum, $tid, $topic)
+    private function setTopic(string $forum, string $tid, array $topic)
     {
         $data = [];
         foreach ($topic as $cid => $comment) {
@@ -178,28 +163,23 @@ class Contents
         }
     }
 
-    /**
-     * @return string
-     */
-    public function getId()
+    public function getId(): string
     {
         return uniqid();
     }
 
     /**
-     * @param string $id
      * @return string|false
      */
-    public function cleanId($id)
+    public function cleanId(string $id)
     {
         return preg_match('/^[a-f0-9]{13}+$/u', $id) ? $id : false;
     }
 
     /**
-     * @param string $forum
      * @return array<string,Topic>
      */
-    public function getSortedTopics($forum)
+    public function getSortedTopics(string $forum): array
     {
         $this->lock($forum, LOCK_SH);
         $topics = $this->getTopics($forum);
@@ -211,11 +191,9 @@ class Contents
     }
 
     /**
-     * @param string $forum
-     * @param string $tid
      * @return array{0:string,1:array<string,Comment>}
      */
-    public function getTopicWithTitle($forum, $tid)
+    public function getTopicWithTitle(string $forum, string $tid): array
     {
         $this->lock($forum, LOCK_SH);
         $topics = $this->getTopics($forum);
@@ -225,14 +203,9 @@ class Contents
     }
 
     /**
-     * @param string $forum
-     * @param string $tid
-     * @param string|null $title
-     * @param string $cid
-     * @param Comment $comment
      * @return void
      */
-    public function createComment($forum, $tid, $title, $cid, $comment)
+    public function createComment(string $forum, string $tid, ?string $title, string $cid, Comment $comment)
     {
         $this->lock($forum, LOCK_EX);
 
@@ -253,13 +226,9 @@ class Contents
     }
 
     /**
-     * @param string $forum
-     * @param string $tid
-     * @param string $cid
-     * @param Comment $comment
      * @return void
      */
-    public function updateComment($forum, $tid, $cid, $comment)
+    public function updateComment(string $forum, string $tid, string $cid, Comment $comment)
     {
         $this->lock($forum, LOCK_EX);
 
@@ -276,13 +245,10 @@ class Contents
     }
 
     /**
-     * @param string $forum
-     * @param string $tid
-     * @param string $cid
      * @param string|bool $user
      * @return string|null|false
      */
-    public function deleteComment($forum, $tid, $cid, $user)
+    public function deleteComment(string $forum, string $tid, string $cid, $user)
     {
         if (!$tid || !$cid) {
             return false;

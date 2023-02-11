@@ -32,38 +32,24 @@ class Comment
     /** @var string */
     private $comment;
 
-    /**
-     * @param string $user
-     * @param int $time
-     * @param string $comment
-     */
-    public function __construct($user, $time, $comment)
+    public function __construct(string $user, int $time, string $comment)
     {
         $this->user = $user;
         $this->time = $time;
         $this->comment = $comment;
     }
 
-    /**
-     * @return string
-     */
-    public function user()
+    public function user(): string
     {
         return $this->user;
     }
 
-    /**
-     * @return int
-     */
-    public function time()
+    public function time(): int
     {
         return $this->time;
     }
 
-    /**
-     * @return string
-     */
-    public function comment()
+    public function comment(): string
     {
         return $this->comment;
     }
@@ -71,7 +57,7 @@ class Comment
     /**
      * @return array{user:string,time:int,comment:string}
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             "user" => $this->user,

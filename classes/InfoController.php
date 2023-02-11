@@ -71,7 +71,7 @@ class InfoController
     /**
      * @return array<int,array{state:string,label:string,stateLabel:string}>
      */
-    public function getChecks()
+    public function getChecks(): array
     {
         return array(
             $this->checkPhpVersion('7.1.0'),
@@ -87,10 +87,9 @@ class InfoController
     }
 
     /**
-     * @param string $version
      * @return array{state:string,label:string,stateLabel:string}
      */
-    private function checkPhpVersion($version)
+    private function checkPhpVersion(string $version): array
     {
         $state = $this->systemChecker->checkPhpVersion($version) ? 'success' : 'fail';
         $label = sprintf($this->lang['syscheck_phpversion'], $version);
@@ -99,11 +98,9 @@ class InfoController
     }
 
     /**
-     * @param string $extension
-     * @param bool $isMandatory
      * @return array{state:string,label:string,stateLabel:string}
      */
-    private function checkExtension($extension, $isMandatory = true)
+    private function checkExtension(string $extension, bool $isMandatory = true): array
     {
         $state = $this->systemChecker->checkExtension($extension) ? 'success' : ($isMandatory ? 'fail' : 'warning');
         $label = sprintf($this->lang['syscheck_extension'], $extension);
@@ -112,10 +109,9 @@ class InfoController
     }
 
     /**
-     * @param string $version
      * @return array{state:string,label:string,stateLabel:string}
      */
-    private function checkXhVersion($version)
+    private function checkXhVersion(string $version): array
     {
         $state = $this->systemChecker->checkXhVersion($version) ? 'success' : 'fail';
         $label = sprintf($this->lang['syscheck_xhversion'], $version);
@@ -124,10 +120,9 @@ class InfoController
     }
 
     /**
-     * @param string $plugin
      * @return array{state:string,label:string,stateLabel:string}
      */
-    private function checkPlugin($plugin)
+    private function checkPlugin(string $plugin): array
     {
         $state = $this->systemChecker->checkPlugin($this->pluginsFolder) ? 'success' : 'fail';
         $label = sprintf($this->lang['syscheck_plugin'], $plugin);
@@ -136,10 +131,9 @@ class InfoController
     }
 
     /**
-     * @param string $folder
      * @return array{state:string,label:string,stateLabel:string}
      */
-    private function checkWritability($folder)
+    private function checkWritability(string $folder): array
     {
         $state = $this->systemChecker->checkWritability($folder) ? 'success' : 'warning';
         $label = sprintf($this->lang['syscheck_writable'], $folder);

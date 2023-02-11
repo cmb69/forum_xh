@@ -76,10 +76,9 @@ class Plugin
     }
 
     /**
-     * @param string $forum
      * @return string|never
      */
-    public static function forum($forum)
+    public static function forum(string $forum)
     {
         global $pth, $plugin_cf, $plugin_tx;
 
@@ -125,10 +124,7 @@ class Plugin
         return "";
     }
 
-    /**
-     * @return CSRFProtection
-     */
-    private static function getCSRFProtector()
+    private static function getCSRFProtector(): CSRFProtection
     {
         global $_XH_csrfProtection;
 

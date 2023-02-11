@@ -32,8 +32,7 @@ class Response
     /** @var bool */
     private $exit;
 
-    /** @param string|null $location */
-    public function __construct(string $output, $location = null, bool $exit = false)
+    public function __construct(string $output, ?string $location = null, bool $exit = false)
     {
         $this->output = $output;
         $this->location = $location;

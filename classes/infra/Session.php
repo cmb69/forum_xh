@@ -23,8 +23,7 @@ namespace Forum\Infra;
 
 class Session
 {
-    /** @return string|null */
-    public function get(string $key)
+    public function get(string $key): ?string
     {
         XH_startSession();
         return isset($_SESSION[$key]) ? $_SESSION[$key] : null;

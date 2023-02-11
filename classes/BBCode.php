@@ -48,10 +48,8 @@ class BBCode
 
     /**
      * @param array<string,string> $lang
-     * @param string $emoticonDir
-     * @param string $iframeTitle
      */
-    public function __construct(array $lang, $emoticonDir, $iframeTitle)
+    public function __construct(array $lang, string $emoticonDir, string $iframeTitle)
     {
         $this->pattern = '/\[(i|b|u|s|url|img|iframe|size|list|quote|code)(=.*?)?]'
             . '(.*?)\[\/\1]/su';
@@ -61,11 +59,7 @@ class BBCode
         $this->iframeTitle = $iframeTitle;
     }
 
-    /**
-     * @param string $text
-     * @return string
-     */
-    public function convert($text)
+    public function convert(string $text): string
     {
         $text = XH_hsc($text);
         $this->context = array();
@@ -78,9 +72,8 @@ class BBCode
 
     /**
      * @param array<int,string> $matches
-     * @return string
      */
-    private function doConvert($matches)
+    private function doConvert(array $matches): string
     {
         $inlines = array('i', 'b', 'u', 's', 'url', 'img', 'iframe', 'size');
         array_push(
@@ -122,9 +115,8 @@ class BBCode
     
     /**
      * @param array<int,string> $matches
-     * @return string
      */
-    private function convertUrl($matches)
+    private function convertUrl(array $matches): string
     {
         if (empty($matches[2])) {
             $url = $matches[3];
@@ -143,9 +135,8 @@ class BBCode
 
     /**
      * @param array<int,string> $matches
-     * @return string
      */
-    private function convertImg($matches)
+    private function convertImg(array $matches): string
     {
         $url = $matches[3];
         if (!preg_match('/^http(s)?:/', $url)) {
@@ -156,9 +147,8 @@ class BBCode
 
     /**
      * @param array<int,string> $matches
-     * @return string
      */
-    private function convertIframe($matches)
+    private function convertIframe(array $matches): string
     {
         $url = $matches[3];
         if (!preg_match('/^http(s)?:/', $url)) {
@@ -173,9 +163,8 @@ class BBCode
 
     /**
      * @param array<int,string> $matches
-     * @return string
      */
-    private function convertSize($matches)
+    private function convertSize(array $matches): string
     {
         $size = substr($matches[2], 1);
         $inner = preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
@@ -187,9 +176,8 @@ class BBCode
     
     /**
      * @param array<int,string> $matches
-     * @return string
      */
-    private function convertList($matches)
+    private function convertList(array $matches): string
     {
         if (in_array('inline', $this->context)) {
             return $matches[0];
@@ -218,9 +206,8 @@ class BBCode
 
     /**
      * @param array<int,string> $matches
-     * @return string
      */
-    private function convertQuote($matches)
+    private function convertQuote(array $matches): string
     {
         if (in_array('inline', $this->context)) {
             return $matches[0];
@@ -233,9 +220,8 @@ class BBCode
     
     /**
      * @param array<int,string> $matches
-     * @return string
      */
-    private function convertCode($matches)
+    private function convertCode(array $matches): string
     {
         if (in_array('inline', $this->context)) {
             return $matches[0];
@@ -248,9 +234,8 @@ class BBCode
     
     /**
      * @param array<int,string> $matches
-     * @return string
      */
-    private function convertOther($matches)
+    private function convertOther(array $matches): string
     {
         $start = '<' . $matches[1] . '>';
         $inner = preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
@@ -258,11 +243,7 @@ class BBCode
         return $start . $inner . $end;
     }
 
-    /**
-     * @param string $text
-     * @return string
-     */
-    private function convertEmoticons($text)
+    private function convertEmoticons(string $text): string
     {
         $emotions = array(
             'happy', 'smile', 'wink', 'grin', 'tongue', 'surprised', 'unhappy'

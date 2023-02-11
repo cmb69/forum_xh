@@ -36,13 +36,7 @@ class MailService
         $this->config = $config;
     }
 
-    /**
-     * @param string $subject
-     * @param string $message
-     * @param ?string $baseUrl
-     * @return bool
-     */
-    public function sendMail($subject, $message, $baseUrl = null)
+    public function sendMail(string $subject, string $message, ?string $baseUrl = null): bool
     {
         $headers = array(
             'MIME-Version: 1.0',

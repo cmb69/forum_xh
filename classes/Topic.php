@@ -35,13 +35,7 @@ class Topic
     /** @var int */
     private $time;
 
-    /**
-     * @param string $title
-     * @param int $comments
-     * @param string $user
-     * @param int $time
-     */
-    public function __construct($title, $comments, $user, $time)
+    public function __construct(string $title, int $comments, string $user, int $time)
     {
         $this->title = $title;
         $this->comments = $comments;
@@ -49,34 +43,22 @@ class Topic
         $this->time = $time;
     }
 
-    /**
-     * @return string
-     */
-    public function title()
+    public function title(): string
     {
         return $this->title;
     }
 
-    /**
-     * @return int
-     */
-    public function comments()
+    public function comments(): int
     {
         return $this->comments;
     }
 
-    /**
-     * @return string
-     */
-    public function user()
+    public function user(): string
     {
         return $this->user;
     }
 
-    /**
-     * @return int
-     */
-    public function time()
+    public function time(): int
     {
         return $this->time;
     }
@@ -84,7 +66,7 @@ class Topic
     /**
      * @return array{title:string,comments:int,user:string,time:int}
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             "title" => $this->title,
