@@ -1,5 +1,5 @@
 doc
-tests/coverage
+/coverage
 vendor
 /composer.lock
 /tools

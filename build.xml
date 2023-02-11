@@ -65,7 +65,7 @@
 
   <target name="coverage" description="generates coverage report">
     <exec executable="phpunit" passthru="true" checkreturn="true">
-      <arg line="--coverage-html tests/coverage"/>
+      <arg line="--coverage-html coverage"/>
     </exec>
   </target>
 
