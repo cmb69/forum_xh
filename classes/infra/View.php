@@ -29,8 +29,6 @@ use function sprintf;
 use function XH_hsc;
 use function XH_numberSuffix;
 
-use Plib\HtmlString;
-
 final class View
 {
     /** @var string */
@@ -49,7 +47,7 @@ final class View
     }
 
     /**
-     * @param string|HtmlString $args
+     * @param string $args
      */
     public function text(string $key, ...$args): string
     {
@@ -58,7 +56,7 @@ final class View
     }
 
     /**
-     * @param string|HtmlString $args
+     * @param string $args
      */
     public function plural(string $key, int $count, ...$args): string
     {
@@ -72,7 +70,7 @@ final class View
     }
 
     /**
-     * @param string|HtmlString $args
+     * @param string $args
      */
     public function message(string $type, string $key, ...$args): string
     {
@@ -93,14 +91,16 @@ final class View
     }
 
     /**
-     * @param string|HtmlString $value
+     * @param string $value
      */
     public function esc($value): string
     {
-        if ($value instanceof HtmlString) {
-            return $value->asString();
-        } else {
-            return XH_hsc($value);
-        }
+        return XH_hsc($value);
+    }
+
+    /** @param scalar $value */
+    public function raw($value): string
+    {
+        return (string) $value;
     }
 }

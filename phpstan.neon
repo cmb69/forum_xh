@@ -11,5 +11,4 @@ parameters:
     - ../../cmsimple/adminfuncs.php
     - ../../cmsimple/functions.php
     - ../fa/classes/RequireCommand.php
-    - ../plib/classes/HtmlString.php
     - ../plib/classes/Url.php

@@ -23,7 +23,6 @@ namespace Forum;
 
 use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
-use Plib\HtmlString;
 use Forum\Infra\View;
 use Plib\Url;
 
@@ -159,7 +158,7 @@ class MainController
             'title' => $title,
             'topic' => $topic,
             'tid' => $tid,
-            'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
+            'csrfTokenInput' => $this->csrfProtector->tokenInput(),
             'isUser' => $this->user() !== false,
             'replyUrl' => $this->url->with("forum_actn", "reply")->with("forum_topic", $tid)->relative(),
             'href' => $this->url->relative(),
@@ -170,7 +169,7 @@ class MainController
                 return XH_formatDate($comment->time());
             },
             'html' => function (Comment $comment) {
-                return new HtmlString($this->bbcode->convert($comment->comment()));
+                return $this->bbcode->convert($comment->comment());
             },
             'commentEditUrl' => function ($cid) use ($editUrl) {
                 return $editUrl->with("forum_comment", $cid)->relative();
@@ -317,7 +316,7 @@ class MainController
                 : $this->url->with("forum_topic", $tid)->relative(),
             'headingKey' => $tid === null ? 'msg_new_topic' : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment'),
             'comment' => $comment,
-            'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
+            'csrfTokenInput' => $this->csrfProtector->tokenInput(),
             'i18n' => json_encode($this->jsTexts()),
             'emoticons' => $emoticons,
         ]);
