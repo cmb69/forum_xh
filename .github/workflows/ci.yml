@@ -33,5 +33,5 @@ jobs:
         run: cd cmsimplexh/plugins/forum && PATH=tools:$PATH phing sniff
       - name: phing stan
         run: cd cmsimplexh/plugins/forum && PATH=tools:$PATH phing stan
-      - name: phing unit-tests
-        run: cd cmsimplexh/plugins/forum && PATH=tools:$PATH phing unit-tests
+      - name: phing test
+        run: cd cmsimplexh/plugins/forum && PATH=tools:$PATH phing test

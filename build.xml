@@ -15,8 +15,7 @@
       <arg line="--runtime-set ignore_warnings_on_exit true"/>
       <arg file="classes"/>
       <arg file="index.php"/>
-      <arg file="tests/unit"/>
-      <arg file="tests/attack"/>
+      <arg file="tests"/>
     </exec>
   </target>
 
@@ -52,7 +51,7 @@
     </exec>
   </target>
 
-  <target name="unit-tests" description="runs all unit tests">
+  <target name="test" description="runs all developer tests">
     <exec executable="phpunit" passthru="true" checkreturn="true"/>
   </target>
 
