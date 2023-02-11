@@ -21,6 +21,9 @@
 
 namespace Forum;
 
+use Forum\Value\Comment;
+use Forum\Value\Topic;
+
 class Contents
 {
     /** @var string */

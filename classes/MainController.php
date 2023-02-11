@@ -26,6 +26,8 @@ use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Session;
 use Forum\Infra\View;
+use Forum\Value\Comment;
+use Forum\Value\Topic;
 
 class MainController
 {

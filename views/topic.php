@@ -1,7 +1,7 @@
 <?php
 
-use Forum\Comment;
 use Forum\Infra\View;
+use Forum\Value\Comment;
 
 /**
  * @var View $this

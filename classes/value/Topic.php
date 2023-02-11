@@ -19,24 +19,38 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Forum;
+namespace Forum\Value;
 
-class Comment
+class Topic
 {
+    /** @var string */
+    private $title;
+
+    /** @var int */
+    private $comments;
+
     /** @var string */
     private $user;
 
     /** @var int */
     private $time;
 
-    /** @var string */
-    private $comment;
-
-    public function __construct(string $user, int $time, string $comment)
+    public function __construct(string $title, int $comments, string $user, int $time)
     {
+        $this->title = $title;
+        $this->comments = $comments;
         $this->user = $user;
         $this->time = $time;
-        $this->comment = $comment;
+    }
+
+    public function title(): string
+    {
+        return $this->title;
+    }
+
+    public function comments(): int
+    {
+        return $this->comments;
     }
 
     public function user(): string
@@ -49,18 +63,14 @@ class Comment
         return $this->time;
     }
 
-    public function comment(): string
-    {
-        return $this->comment;
-    }
-
-    /** @return array{user:string,time:int,comment:string} */
+    /** @return array{title:string,comments:int,user:string,time:int} */
     public function toArray(): array
     {
         return [
+            "title" => $this->title,
+            "comments" => $this->comments,
             "user" => $this->user,
             "time" => $this->time,
-            "comment" => $this->comment,
         ];
     }
 }

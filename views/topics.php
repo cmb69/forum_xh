@@ -1,7 +1,7 @@
 <?php
 
-use Forum\Topic;
 use Forum\Infra\View;
+use Forum\Value\Topic;
 
 /**
  * @var View $this

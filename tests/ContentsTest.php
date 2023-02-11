@@ -25,6 +25,8 @@ use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStream;
+use Forum\Value\Comment;
+use Forum\Value\Topic;
 
 class ContentsTest extends TestCase
 {
