@@ -94,9 +94,9 @@ class InfoController
     }
 
     /** @return array{state:string,label:string,stateLabel:string} */
-    private function checkExtension(string $extension, bool $isMandatory = true): array
+    private function checkExtension(string $extension): array
     {
-        $state = $this->systemChecker->checkExtension($extension) ? 'success' : ($isMandatory ? 'fail' : 'warning');
+        $state = $this->systemChecker->checkExtension($extension) ? 'success' : 'fail';
         $label = sprintf($this->lang['syscheck_extension'], $extension);
         $stateLabel = $this->lang["syscheck_$state"];
         return compact('state', 'label', 'stateLabel');
