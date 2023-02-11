@@ -23,7 +23,7 @@ namespace Forum;
 
 use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
-use Plib\HtmlView as View;
+use Forum\Infra\View;
 use Plib\Url;
 use Forum\Infra\SystemChecker;
 

@@ -3,8 +3,7 @@
 require_once './vendor/autoload.php';
 require_once '../../cmsimple/functions.php';
 
-require_once "../plib/classes/HtmlView.php";
-
+require_once "./classes/infra/View.php";
 require_once "./classes/infra/SystemChecker.php";
 
 require_once './classes/BBCode.php';

@@ -12,5 +12,4 @@ parameters:
     - ../../cmsimple/functions.php
     - ../fa/classes/RequireCommand.php
     - ../plib/classes/HtmlString.php
-    - ../plib/classes/HtmlView.php
     - ../plib/classes/Url.php

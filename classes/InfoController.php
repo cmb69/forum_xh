@@ -21,8 +21,8 @@
 
 namespace Forum;
 
-use Plib\HtmlView as View;
 use Forum\Infra\SystemChecker;
+use Forum\Infra\View;
 
 class InfoController
 {

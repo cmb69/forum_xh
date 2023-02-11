@@ -1,7 +1,7 @@
 <?php
 
 use Plib\HtmlString;
-use Plib\HtmlView as View;
+use Forum\Infra\View;
 
 /**
  * @var View $this

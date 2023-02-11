@@ -24,7 +24,7 @@ namespace Forum;
 use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
 use Plib\HtmlString;
-use Plib\HtmlView as View;
+use Forum\Infra\View;
 use Plib\Url;
 
 use function XH_formatDate;
