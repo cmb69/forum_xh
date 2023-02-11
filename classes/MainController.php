@@ -234,7 +234,7 @@ class MainController
             $subject = $this->lang['mail_subject_edit'];
         }
 
-        if (!defined('XH_ADM') || !XH_ADM && $this->config['mail_address']) {
+        if (!(defined('XH_ADM') && XH_ADM) && $this->config['mail_address']) {
             $url = $this->url->replace(["forum_topic" => $tid])->absolute();
             $date = XH_formatDate($comment->time());
             $attribution = sprintf($this->lang['mail_attribution'], $comment->user(), $date);
