@@ -213,7 +213,7 @@ class MainController
     private function postComment($forum, $tid = null, $cid = null)
     {
         if (!isset($tid) && empty($_POST['forum_title'])
-            || $this->user() === false || empty($_POST['forum_text'])
+            || ($this->user() === false && !(defined('XH_ADM') && XH_ADM)) || empty($_POST['forum_text'])
         ) {
             return false;
         }

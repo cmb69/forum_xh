@@ -258,7 +258,7 @@ class Contents
         $this->lock($forum, LOCK_EX);
 
         $comments = $this->getTopic($forum, $tid);
-        if ($comment->user() != $comments[$cid]->user()) {
+        if ($comment->user() != $comments[$cid]->user() && !(defined('XH_ADM') && XH_ADM)) {
             $this->lock($forum, LOCK_UN);
             return; // TODO throw exception
         }
