@@ -150,7 +150,7 @@ class MainControllerTest extends TestCase
 
     public function testPreviewActionRendersBbCodeAndExits(): void
     {
-        $_POST = ['data' => "something"];
+        $_GET = ['forum_bbcode' => "something"];
         $this->bbcode->method('convert')->willReturn("else");
         $response = $this->sut->previewAction();
         $this->assertEquals("else", $response->output());
