@@ -59,10 +59,16 @@ class Response
         global $hjs;
 
         if ($this->location !== null) {
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
             header("Location: {$this->location}", true, 303);
             exit;
         }
         if ($this->exit) {
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
             echo $this->output;
             exit;
         }

@@ -108,9 +108,9 @@ class MainController
             || ($tid = $this->contents->cleanId($_GET['forum_topic'])) === false
             || !$this->contents->hasTopic($forum, $tid)
         ) {
-            $response = new Response($this->renderTopicsView($forum));
+            $response = new Response($this->renderTopicsView($forum), null, isset($_GET['forum_ajax']));
         } else {
-            $response = new Response($this->renderTopicView($forum, $tid));
+            $response = new Response($this->renderTopicView($forum, $tid), null, isset($_GET['forum_ajax']));
         }
         $response->addScript("{$this->pluginFolder}forum");
         return $response;
@@ -166,8 +166,7 @@ class MainController
     public function newAction(string $forum): Response
     {
         $output = $this->renderCommentForm($forum);
-
-        $response = new Response($output);
+        $response = new Response($output, null, isset($_GET['forum_ajax']));
         $response->addScript("{$this->pluginFolder}forum");
         return $response;
     }
@@ -182,6 +181,9 @@ class MainController
             $tid = $this->postComment($forum, $forumtopic);
         }
         $url = $tid ? $this->url->replace(["forum_topic" => $tid]) : $this->url;
+        if (isset($_GET['forum_ajax'])) {
+            $url = $url->replace(['forum_ajax' => ""]);
+        }
         return new Response("", $url->absolute());
     }
 
@@ -233,7 +235,7 @@ class MainController
         } else {
             $output = ''; // should display error
         }
-        $response =  new Response($output);
+        $response =  new Response($output, null, isset($_GET['forum_ajax']));
         $response->addScript("{$this->pluginFolder}forum");
         return $response;
     }
@@ -246,6 +248,9 @@ class MainController
         $url = $tid && $cid && $this->contents->deleteComment($forum, $tid, $cid, $this->authorizer)
             ? $this->url->replace(["forum_topic" => $tid])
             : $this->url;
+        if (isset($_GET['forum_ajax'])) {
+            $url = $url->replace(['forum_ajax' => ""]);
+        }
         return new Response("", $url->absolute());
     }
 
@@ -306,7 +311,7 @@ class MainController
             $tid = $this->contents->cleanId($_GET['forum_topic']);
             $output = $this->renderCommentForm($forum, $tid ? $tid : null);
         }
-        $response = new Response($output);
+        $response = new Response($output, null, isset($_GET['forum_ajax']));
         $response->addScript("{$this->pluginFolder}forum");
         return $response;
     }

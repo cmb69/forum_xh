@@ -30,13 +30,12 @@ window.addEventListener("popstate", function (event) {
 
 function retrieveWidget(container, url, isPop) {
     var request = new XMLHttpRequest;
-    request.open("GET", url, true);
+    request.open("GET", url + "&forum_ajax", true);
     request.onload = function() {
         if (this.status >= 200 && this.status < 300) {
             replaceWidget(container, this, isPop);
         }
     };
-    request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     request.send();
     container.classList.add("forum_loading");
 }
@@ -266,14 +265,13 @@ function serialize(form) {
 
 function submitForm(form, container) {
     var request = new XMLHttpRequest;
-    request.open("POST", form.action, true);
+    request.open("POST", form.action + "&forum_ajax", true);
     request.onload = function () {
         if (this.status >= 200 && this.status < 300) {
             replaceWidget(container, this);
         }
     };
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-    request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     request.send(serialize(form));
     container.classList.add("forum_loading");
 }

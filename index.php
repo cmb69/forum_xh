@@ -38,13 +38,5 @@ function forum(string $forum)
     if (!is_callable([$controller, $action])) {
         $action = 'defaultAction';
     }
-    if (($_SERVER['HTTP_X_REQUESTED_WITH'] ?? null) === 'XMLHttpRequest') {
-        while (ob_get_level()) {
-            ob_end_clean();
-        }
-        echo $controller->{$action}($forum)->fire();
-        exit;
-    } else {
-        return $controller->{$action}($forum)->fire();
-    }
+    return $controller->{$action}($forum)->fire();
 }
