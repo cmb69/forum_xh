@@ -47,7 +47,7 @@ function replaceWidget(container, request, isPop) {
     initEditor();
     initDeleteForms();
     if (!isPop) {
-        var url = request.responseURL || request.getResponseHeader("X-Location");
+        var url = request.responseURL;
         history.pushState({forum_url: url}, document.title, url);
     }
 }
