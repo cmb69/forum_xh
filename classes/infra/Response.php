@@ -33,7 +33,7 @@ class Response
     private $exit;
 
     /** @var string */
-    private $bjs = "";
+    private $hjs = "";
 
     public function __construct(string $output, ?string $location = null, bool $exit = false)
     {
@@ -50,19 +50,19 @@ class Response
         } else {
             $filename = "$basename.js";
         }
-        $this->bjs .= "<script type=\"text/javascript\" src=\"$filename\"></script>";
+        $this->hjs .= "<script type=\"module\" src=\"$filename\"></script>";
     }
 
     /** @return void */
     public function fire()
     {
-        global $bjs;
+        global $hjs;
 
         if ($this->location !== null) {
             header("Location: {$this->location}", true, 303);
             exit;
         }
-        $bjs .= $this->bjs;
+        $hjs .= $this->hjs;
         echo $this->output;
         if ($this->exit) {
             exit;
