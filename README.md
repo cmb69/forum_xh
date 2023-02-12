@@ -162,7 +162,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Forum\_XH.  If not, see <https://www.gnu.org/licenses/>.
 
-© 2012-2021 Christoph M. Becker
+© 2012-2023 Christoph M. Becker
 
 Danish translation © 2012 Jens Maegard  
 Russian translation © 2012 Lybomyr Kydray

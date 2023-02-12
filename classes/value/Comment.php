@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2021 Christoph M. Becker
+ * Copyright 2021-2023 Christoph M. Becker
  *
  * This file is part of Forum_XH.
  *
