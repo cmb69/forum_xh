@@ -22,7 +22,7 @@ require_once "./classes/infra/Url.php";
 require_once "./classes/infra/View.php";
 require_once "./classes/infra/SystemChecker.php";
 
-require_once "./classes/logic/Bbcode.php";
+require_once "./classes/logic/BbCode.php";
 
 require_once './classes/Contents.php';
 require_once "./classes/InfoController.php";
