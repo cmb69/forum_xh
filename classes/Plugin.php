@@ -21,14 +21,6 @@
 
 namespace Forum;
 
-use XH\CSRFProtection;
-use Fa\RequireCommand as FaRequireCommand;
-use Forum\Infra\Authorizer;
-use Forum\Infra\DateFormatter;
-use Forum\Infra\Mailer;
-use Forum\Infra\View;
-use Forum\Infra\SystemChecker;
-
 use function XH_message;
 use const CMSIMPLE_URL;
 use function XH_registerStandardPluginMenuItems;
@@ -53,19 +45,12 @@ class Plugin
     /** @return void */
     private static function handleAdministration()
     {
-        global $pth, $plugin_tx, $admin, $o;
+        global $admin, $o;
 
         $o .= print_plugin_admin('off');
         switch ($admin) {
             case '':
-                $controller = new InfoController(
-                    $pth['folder']['plugins'],
-                    "{$pth['folder']['content']}{$pth['folder']['base']}forum/",
-                    $plugin_tx['forum'],
-                    new SystemChecker(),
-                    new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum'])
-                );
-                $o .= $controller->defaultAction();
+                $o .= Dic::makeInfoController()->defaultAction();
                 break;
             default:
                 $o .= plugin_admin_common();
@@ -75,30 +60,13 @@ class Plugin
     /** @return string|never */
     public static function forum(string $forum)
     {
-        global $pth, $plugin_cf, $plugin_tx;
+        global $plugin_tx;
 
         $ptx = $plugin_tx['forum'];
         if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
             return XH_message('fail', $ptx['msg_invalid_name'], $forum);
         }
-        $controller = new MainController(
-            self::url(),
-            $plugin_cf['forum'],
-            $plugin_tx['forum'],
-            "{$pth['folder']['plugins']}forum/",
-            new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
-            new BBCode(
-                $plugin_tx['forum'],
-                "{$pth['folder']['plugins']}forum/images/",
-                $plugin_tx['forum']['title_iframe']
-            ),
-            self::getCSRFProtector(),
-            new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
-            new FaRequireCommand(),
-            new Mailer($plugin_cf['forum']),
-            new DateFormatter(),
-            new Authorizer()
-        );
+        $controller = Dic::makeMainController();
         $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'default';
         $action .= 'Action';
         if (method_exists($controller, $action)) {
@@ -116,22 +84,5 @@ class Plugin
             }
         }
         return "";
-    }
-
-    private static function getCSRFProtector(): CSRFProtection
-    {
-        global $_XH_csrfProtection;
-
-        if (isset($_XH_csrfProtection)) {
-            return $_XH_csrfProtection;
-        }
-        return new CSRFProtection('forum_token');
-    }
-
-    private static function url(): Url
-    {
-        global $sn, $su;
-
-        return new Url($sn, $su, []);
     }
 }
