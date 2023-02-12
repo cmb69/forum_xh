@@ -150,15 +150,6 @@ class MainControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
-    public function testPreviewActionRendersBbCodeAndExits(): void
-    {
-        $_GET = ['forum_bbcode' => "something"];
-        $this->bbcode->method('convert')->willReturn("else");
-        $response = $this->sut->previewAction();
-        $this->assertEquals("else", $response->output());
-        $this->assertTrue($response->exit());
-    }
-
     private function topic(): Topic
     {
         return new Topic("Topic Title", 1, "cmb", 1676130605);

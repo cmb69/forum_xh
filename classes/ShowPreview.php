@@ -19,28 +19,23 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Forum\Dic;
+namespace Forum;
 
-const FORUM_VERSION = "1.0beta5";
+use Forum\Infra\Response;
+use Forum\Logic\BbCode;
 
-/** @return string|never */
-function forum(string $forum)
+class ShowPreview
 {
-    global $plugin_tx;
+    /** @var BbCode */
+    private $bbCode;
 
-    $ptx = $plugin_tx['forum'];
-    if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
-        return XH_message('fail', $ptx['msg_invalid_name'], $forum);
+    public function __construct(BbCode $bbCode)
+    {
+        $this->bbCode = $bbCode;
     }
-    switch ($_GET['forum_actn'] ?? "") {
-        case "preview":
-            return Dic::makeShowPreview()()->fire();
+
+    public function __invoke(): Response
+    {
+        return new Response($this->bbCode->convert($_GET['forum_bbcode']), null, true);
     }
-    $controller = Dic::makeMainController();
-    $action = $_GET['forum_actn'] ?? 'default';
-    $action .= 'Action';
-    if (!is_callable([$controller, $action])) {
-        $action = 'defaultAction';
-    }
-    return $controller->{$action}($forum)->fire();
 }

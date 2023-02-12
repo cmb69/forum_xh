@@ -44,11 +44,7 @@ class Dic
             $plugin_tx['forum'],
             "{$pth['folder']['plugins']}forum/",
             new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
-            new BbCode(
-                $plugin_tx['forum'],
-                "{$pth['folder']['plugins']}forum/images/",
-                $plugin_tx['forum']['title_iframe']
-            ),
+            self::makeBbCode(),
             self::makeCsrfProtector(),
             new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
             new FaRequireCommand(),
@@ -56,6 +52,11 @@ class Dic
             new DateFormatter(),
             new Authorizer()
         );
+    }
+
+    public static function makeShowPreview(): ShowPreview
+    {
+        return new ShowPreview(self::makeBbCode());
     }
 
     public static function makeShowInfo(): ShowInfo
@@ -68,6 +69,17 @@ class Dic
             $plugin_tx['forum'],
             new SystemChecker(),
             new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum'])
+        );
+    }
+
+    private static function makeBbCode(): BbCode
+    {
+        global $pth, $plugin_tx;
+
+        return new BbCode(
+            $plugin_tx['forum'],
+            "{$pth['folder']['plugins']}forum/images/",
+            $plugin_tx['forum']['title_iframe']
         );
     }
 

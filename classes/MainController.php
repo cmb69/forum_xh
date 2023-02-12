@@ -317,9 +317,4 @@ class MainController
         $response->addScript("{$this->pluginFolder}forum");
         return $response;
     }
-
-    public function previewAction(): Response
-    {
-        return new Response($this->bbcode->convert($_GET['forum_bbcode']), null, true);
-    }
 }
