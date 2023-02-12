@@ -26,20 +26,20 @@ use ApprovalTests\Approvals;
 use Forum\Infra\View;
 use Forum\Infra\SystemChecker;
 
-class InfoControllerTest extends TestCase
+class ShowInfoTest extends TestCase
 {
     public function testRendersPluginInfo(): void
     {
         $systemChecker = $this->createStub(SystemChecker::class);
         $lang = XH_includeVar("./languages/en.php", 'plugin_tx')['forum'];
-        $sut = new InfoController(
+        $sut = new ShowInfo(
             "../",
             "irrelevant_content_folder",
             $lang,
             $systemChecker,
             new View("./views/", $lang)
         );
-        $response = $sut->defaultAction();
-        Approvals::verifyHtml($response);
+        $response = $sut();
+        Approvals::verifyHtml($response->output());
     }
 }

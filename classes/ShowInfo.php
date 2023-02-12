@@ -21,10 +21,11 @@
 
 namespace Forum;
 
+use Forum\Infra\Response;
 use Forum\Infra\SystemChecker;
 use Forum\Infra\View;
 
-class InfoController
+class ShowInfo
 {
     /** @var string */
     private $pluginsFolder;
@@ -60,12 +61,13 @@ class InfoController
         $this->view = $view;
     }
 
-    public function defaultAction(): string
+    public function __invoke(): Response
     {
-        return $this->view->render('info', [
+        $output = $this->view->render('info', [
             'version' => FORUM_VERSION,
             'checks' => $this->getChecks(),
         ]);
+        return new Response($output);
     }
 
     /** @return list<array{state:string,label:string,stateLabel:string}> */

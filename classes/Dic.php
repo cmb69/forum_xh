@@ -58,11 +58,11 @@ class Dic
         );
     }
 
-    public static function makeInfoController(): InfoController
+    public static function makeShowInfo(): ShowInfo
     {
         global $pth, $plugin_tx;
 
-        return new InfoController(
+        return new ShowInfo(
             $pth['folder']['plugins'],
             "{$pth['folder']['content']}{$pth['folder']['base']}forum/",
             $plugin_tx['forum'],

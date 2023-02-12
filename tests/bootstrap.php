@@ -25,5 +25,5 @@ require_once "./classes/infra/SystemChecker.php";
 
 require_once "./classes/logic/BbCode.php";
 
-require_once "./classes/InfoController.php";
+require_once "./classes/ShowInfo.php";
 require_once "./classes/MainController.php";
