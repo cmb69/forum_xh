@@ -44,9 +44,6 @@ class MainControllerTest extends TestCase
     /** @var Contents&MockObject */
     private $contents;
 
-    /** @var BbCode&MockObject */
-    private $bbcode;
-
     /** @var Authorizer&MockObject */
     private $authorizer;
 
@@ -54,7 +51,6 @@ class MainControllerTest extends TestCase
     {
         $lang = XH_includeVar("./languages/en.php", 'plugin_tx')['forum'];
         $this->contents = $this->createStub(Contents::class);
-        $this->bbcode = $this->createStub(BbCode::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
         $faRequireCommand = $this->createStub(RequireCommand::class);
@@ -67,7 +63,6 @@ class MainControllerTest extends TestCase
             $lang,
             "./",
             $this->contents,
-            $this->bbcode,
             $csrfProtector,
             $view,
             $faRequireCommand,
@@ -75,23 +70,6 @@ class MainControllerTest extends TestCase
             $dateFormatter,
             $this->authorizer
         );
-    }
-
-    public function testDefaultActionRendersForumOverview(): void
-    {
-        $this->contents->method('getSortedTopics')->willReturn(["1234" => $this->topic()]);
-        $response = $this->sut->defaultAction("test");
-        Approvals::verifyHtml($response->output());
-    }
-
-    public function testDefaultActionRendersTopicOverview(): void
-    {
-        $_GET = ['forum_topic' => "1234"];
-        $this->contents->method('cleanId')->willReturn("1234");
-        $this->contents->method('hasTopic')->willReturn(true);
-        $this->contents->method('getTopicWithTitle')->willReturn(["Topic Title", ["2345" => $this->comment()]]);
-        $response = $this->sut->defaultAction("test");
-        Approvals::verifyHtml($response->output());
     }
 
     public function testNewActionRendersCommentForm(): void
@@ -148,11 +126,6 @@ class MainControllerTest extends TestCase
         $this->authorizer->method('isUser')->willReturn(true);
         $response = $this->sut->replyAction("test");
         Approvals::verifyHtml($response->output());
-    }
-
-    private function topic(): Topic
-    {
-        return new Topic("Topic Title", 1, "cmb", 1676130605);
     }
 
     private function comment(): Comment

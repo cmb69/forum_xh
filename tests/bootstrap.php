@@ -25,6 +25,7 @@ require_once "./classes/infra/SystemChecker.php";
 
 require_once "./classes/logic/BbCode.php";
 
+require_once "./classes/ShowForum.php";
 require_once "./classes/ShowInfo.php";
 require_once "./classes/ShowPreview.php";
 require_once "./classes/MainController.php";

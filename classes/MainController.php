@@ -30,9 +30,7 @@ use Forum\Infra\Mailer;
 use Forum\Infra\Response;
 use Forum\Infra\Url;
 use Forum\Infra\View;
-use Forum\Logic\BbCode;
 use Forum\Value\Comment;
-use Forum\Value\Topic;
 
 class MainController
 {
@@ -50,9 +48,6 @@ class MainController
 
     /** @var Contents */
     private $contents;
-
-    /** @var BbCode */
-    private $bbcode;
 
     /** @var CSRFProtection */
     private $csrfProtector;
@@ -82,7 +77,6 @@ class MainController
         array $lang,
         string $pluginFolder,
         Contents $contents,
-        BbCode $bbcode,
         CSRFProtection $csrfProtector,
         View $view,
         FaRequireCommand $faRequireCommand,
@@ -95,74 +89,12 @@ class MainController
         $this->lang = $lang;
         $this->pluginFolder = $pluginFolder;
         $this->contents = $contents;
-        $this->bbcode = $bbcode;
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
         $this->faRequireCommand = $faRequireCommand;
         $this->mailer = $mailer;
         $this->dateFormatter = $dateFormatter;
         $this->authorizer = $authorizer;
-    }
-
-    public function defaultAction(string $forum): Response
-    {
-        if (empty($_GET['forum_topic'])
-            || ($tid = $this->contents->cleanId($_GET['forum_topic'])) === false
-            || !$this->contents->hasTopic($forum, $tid)
-        ) {
-            $response = new Response($this->renderTopicsView($forum), null, isset($_GET['forum_ajax']));
-        } else {
-            $response = new Response($this->renderTopicView($forum, $tid), null, isset($_GET['forum_ajax']));
-        }
-        $response->addScript("{$this->pluginFolder}forum");
-        return $response;
-    }
-
-    private function renderTopicsView(string $forum): string
-    {
-        $topics = $this->contents->getSortedTopics($forum);
-        return $this->view->render('topics', [
-            'isUser' => $this->authorizer->isUser(),
-            'href' => $this->url->replace(["forum_actn" => "new"])->relative(),
-            'topics' => $topics,
-            'topicUrl' => function ($tid) {
-                return $this->url->replace(["forum_topic" => $tid])->relative();
-            },
-            'topicDate' => function (Topic $topic) {
-                return $this->dateFormatter->format($topic->time());
-            },
-        ]);
-    }
-
-    private function renderTopicView(string $forum, string $tid): string
-    {
-        $this->faRequireCommand->execute();
-        list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
-        $editUrl = $this->url->replace(["forum_actn" => "edit", "forum_topic" => $tid]);
-
-        $this->csrfProtector->store();
-        return $this->view->render('topic', [
-            'title' => $title,
-            'topic' => $topic,
-            'tid' => $tid,
-            'csrfTokenInput' => $this->csrfProtector->tokenInput(),
-            'isUser' => $this->authorizer->isUser(),
-            'replyUrl' => $this->url->replace(["forum_actn" => "reply", "forum_topic" => $tid])->relative(),
-            'deleteUrl' => $this->url->replace(["forum_actn" => "delete"])->relative(),
-            'href' => $this->url->relative(),
-            'mayDeleteComment' => function (Comment $comment) {
-                return $this->authorizer->mayModify($comment);
-            },
-            'commentDate' => function (Comment $comment) {
-                return $this->dateFormatter->format($comment->time());
-            },
-            'html' => function (Comment $comment) {
-                return $this->bbcode->convert($comment->comment());
-            },
-            'commentEditUrl' => function ($cid) use ($editUrl) {
-                return $editUrl->replace(["forum_comment" => $cid])->relative();
-            },
-        ]);
     }
 
     public function newAction(string $forum): Response

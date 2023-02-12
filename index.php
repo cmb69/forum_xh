@@ -33,6 +33,9 @@ function forum(string $forum)
         return XH_message('fail', $ptx['msg_invalid_name'], $forum);
     }
     switch ($_GET['forum_actn'] ?? "") {
+        case "default":
+        case "":
+            return Dic::makeShowForum()($forum)->fire();
         case "preview":
             return Dic::makeShowPreview()()->fire();
     }

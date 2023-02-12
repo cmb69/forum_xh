@@ -44,11 +44,27 @@ class Dic
             $plugin_tx['forum'],
             "{$pth['folder']['plugins']}forum/",
             new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
-            self::makeBbCode(),
             self::makeCsrfProtector(),
             new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
             new FaRequireCommand(),
             new Mailer($plugin_cf['forum']),
+            new DateFormatter(),
+            new Authorizer()
+        );
+    }
+
+    public static function makeShowForum(): ShowForum
+    {
+        global $pth, $plugin_tx;
+
+        return new ShowForum(
+            self::makeUrl(),
+            "{$pth['folder']['plugins']}forum/",
+            new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
+            self::makeBbCode(),
+            self::makeCsrfProtector(),
+            new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
+            new FaRequireCommand(),
             new DateFormatter(),
             new Authorizer()
         );
