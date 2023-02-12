@@ -110,23 +110,18 @@ class MainController
             || ($tid = $this->contents->cleanId($_GET['forum_topic'])) === false
             || !$this->contents->hasTopic($this->forum, $tid)
         ) {
-            ob_start();
-            $this->renderTopicsView($this->forum);
-            $response = new Response((string) ob_get_clean());
+            $response = new Response($this->renderTopicsView($this->forum));
         } else {
-            ob_start();
-            $this->renderTopicView($this->forum, $tid);
-            $response = new Response((string) ob_get_clean());
+            $response = new Response($this->renderTopicView($this->forum, $tid));
         }
         $this->addScript();
         return $response;
     }
 
-    /** @return void */
-    private function renderTopicsView(string $forum)
+    private function renderTopicsView(string $forum): string
     {
         $topics = $this->contents->getSortedTopics($forum);
-        echo $this->view->render('topics', [
+        return $this->view->render('topics', [
             'isUser' => $this->user() !== false,
             'href' => $this->url->replace(["forum_actn" => "new"])->relative(),
             'topics' => $topics,
@@ -139,15 +134,14 @@ class MainController
         ]);
     }
 
-    /** @return void */
-    private function renderTopicView(string $forum, string $tid)
+    private function renderTopicView(string $forum, string $tid): string
     {
         $this->faRequireCommand->execute();
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
         $editUrl = $this->url->replace(["forum_actn" => "edit", "forum_topic" => $tid]);
 
         $this->csrfProtector->store();
-        echo $this->view->render('topic', [
+        return $this->view->render('topic', [
             'title' => $title,
             'topic' => $topic,
             'tid' => $tid,
@@ -172,9 +166,7 @@ class MainController
 
     public function newAction(): Response
     {
-        ob_start();
-        $this->renderCommentForm($this->forum);
-        $output = (string) ob_get_clean();
+        $output = $this->renderCommentForm($this->forum);
         $this->addScript();
         return new Response($output);
     }
@@ -237,9 +229,7 @@ class MainController
         $tid = $this->contents->cleanId($_GET['forum_topic']);
         $cid = $this->contents->cleanId($_GET['forum_comment']);
         if ($tid && $cid) {
-            ob_start();
-            $this->renderCommentForm($this->forum, $tid, $cid);
-            $output = (string) ob_get_clean();
+            $output = $this->renderCommentForm($this->forum, $tid, $cid);
         } else {
             $output = ''; // should display error
         }
@@ -259,11 +249,10 @@ class MainController
         return new Response("", $url->absolute());
     }
 
-    /** @return void */
-    private function renderCommentForm(string $forum, ?string $tid = null, ?string $cid = null)
+    private function renderCommentForm(string $forum, ?string $tid = null, ?string $cid = null): string
     {
         if ($this->user() === false && (!defined('XH_ADM') || !XH_ADM)) {
-            return;
+            return "";
         }
         $this->faRequireCommand->execute();
 
@@ -280,7 +269,7 @@ class MainController
         foreach ($emotions as $emotion) {
             $emoticons[$emotion] = "{$this->pluginFolder}images/emoticon_$emotion.png";
         }
-        echo $this->view->render('form', [
+        $output = $this->view->render('form', [
             'newTopic' => $tid === null,
             'tid' => $tid,
             'cid' => $cid !== null ? $cid : "",
@@ -296,6 +285,7 @@ class MainController
             'emoticons' => $emoticons,
         ]);
         $this->csrfProtector->store();
+        return $output;
     }
 
     /** @return void */
@@ -341,9 +331,7 @@ class MainController
         $output = "";
         if (isset($_GET['forum_topic'])) {
             $tid = $this->contents->cleanId($_GET['forum_topic']);
-            ob_start();
-            $this->renderCommentForm($this->forum, $tid ? $tid : null);
-            $output = (string) ob_get_clean();
+            $output = $this->renderCommentForm($this->forum, $tid ? $tid : null);
         }
         $this->addScript();
         return new Response($output);
