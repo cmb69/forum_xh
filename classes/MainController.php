@@ -25,7 +25,7 @@ use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\Authorizer;
 use Forum\Infra\DateFormatter;
-use Forum\Infra\Session;
+use Forum\Infra\Mailer;
 use Forum\Infra\View;
 use Forum\Value\Comment;
 use Forum\Value\Topic;
@@ -62,8 +62,8 @@ class MainController
     /** @var FaRequireCommand */
     private $faRequireCommand;
 
-    /** @var MailService */
-    private $mailService;
+    /** @var Mailer */
+    private $mailer;
 
     /** @var DateFormatter */
     private $dateFormatter;
@@ -86,7 +86,7 @@ class MainController
         CSRFProtection $csrfProtector,
         View $view,
         FaRequireCommand $faRequireCommand,
-        MailService $mailService,
+        Mailer $mailer,
         DateFormatter $dateFormatter,
         Authorizer $authorizer
     ) {
@@ -100,7 +100,7 @@ class MainController
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
         $this->faRequireCommand = $faRequireCommand;
-        $this->mailService = $mailService;
+        $this->mailer = $mailer;
         $this->dateFormatter = $dateFormatter;
         $this->authorizer = $authorizer;
     }
@@ -219,7 +219,7 @@ class MainController
             $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment->comment());
             assert(is_string($content));
             $message = "$attribution\n\n> $content\n\n<$url>";
-            $this->mailService->sendMail($subject, $message, $url);
+            $this->mailer->sendMail($subject, $message, $url);
         }
 
         return $tid;

@@ -19,9 +19,9 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Forum;
+namespace Forum\Infra;
 
-class MailService
+class Mailer
 {
     /** @var array<string,string> */
     private $config;

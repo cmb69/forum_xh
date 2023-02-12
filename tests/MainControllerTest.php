@@ -28,6 +28,7 @@ use XH\CSRFProtection as CsrfProtector;
 use Fa\RequireCommand;
 use Forum\Infra\Authorizer;
 use Forum\Infra\DateFormatter;
+use Forum\Infra\Mailer;
 use Forum\Infra\View;
 use Forum\Value\Comment;
 use Forum\Value\Topic;
@@ -54,7 +55,7 @@ class MainControllerTest extends TestCase
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
         $faRequireCommand = $this->createStub(RequireCommand::class);
-        $mailService = $this->createStub(MailService::class);
+        $mailer = $this->createStub(Mailer::class);
         $dateFormatter = $this->createStub(DateFormatter::class);
         $this->authorizer = $this->createStub(Authorizer::class);
         $this->sut = new MainController(
@@ -68,7 +69,7 @@ class MainControllerTest extends TestCase
             $csrfProtector,
             $view,
             $faRequireCommand,
-            $mailService,
+            $mailer,
             $dateFormatter,
             $this->authorizer
         );

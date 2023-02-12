@@ -14,13 +14,13 @@ require_once "./classes/value/Topic.php";
 
 require_once "./classes/infra/Authorizer.php";
 require_once "./classes/infra/DateFormatter.php";
+require_once "./classes/infra/Mailer.php";
 require_once "./classes/infra/View.php";
 require_once "./classes/infra/SystemChecker.php";
 
 require_once './classes/BBCode.php';
 require_once './classes/Contents.php';
 require_once "./classes/InfoController.php";
-require_once "./classes/MailService.php";
 require_once "./classes/MainController.php";
 require_once "./classes/Plugin.php";
 require_once "./classes/Response.php";

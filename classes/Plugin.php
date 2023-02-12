@@ -25,7 +25,7 @@ use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\Authorizer;
 use Forum\Infra\DateFormatter;
-use Forum\Infra\Session;
+use Forum\Infra\Mailer;
 use Forum\Infra\View;
 use Forum\Infra\SystemChecker;
 
@@ -96,7 +96,7 @@ class Plugin
             self::getCSRFProtector(),
             new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
             new FaRequireCommand(),
-            new MailService($plugin_cf['forum']),
+            new Mailer($plugin_cf['forum']),
             new DateFormatter(),
             new Authorizer()
         );
