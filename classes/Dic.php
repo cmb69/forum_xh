@@ -36,6 +36,10 @@ class Dic
 {
     public static function makeShowForum(): ShowForum
     {
+        /**
+         * @var array{file:array<string,string>,folder:array<string,string} $pth
+         * @var array<string,array<string,string>> $plugin_tx
+         */
         global $pth, $plugin_tx;
 
         return new ShowForum(
@@ -53,6 +57,10 @@ class Dic
 
     public static function makeShowEditor(): ShowEditor
     {
+        /**
+         * @var array{file:array<string,string>,folder:array<string,string} $pth
+         * @var array<string,array<string,string>> $plugin_tx
+         */
         global $pth, $plugin_tx;
 
         return new ShowEditor(
@@ -69,6 +77,11 @@ class Dic
 
     public static function makePostComment(): PostComment
     {
+        /**
+         * @var array{file:array<string,string>,folder:array<string,string} $pth
+         * @var array<string,array<string,string>> $plugin_cf
+         * @var array<string,array<string,string>> $plugin_tx
+         */
         global $pth, $plugin_cf, $plugin_tx;
 
         return new PostComment(
@@ -85,6 +98,7 @@ class Dic
 
     public static function makeDeleteComment(): DeleteComment
     {
+        /** @var array{file:array<string,string>,folder:array<string,string} $pth */
         global $pth;
 
         return new DeleteComment(
@@ -102,6 +116,10 @@ class Dic
 
     public static function makeShowInfo(): ShowInfo
     {
+        /**
+         * @var array{file:array<string,string>,folder:array<string,string} $pth
+         * @var array<string,array<string,string>> $plugin_tx
+         */
         global $pth, $plugin_tx;
 
         return new ShowInfo(
@@ -115,6 +133,10 @@ class Dic
 
     private static function makeBbCode(): BbCode
     {
+        /**
+         * @var array{file:array<string,string>,folder:array<string,string} $pth
+         * @var array<string,array<string,string>> $plugin_tx
+         */
         global $pth, $plugin_tx;
 
         return new BbCode(
@@ -126,6 +148,7 @@ class Dic
 
     private static function makeCsrfProtector(): CsrfProtector
     {
+        /** @var CsrfProtector|null $_XH_csrfProtection */
         global $_XH_csrfProtection;
 
         return $_XH_csrfProtection ?? new CsrfProtector('forum_token');
@@ -133,6 +156,10 @@ class Dic
 
     private static function makeUrl(): Url
     {
+        /**
+         * @var string $sn
+         * @var string $su
+         */
         global $sn, $su;
 
         return new Url($sn, $su, []);

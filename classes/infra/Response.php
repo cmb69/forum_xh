@@ -56,6 +56,7 @@ class Response
     /** @return string|never */
     public function fire()
     {
+        /** @var string $hjs */
         global $hjs;
 
         if ($this->location !== null) {

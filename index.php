@@ -26,6 +26,7 @@ const FORUM_VERSION = "1.0beta5";
 /** @return string|never */
 function forum(string $forum)
 {
+    /** @var array<string,array<string,string>> $plugin_tx */
     global $plugin_tx;
 
     $ptx = $plugin_tx['forum'];
