@@ -57,22 +57,28 @@ class Contents
         return $filename;
     }
 
-    /** @return resource */
+    /** @return resource|null */
     private function lock(string $forum, bool $exclusive)
     {
         $filename = $this->dataFolder($forum) . '.lock';
         touch($filename);
         $stream = fopen($filename, 'r+b');
+        if (!$stream) {
+            return null;
+        }
         flock($stream, $exclusive ? LOCK_EX : LOCK_SH);
         return $stream;
     }
 
     /**
-     * @param resource $stream
+     * @param resource|null $stream
      * @return void
      */
     private function unlock($stream)
     {
+        if ($stream === null) {
+            return;
+        }
         flock($stream, LOCK_UN);
         fclose($stream);
     }
