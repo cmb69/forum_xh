@@ -110,7 +110,7 @@ class ShowEditor
         }
         $output = $this->view->render('form', [
             'newTopic' => $tid === null,
-            'tid' => $tid,
+            'tid' => $tid !== null ? $tid : "",
             'cid' => $cid !== null ? $cid : "",
             'action' => $this->url->replace(["forum_actn" => "post"])->relative(),
             'previewUrl' => $this->url->replace(["forum_actn" => "preview"])->relative(),

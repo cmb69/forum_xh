@@ -5,13 +5,13 @@ use Forum\Infra\View;
 /**
  * @var View $this
  * @var bool $newTopic
- * @var string|null $tid
- * @var string|null $cid
+ * @var string $tid
+ * @var string $cid
  * @var string $action
  * @var string $previewUrl
  * @var string $backUrl
  * @var string $headingKey
- * @var mixed $comment
+ * @var string $comment
  * @var string $csrfTokenInput
  * @var string|false $i18n
  * @var array<string,string> $emoticons
