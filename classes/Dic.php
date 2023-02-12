@@ -27,6 +27,7 @@ use Forum\Infra\Authorizer;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Mailer;
 use Forum\Infra\SystemChecker;
+use Forum\Infra\Url;
 use Forum\Infra\View;
 
 class Dic
