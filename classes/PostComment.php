@@ -108,7 +108,7 @@ class PostComment
         $tid = isset($tid)
             ? $this->contents->cleanId($tid)
             : $this->contents->getId();
-        if ($tid === false) {
+        if ($tid === null) {
             return false;
         }
 

@@ -86,7 +86,7 @@ class ShowForum
     public function __invoke(string $forum): Response
     {
         if (empty($_GET['forum_topic'])
-            || ($tid = $this->contents->cleanId($_GET['forum_topic'])) === false
+            || ($tid = $this->contents->cleanId($_GET['forum_topic'])) === null
             || !$this->contents->hasTopic($forum, $tid)
         ) {
             $response = new Response($this->renderTopicsView($forum), null, isset($_GET['forum_ajax']));
@@ -102,7 +102,7 @@ class ShowForum
         $topics = $this->contents->getSortedTopics($forum);
         return $this->view->render('topics', [
             'isUser' => $this->authorizer->isUser(),
-            'href' => $this->url->replace(["forum_actn" => "new"])->relative(),
+            'href' => $this->url->replace(["forum_actn" => "edit"])->relative(),
             'topics' => $topics,
             'topicUrl' => function ($tid) {
                 return $this->url->replace(["forum_topic" => $tid])->relative();
@@ -126,7 +126,7 @@ class ShowForum
             'tid' => $tid,
             'csrfTokenInput' => $this->csrfProtector->tokenInput(),
             'isUser' => $this->authorizer->isUser(),
-            'replyUrl' => $this->url->replace(["forum_actn" => "reply", "forum_topic" => $tid])->relative(),
+            'replyUrl' => $this->url->replace(["forum_actn" => "edit", "forum_topic" => $tid])->relative(),
             'deleteUrl' => $this->url->replace(["forum_actn" => "delete"])->relative(),
             'href' => $this->url->relative(),
             'mayDeleteComment' => function (Comment $comment) {

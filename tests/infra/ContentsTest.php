@@ -47,7 +47,7 @@ class ContentsTest extends TestCase
     public function testCleanId(): void
     {
         $id = $this->contents->getId();
-        $this->assertTrue((bool) $this->contents->cleanId($id));
+        $this->assertNotNull($this->contents->cleanId($id));
     }
 
     private function getComment(string $forum, string $tid, string $cid): ?Comment

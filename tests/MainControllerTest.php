@@ -67,10 +67,10 @@ class MainControllerTest extends TestCase
         );
     }
 
-    public function testNewActionRendersCommentForm(): void
+    public function testEditActionRendersCommentFormForNewPost(): void
     {
         $this->authorizer->method('isUser')->willReturn(true);
-        $response = $this->sut->newAction("test");
+        $response = $this->sut->editAction("test");
         Approvals::verifyHtml($response->output());
     }
 
@@ -85,12 +85,12 @@ class MainControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
-    public function testReplyActionRendersCommentForm(): void
+    public function testEditActionRendersCommentFormForReply(): void
     {
         $_GET = ['forum_topic' => "1234"];
-        $this->contents->method('cleanId')->willReturn("1234");
+        $this->contents->method('cleanId')->willReturnOnConsecutiveCalls("1234", null);
         $this->authorizer->method('isUser')->willReturn(true);
-        $response = $this->sut->replyAction("test");
+        $response = $this->sut->editAction("test");
         Approvals::verifyHtml($response->output());
     }
 

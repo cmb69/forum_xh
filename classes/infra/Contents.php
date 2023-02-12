@@ -161,10 +161,9 @@ class Contents
         return uniqid();
     }
 
-    /** @return string|false */
-    public function cleanId(string $id)
+    public function cleanId(string $id): ?string
     {
-        return preg_match('/^[a-f0-9]{13}+$/u', $id) ? $id : false;
+        return preg_match('/^[a-f0-9]{13}+$/u', $id) ? $id : null;
     }
 
     /** @return array<string,Topic> */

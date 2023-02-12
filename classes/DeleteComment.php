@@ -59,7 +59,7 @@ class DeleteComment
         $this->csrfProtector->check();
         $tid = $this->contents->cleanId($_POST['forum_topic']);
         $cid = $this->contents->cleanId($_POST['forum_comment']);
-        $url = $tid && $cid && $this->contents->deleteComment($forum, $tid, $cid, $this->authorizer)
+        $url = $tid !== null && $cid !== null && $this->contents->deleteComment($forum, $tid, $cid, $this->authorizer)
             ? $this->url->replace(["forum_topic" => $tid])
             : $this->url;
         if (isset($_GET['forum_ajax'])) {

@@ -78,29 +78,17 @@ class MainController
         $this->authorizer = $authorizer;
     }
 
-    public function newAction(string $forum): Response
+    public function editAction(string $forum): Response
     {
-        $output = $this->renderCommentForm($forum);
+        $tid = $this->contents->cleanId($_GET['forum_topic'] ?? "");
+        $cid = $this->contents->cleanId($_GET['forum_comment'] ?? "");
+        $output = $this->renderCommentForm($forum, $tid, $cid);
         $response = new Response($output, null, isset($_GET['forum_ajax']));
         $response->addScript("{$this->pluginFolder}forum");
         return $response;
     }
 
-    public function editAction(string $forum): Response
-    {
-        $tid = $this->contents->cleanId($_GET['forum_topic']);
-        $cid = $this->contents->cleanId($_GET['forum_comment']);
-        if ($tid && $cid) {
-            $output = $this->renderCommentForm($forum, $tid, $cid);
-        } else {
-            $output = ''; // should display error
-        }
-        $response =  new Response($output, null, isset($_GET['forum_ajax']));
-        $response->addScript("{$this->pluginFolder}forum");
-        return $response;
-    }
-
-    private function renderCommentForm(string $forum, ?string $tid = null, ?string $cid = null): string
+    private function renderCommentForm(string $forum, ?string $tid, ?string $cid): string
     {
         if ($this->authorizer->isVisitor()) {
             return "";
@@ -148,17 +136,5 @@ class MainController
             $texts[strtoupper($key)] = $this->lang['msg_' . $key];
         }
         return $texts;
-    }
-
-    public function replyAction(string $forum): Response
-    {
-        $output = "";
-        if (isset($_GET['forum_topic'])) {
-            $tid = $this->contents->cleanId($_GET['forum_topic']);
-            $output = $this->renderCommentForm($forum, $tid ? $tid : null);
-        }
-        $response = new Response($output, null, isset($_GET['forum_ajax']));
-        $response->addScript("{$this->pluginFolder}forum");
-        return $response;
     }
 }
