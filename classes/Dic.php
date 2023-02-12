@@ -119,9 +119,14 @@ class Dic
          */
         global $pth, $plugin_tx;
 
+        $contentFolder = $pth['folder']['content'];
+        if ($pth['folder']['base'] === "../") {
+            $contentFolder = dirname($contentFolder) . "/";
+        }
+        $contentFolder .= "forum/";
         return new ShowInfo(
             $pth['folder']['plugins'],
-            "{$pth['folder']['content']}{$pth['folder']['base']}forum/",
+            $contentFolder,
             $plugin_tx['forum'],
             new SystemChecker(),
             new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum'])
