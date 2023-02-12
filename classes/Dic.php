@@ -24,6 +24,7 @@ namespace Forum;
 use XH\CSRFProtection as CsrfProtector;
 use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\Authorizer;
+use Forum\Infra\Contents;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Mailer;
 use Forum\Infra\SystemChecker;

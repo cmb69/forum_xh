@@ -15,6 +15,7 @@ require_once "./classes/value/Comment.php";
 require_once "./classes/value/Topic.php";
 
 require_once "./classes/infra/Authorizer.php";
+require_once './classes/infra/Contents.php';
 require_once "./classes/infra/DateFormatter.php";
 require_once "./classes/infra/Mailer.php";
 require_once "./classes/infra/Response.php";
@@ -24,6 +25,5 @@ require_once "./classes/infra/SystemChecker.php";
 
 require_once "./classes/logic/BbCode.php";
 
-require_once './classes/Contents.php';
 require_once "./classes/InfoController.php";
 require_once "./classes/MainController.php";

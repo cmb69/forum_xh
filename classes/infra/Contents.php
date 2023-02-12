@@ -19,9 +19,8 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Forum;
+namespace Forum\Infra;
 
-use Forum\Infra\Authorizer;
 use Forum\Value\Comment;
 use Forum\Value\Topic;
 
