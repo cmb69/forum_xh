@@ -90,26 +90,25 @@ class PostComment
         } else {
             $tid = $this->postComment($forum, $forumtopic);
         }
-        $url = $tid ? $this->url->replace(["forum_topic" => $tid]) : $this->url;
+        $url = $tid !== null ? $this->url->replace(["forum_topic" => $tid]) : $this->url;
         if (isset($_GET['forum_ajax'])) {
             $url = $url->replace(['forum_ajax' => ""]);
         }
         return new Response("", $url->absolute());
     }
 
-    /** @return string|false */
-    private function postComment(string $forum, ?string $tid = null, ?string $cid = null)
+    private function postComment(string $forum, ?string $tid = null, ?string $cid = null): ?string
     {
         if (!isset($tid) && empty($_POST['forum_title'])
             || $this->authorizer->isVisitor() || empty($_POST['forum_text'])
         ) {
-            return false;
+            return null;
         }
         $tid = isset($tid)
             ? $this->contents->cleanId($tid)
             : $this->contents->getId();
         if ($tid === null) {
-            return false;
+            return null;
         }
 
         $comment = new Comment($this->authorizer->username(), time(), $_POST['forum_text']);

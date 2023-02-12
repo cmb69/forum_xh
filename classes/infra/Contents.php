@@ -226,17 +226,16 @@ class Contents
         $this->lock($forum, LOCK_UN);
     }
 
-    /** @return string|null|false */
-    public function deleteComment(string $forum, string $tid, string $cid, Authorizer $authorizer)
+    public function deleteComment(string $forum, string $tid, string $cid, Authorizer $authorizer): ?string
     {
         if (!$tid || !$cid) {
-            return false;
+            return null;
         }
         $this->lock($forum, LOCK_EX);
         $topics = $this->getTopics($forum);
         $comments = $this->getTopic($forum, $tid);
         if (!$authorizer->mayModify($comments[$cid])) {
-            return false;
+            return null;
         }
         unset($comments[$cid]);
         if (count($comments) > 0) {
