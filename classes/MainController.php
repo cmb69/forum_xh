@@ -32,9 +32,6 @@ use Forum\Value\Topic;
 
 class MainController
 {
-    /** @var string */
-    private $forum;
-
     /** @var Url */
     private $url;
 
@@ -76,7 +73,6 @@ class MainController
      * @param array<string,string> $lang
      */
     public function __construct(
-        string $forum,
         Url $url,
         array $config,
         array $lang,
@@ -90,7 +86,6 @@ class MainController
         DateFormatter $dateFormatter,
         Authorizer $authorizer
     ) {
-        $this->forum = $forum;
         $this->url = $url;
         $this->config = $config;
         $this->lang = $lang;
@@ -105,15 +100,15 @@ class MainController
         $this->authorizer = $authorizer;
     }
 
-    public function defaultAction(): Response
+    public function defaultAction(string $forum): Response
     {
         if (empty($_GET['forum_topic'])
             || ($tid = $this->contents->cleanId($_GET['forum_topic'])) === false
-            || !$this->contents->hasTopic($this->forum, $tid)
+            || !$this->contents->hasTopic($forum, $tid)
         ) {
-            $response = new Response($this->renderTopicsView($this->forum));
+            $response = new Response($this->renderTopicsView($forum));
         } else {
-            $response = new Response($this->renderTopicView($this->forum, $tid));
+            $response = new Response($this->renderTopicView($forum, $tid));
         }
         $response->addScript("{$this->pluginFolder}forum");
         return $response;
@@ -165,23 +160,23 @@ class MainController
         ]);
     }
 
-    public function newAction(): Response
+    public function newAction(string $forum): Response
     {
-        $output = $this->renderCommentForm($this->forum);
+        $output = $this->renderCommentForm($forum);
 
         $response = new Response($output);
         $response->addScript("{$this->pluginFolder}forum");
         return $response;
     }
 
-    public function postAction(): Response
+    public function postAction(string $forum): Response
     {
         $this->csrfProtector->check();
         $forumtopic = isset($_POST['forum_topic']) ? $_POST['forum_topic'] : null;
         if (!empty($_POST['forum_comment'])) {
-            $tid = $this->postComment($this->forum, $forumtopic, $_POST['forum_comment']);
+            $tid = $this->postComment($forum, $forumtopic, $_POST['forum_comment']);
         } else {
-            $tid = $this->postComment($this->forum, $forumtopic);
+            $tid = $this->postComment($forum, $forumtopic);
         }
         $url = $tid ? $this->url->replace(["forum_topic" => $tid]) : $this->url;
         return new Response("", $url->absolute());
@@ -227,12 +222,12 @@ class MainController
         return $tid;
     }
 
-    public function editAction(): Response
+    public function editAction(string $forum): Response
     {
         $tid = $this->contents->cleanId($_GET['forum_topic']);
         $cid = $this->contents->cleanId($_GET['forum_comment']);
         if ($tid && $cid) {
-            $output = $this->renderCommentForm($this->forum, $tid, $cid);
+            $output = $this->renderCommentForm($forum, $tid, $cid);
         } else {
             $output = ''; // should display error
         }
@@ -241,12 +236,12 @@ class MainController
         return $response;
     }
 
-    public function deleteAction(): Response
+    public function deleteAction(string $forum): Response
     {
         $this->csrfProtector->check();
         $tid = $this->contents->cleanId($_POST['forum_topic']);
         $cid = $this->contents->cleanId($_POST['forum_comment']);
-        $url = $tid && $cid && $this->contents->deleteComment($this->forum, $tid, $cid, $this->authorizer)
+        $url = $tid && $cid && $this->contents->deleteComment($forum, $tid, $cid, $this->authorizer)
             ? $this->url->replace(["forum_topic" => $tid])
             : $this->url;
         return new Response("", $url->absolute());
@@ -302,12 +297,12 @@ class MainController
         return $texts;
     }
 
-    public function replyAction(): Response
+    public function replyAction(string $forum): Response
     {
         $output = "";
         if (isset($_GET['forum_topic'])) {
             $tid = $this->contents->cleanId($_GET['forum_topic']);
-            $output = $this->renderCommentForm($this->forum, $tid ? $tid : null);
+            $output = $this->renderCommentForm($forum, $tid ? $tid : null);
         }
         $response = new Response($output);
         $response->addScript("{$this->pluginFolder}forum");

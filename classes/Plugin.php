@@ -82,7 +82,6 @@ class Plugin
             return XH_message('fail', $ptx['msg_invalid_name'], $forum);
         }
         $controller = new MainController(
-            $forum,
             self::url(),
             $plugin_cf['forum'],
             $plugin_tx['forum'],
@@ -108,11 +107,11 @@ class Plugin
                 while (ob_get_level()) {
                     ob_end_clean();
                 }
-                $controller->{$action}()->fire();
+                $controller->{$action}($forum)->fire();
                 exit;
             } else {
                 ob_start();
-                $controller->{$action}()->fire();
+                $controller->{$action}($forum)->fire();
                 return (string) ob_get_clean();
             }
         }

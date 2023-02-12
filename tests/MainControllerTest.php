@@ -59,7 +59,6 @@ class MainControllerTest extends TestCase
         $dateFormatter = $this->createStub(DateFormatter::class);
         $this->authorizer = $this->createStub(Authorizer::class);
         $this->sut = new MainController(
-            "test",
             new Url("/", "Forum", []),
             XH_includeVar("./config/config.php", 'plugin_cf')['forum'],
             $lang,
@@ -78,7 +77,7 @@ class MainControllerTest extends TestCase
     public function testDefaultActionRendersForumOverview(): void
     {
         $this->contents->method('getSortedTopics')->willReturn(["1234" => $this->topic()]);
-        $response = $this->sut->defaultAction();
+        $response = $this->sut->defaultAction("test");
         Approvals::verifyHtml($response->output());
     }
 
@@ -88,14 +87,14 @@ class MainControllerTest extends TestCase
         $this->contents->method('cleanId')->willReturn("1234");
         $this->contents->method('hasTopic')->willReturn(true);
         $this->contents->method('getTopicWithTitle')->willReturn(["Topic Title", ["2345" => $this->comment()]]);
-        $response = $this->sut->defaultAction();
+        $response = $this->sut->defaultAction("test");
         Approvals::verifyHtml($response->output());
     }
 
     public function testNewActionRendersCommentForm(): void
     {
         $this->authorizer->method('isUser')->willReturn(true);
-        $response = $this->sut->newAction();
+        $response = $this->sut->newAction("test");
         Approvals::verifyHtml($response->output());
     }
 
@@ -105,7 +104,7 @@ class MainControllerTest extends TestCase
         $this->contents->method('getId')->willReturn("3456");
         $this->contents->expects($this->once())->method('createComment');
         $this->authorizer->method('isUser')->willReturn(true);
-        $response = $this->sut->postAction();
+        $response = $this->sut->postAction("test");
         $this->assertEquals("http://example.com/index.php?Forum&forum_topic=3456", $response->location());
     }
 
@@ -114,7 +113,7 @@ class MainControllerTest extends TestCase
         $_POST = ['forum_topic' => "1234", 'forum_comment' => "3456", 'forum_text' => "A changed comment"];
         $this->contents->method('cleanId')->willReturn("1234");
         $this->authorizer->method('isUser')->willReturn(true);
-        $response = $this->sut->postAction();
+        $response = $this->sut->postAction("test");
         $this->assertEquals("http://example.com/index.php?Forum&forum_topic=1234", $response->location());
     }
 
@@ -125,7 +124,7 @@ class MainControllerTest extends TestCase
         $this->contents->method('getTopic')->willReturn(["3456" => $this->comment()]);
         $this->authorizer->method('isUser')->willReturn(true);
         $this->authorizer->method('mayModify')->willReturn(true);
-        $response = $this->sut->editAction();
+        $response = $this->sut->editAction("test");
         Approvals::verifyHtml($response->output());
     }
 
@@ -135,7 +134,7 @@ class MainControllerTest extends TestCase
         $this->contents->method('cleanId')->willReturnOnConsecutiveCalls("1234", "3456");
         $this->contents->expects($this->once())->method('deleteComment');
         $this->authorizer->method('isUser')->willReturn(true);
-        $response = $this->sut->deleteAction();
+        $response = $this->sut->deleteAction("test");
         $this->assertEquals("http://example.com/index.php?Forum", $response->location());
     }
 
@@ -144,7 +143,7 @@ class MainControllerTest extends TestCase
         $_GET = ['forum_topic' => "1234"];
         $this->contents->method('cleanId')->willReturn("1234");
         $this->authorizer->method('isUser')->willReturn(true);
-        $response = $this->sut->replyAction();
+        $response = $this->sut->replyAction("test");
         Approvals::verifyHtml($response->output());
     }
 
