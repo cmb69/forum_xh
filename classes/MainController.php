@@ -115,7 +115,7 @@ class MainController
         } else {
             $response = new Response($this->renderTopicView($this->forum, $tid));
         }
-        $this->addScript();
+        $response->addScript("{$this->pluginFolder}forum");
         return $response;
     }
 
@@ -168,8 +168,10 @@ class MainController
     public function newAction(): Response
     {
         $output = $this->renderCommentForm($this->forum);
-        $this->addScript();
-        return new Response($output);
+
+        $response = new Response($output);
+        $response->addScript("{$this->pluginFolder}forum");
+        return $response;
     }
 
     public function postAction(): Response
@@ -234,8 +236,9 @@ class MainController
         } else {
             $output = ''; // should display error
         }
-        $this->addScript();
-        return new Response($output);
+        $response =  new Response($output);
+        $response->addScript("{$this->pluginFolder}forum");
+        return $response;
     }
 
     public function deleteAction(): Response
@@ -288,19 +291,6 @@ class MainController
         return $output;
     }
 
-    /** @return void */
-    private function addScript()
-    {
-        global $bjs;
-
-        if (is_file("{$this->pluginFolder}forum.min.js")) {
-            $filename = "{$this->pluginFolder}forum.min.js";
-        } else {
-            $filename = "{$this->pluginFolder}forum.js";
-        }
-        $bjs .= sprintf('<script type="text/javascript" src="%s"></script>', $this->view->esc($filename));
-    }
-
     /** @return array<string,string> */
     private function jsTexts()
     {
@@ -319,8 +309,9 @@ class MainController
             $tid = $this->contents->cleanId($_GET['forum_topic']);
             $output = $this->renderCommentForm($this->forum, $tid ? $tid : null);
         }
-        $this->addScript();
-        return new Response($output);
+        $response = new Response($output);
+        $response->addScript("{$this->pluginFolder}forum");
+        return $response;
     }
 
     public function previewAction(): Response

@@ -32,6 +32,9 @@ class Response
     /** @var bool */
     private $exit;
 
+    /** @var string */
+    private $bjs = "";
+
     public function __construct(string $output, ?string $location = null, bool $exit = false)
     {
         $this->output = $output;
@@ -40,12 +43,26 @@ class Response
     }
 
     /** @return void */
+    public function addScript(string $basename)
+    {
+        if (is_file("$basename.min.js")) {
+            $filename = "$basename.min.js";
+        } else {
+            $filename = "$basename.js";
+        }
+        $this->bjs .= "<script type=\"text/javascript\" src=\"$filename\"></script>";
+    }
+
+    /** @return void */
     public function fire()
     {
+        global $bjs;
+
         if ($this->location !== null) {
             header("Location: {$this->location}", true, 303);
             exit;
         }
+        $bjs .= $this->bjs;
         echo $this->output;
         if ($this->exit) {
             exit;
