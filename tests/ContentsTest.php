@@ -31,14 +31,10 @@ use Forum\Value\Topic;
 
 class ContentsTest extends TestCase
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $forum;
 
-    /**
-     * @var object
-     */
+    /** @var Contents */
     private $contents;
 
     protected function setUp(): void
@@ -49,25 +45,19 @@ class ContentsTest extends TestCase
         $this->contents = new Contents(vfsStream::url('test'));
     }
 
-    public function testCleanId()
+    public function testCleanId(): void
     {
         $id = $this->contents->getId();
         $this->assertTrue((bool) $this->contents->cleanId($id));
     }
 
-    /**
-     * @param string $forum
-     * @param string $tid
-     * @param string $cid
-     * @return array
-     */
-    private function getComment($forum, $tid, $cid)
+    private function getComment(string $forum, string $tid, string $cid): ?Comment
     {
         $topic = $this->contents->getTopic($forum, $tid);
-        return $topic[$cid] ?? [];
+        return $topic[$cid] ?? null;
     }
 
-    public function testCreateAndDeleteComment()
+    public function testCreateAndDeleteComment(): void
     {
         $tid = $this->contents->getId();
         $title = 'hallo';
@@ -87,7 +77,7 @@ class ContentsTest extends TestCase
         $this->assertEmpty($actual);
     }
 
-    public function testDeleteFirstOfTwoCommentsProperlyUpdatesTopic()
+    public function testDeleteFirstOfTwoCommentsProperlyUpdatesTopic(): void
     {
         $tid = $this->contents->getId();
         $title = 'hallo';

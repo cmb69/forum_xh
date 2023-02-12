@@ -25,9 +25,7 @@ use PHPUnit\Framework\TestCase;
 
 class BBCodeTest extends TestCase
 {
-    /**
-     * @var object
-     */
+    /** @var BBCode */
     private $bbcode;
 
     protected function setUp(): void
@@ -44,21 +42,14 @@ class BBCodeTest extends TestCase
         $this->bbcode = new BBCode($lang, './', "External <content>");
     }
 
-    /**
-     * @param string $text
-     * @param string $expected
-     * @dataProvider dataForConversion
-     */
-    public function testConversion($text, $expected)
+    /** @dataProvider dataForConversion */
+    public function testConversion(string $text, string $expected): void
     {
         $actual = $this->bbcode->convert($text);
         $this->assertEquals($expected, $actual);
     }
 
-    /**
-     * @return array
-     */
-    public function dataForConversion()
+    public function dataForConversion(): array
     {
         return array(
             array('[i]foo[/i]', '<i>foo</i>'),
