@@ -42,11 +42,9 @@ function forum(string $forum)
         while (ob_get_level()) {
             ob_end_clean();
         }
-        $controller->{$action}($forum)->fire();
+        echo $controller->{$action}($forum)->fire();
         exit;
     } else {
-        ob_start();
-        $controller->{$action}($forum)->fire();
-        return (string) ob_get_clean();
+        return $controller->{$action}($forum)->fire();
     }
 }

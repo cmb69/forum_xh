@@ -53,7 +53,7 @@ class Response
         $this->hjs .= "<script type=\"module\" src=\"$filename\"></script>";
     }
 
-    /** @return void */
+    /** @return string|never */
     public function fire()
     {
         global $hjs;
@@ -62,11 +62,12 @@ class Response
             header("Location: {$this->location}", true, 303);
             exit;
         }
-        $hjs .= $this->hjs;
-        echo $this->output;
         if ($this->exit) {
+            echo $this->output;
             exit;
         }
+        $hjs .= $this->hjs;
+        return $this->output;
     }
 
     public function output(): string
