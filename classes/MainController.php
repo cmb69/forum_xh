@@ -25,20 +25,14 @@ use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
-use Forum\Infra\DateFormatter;
-use Forum\Infra\Mailer;
 use Forum\Infra\Response;
 use Forum\Infra\Url;
 use Forum\Infra\View;
-use Forum\Value\Comment;
 
 class MainController
 {
     /** @var Url */
     private $url;
-
-    /** @var array<string,string> */
-    private $config;
 
     /** @var array<string,string> */
     private $lang;
@@ -58,42 +52,29 @@ class MainController
     /** @var FaRequireCommand */
     private $faRequireCommand;
 
-    /** @var Mailer */
-    private $mailer;
-
-    /** @var DateFormatter */
-    private $dateFormatter;
-
     /** @var Authorizer */
     private $authorizer;
 
     /**
-     * @param array<string,string> $config
      * @param array<string,string> $lang
      */
     public function __construct(
         Url $url,
-        array $config,
         array $lang,
         string $pluginFolder,
         Contents $contents,
         CSRFProtection $csrfProtector,
         View $view,
         FaRequireCommand $faRequireCommand,
-        Mailer $mailer,
-        DateFormatter $dateFormatter,
         Authorizer $authorizer
     ) {
         $this->url = $url;
-        $this->config = $config;
         $this->lang = $lang;
         $this->pluginFolder = $pluginFolder;
         $this->contents = $contents;
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
         $this->faRequireCommand = $faRequireCommand;
-        $this->mailer = $mailer;
-        $this->dateFormatter = $dateFormatter;
         $this->authorizer = $authorizer;
     }
 
@@ -103,61 +84,6 @@ class MainController
         $response = new Response($output, null, isset($_GET['forum_ajax']));
         $response->addScript("{$this->pluginFolder}forum");
         return $response;
-    }
-
-    public function postAction(string $forum): Response
-    {
-        $this->csrfProtector->check();
-        $forumtopic = $_POST['forum_topic'] ?? null;
-        if (!empty($_POST['forum_comment'])) {
-            $tid = $this->postComment($forum, $forumtopic, $_POST['forum_comment']);
-        } else {
-            $tid = $this->postComment($forum, $forumtopic);
-        }
-        $url = $tid ? $this->url->replace(["forum_topic" => $tid]) : $this->url;
-        if (isset($_GET['forum_ajax'])) {
-            $url = $url->replace(['forum_ajax' => ""]);
-        }
-        return new Response("", $url->absolute());
-    }
-
-    /** @return string|false */
-    private function postComment(string $forum, ?string $tid = null, ?string $cid = null)
-    {
-        if (!isset($tid) && empty($_POST['forum_title'])
-            || $this->authorizer->isVisitor() || empty($_POST['forum_text'])
-        ) {
-            return false;
-        }
-        $tid = isset($tid)
-            ? $this->contents->cleanId($tid)
-            : $this->contents->getId();
-        if ($tid === false) {
-            return false;
-        }
-
-        $comment = new Comment($this->authorizer->username(), time(), $_POST['forum_text']);
-        if (!isset($cid)) {
-            $cid = $this->contents->getId();
-            $title = $_POST['forum_title'] ?? null;
-            $this->contents->createComment($forum, $tid, $title, $cid, $comment);
-            $subject = $this->lang['mail_subject_new'];
-        } else {
-            $this->contents->updateComment($forum, $tid, $cid, $comment);
-            $subject = $this->lang['mail_subject_edit'];
-        }
-
-        if (!$this->authorizer->isAdmin() && $this->config['mail_address']) {
-            $url = $this->url->replace(["forum_topic" => $tid])->absolute();
-            $date = $this->dateFormatter->format($comment->time());
-            $attribution = sprintf($this->lang['mail_attribution'], $comment->user(), $date);
-            $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment->comment());
-            assert(is_string($content));
-            $message = "$attribution\n\n> $content\n\n<$url>";
-            $this->mailer->sendMail($subject, $message, $url);
-        }
-
-        return $tid;
     }
 
     public function editAction(string $forum): Response

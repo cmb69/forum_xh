@@ -32,9 +32,7 @@ use Forum\Infra\DateFormatter;
 use Forum\Infra\Mailer;
 use Forum\Infra\Url;
 use Forum\Infra\View;
-use Forum\Logic\BbCode;
 use Forum\Value\Comment;
-use Forum\Value\Topic;
 
 class MainControllerTest extends TestCase
 {
@@ -59,15 +57,12 @@ class MainControllerTest extends TestCase
         $this->authorizer = $this->createStub(Authorizer::class);
         $this->sut = new MainController(
             new Url("/", "Forum", []),
-            XH_includeVar("./config/config.php", 'plugin_cf')['forum'],
             $lang,
             "./",
             $this->contents,
             $csrfProtector,
             $view,
             $faRequireCommand,
-            $mailer,
-            $dateFormatter,
             $this->authorizer
         );
     }
@@ -77,25 +72,6 @@ class MainControllerTest extends TestCase
         $this->authorizer->method('isUser')->willReturn(true);
         $response = $this->sut->newAction("test");
         Approvals::verifyHtml($response->output());
-    }
-
-    public function testPostActionCreatesNewTopicAndRedirects(): void
-    {
-        $_POST = ['forum_title' => "A new Topic", 'forum_text' => "A comment"];
-        $this->contents->method('getId')->willReturn("3456");
-        $this->contents->expects($this->once())->method('createComment');
-        $this->authorizer->method('isUser')->willReturn(true);
-        $response = $this->sut->postAction("test");
-        $this->assertEquals("http://example.com/index.php?Forum&forum_topic=3456", $response->location());
-    }
-
-    public function testPostActionUpdatesCommentAndRedirects(): void
-    {
-        $_POST = ['forum_topic' => "1234", 'forum_comment' => "3456", 'forum_text' => "A changed comment"];
-        $this->contents->method('cleanId')->willReturn("1234");
-        $this->authorizer->method('isUser')->willReturn(true);
-        $response = $this->sut->postAction("test");
-        $this->assertEquals("http://example.com/index.php?Forum&forum_topic=1234", $response->location());
     }
 
     public function testEditActionRendersCommentForm(): void

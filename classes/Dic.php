@@ -36,19 +36,16 @@ class Dic
 {
     public static function makeMainController(): MainController
     {
-        global $pth, $plugin_cf, $plugin_tx;
+        global $pth, $plugin_tx;
 
         return new MainController(
             self::makeUrl(),
-            $plugin_cf['forum'],
             $plugin_tx['forum'],
             "{$pth['folder']['plugins']}forum/",
             new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
             self::makeCsrfProtector(),
             new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
             new FaRequireCommand(),
-            new Mailer($plugin_cf['forum']),
-            new DateFormatter(),
             new Authorizer()
         );
     }
@@ -65,6 +62,22 @@ class Dic
             self::makeCsrfProtector(),
             new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
             new FaRequireCommand(),
+            new DateFormatter(),
+            new Authorizer()
+        );
+    }
+
+    public static function makePostComment(): PostComment
+    {
+        global $pth, $plugin_cf, $plugin_tx;
+
+        return new PostComment(
+            self::makeUrl(),
+            $plugin_cf['forum'],
+            $plugin_tx['forum'],
+            new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
+            self::makeCsrfProtector(),
+            new Mailer($plugin_cf['forum']),
             new DateFormatter(),
             new Authorizer()
         );

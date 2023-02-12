@@ -36,6 +36,8 @@ function forum(string $forum)
         case "default":
         case "":
             return Dic::makeShowForum()($forum)->fire();
+        case "post":
+            return Dic::makePostComment()($forum)->fire();
         case "preview":
             return Dic::makeShowPreview()()->fire();
     }
