@@ -26,6 +26,7 @@ use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\Authorizer;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Mailer;
+use Forum\Infra\Response;
 use Forum\Infra\View;
 use Forum\Value\Comment;
 use Forum\Value\Topic;
