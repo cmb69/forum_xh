@@ -27,6 +27,7 @@ use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Mailer;
+use Forum\Infra\Request;
 use Forum\Infra\SystemChecker;
 use Forum\Infra\Url;
 use Forum\Infra\View;
@@ -43,7 +44,6 @@ class Dic
         global $pth, $plugin_tx;
 
         return new ShowForum(
-            self::makeUrl(),
             "{$pth['folder']['plugins']}forum/",
             new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
             self::makeBbCode(),
@@ -64,7 +64,6 @@ class Dic
         global $pth, $plugin_tx;
 
         return new ShowEditor(
-            self::makeUrl(),
             $plugin_tx['forum'],
             "{$pth['folder']['plugins']}forum/",
             new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
@@ -85,7 +84,6 @@ class Dic
         global $pth, $plugin_cf, $plugin_tx;
 
         return new PostComment(
-            self::makeUrl(),
             $plugin_cf['forum'],
             $plugin_tx['forum'],
             new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
@@ -102,7 +100,6 @@ class Dic
         global $pth;
 
         return new DeleteComment(
-            self::makeUrl(),
             new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
             self::makeCsrfProtector(),
             new Authorizer()
@@ -129,6 +126,11 @@ class Dic
             new SystemChecker(),
             new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum'])
         );
+    }
+
+    public static function makeRequest(): Request
+    {
+        return new Request(self::makeUrl());
     }
 
     private static function makeBbCode(): BbCode

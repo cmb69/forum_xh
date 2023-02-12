@@ -25,15 +25,13 @@ use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
+use Forum\Infra\Request;
 use Forum\Infra\Response;
 use Forum\Infra\Url;
 use Forum\Infra\View;
 
 class ShowEditor
 {
-    /** @var Url */
-    private $url;
-
     /** @var array<string,string> */
     private $lang;
 
@@ -59,7 +57,6 @@ class ShowEditor
      * @param array<string,string> $lang
      */
     public function __construct(
-        Url $url,
         array $lang,
         string $pluginFolder,
         Contents $contents,
@@ -68,7 +65,6 @@ class ShowEditor
         FaRequireCommand $faRequireCommand,
         Authorizer $authorizer
     ) {
-        $this->url = $url;
         $this->lang = $lang;
         $this->pluginFolder = $pluginFolder;
         $this->contents = $contents;
@@ -78,17 +74,17 @@ class ShowEditor
         $this->authorizer = $authorizer;
     }
 
-    public function __invoke(string $forum): Response
+    public function __invoke(string $forum, Request $request): Response
     {
-        $tid = $this->contents->cleanId($_GET['forum_topic'] ?? "");
-        $cid = $this->contents->cleanId($_GET['forum_comment'] ?? "");
-        $output = $this->renderCommentForm($forum, $tid, $cid);
-        $response = new Response($output, null, isset($_GET['forum_ajax']));
+        $tid = $this->contents->cleanId($request->get("forum_topic") ?? "");
+        $cid = $this->contents->cleanId($request->get("forum_comment") ?? "");
+        $output = $this->renderCommentForm($forum, $tid, $cid, $request);
+        $response = new Response($output, null, $request->get("forum_ajax") !== null);
         $response->addScript("{$this->pluginFolder}forum");
         return $response;
     }
 
-    private function renderCommentForm(string $forum, ?string $tid, ?string $cid): string
+    private function renderCommentForm(string $forum, ?string $tid, ?string $cid, Request $request): string
     {
         if ($this->authorizer->isVisitor()) {
             return "";
@@ -112,11 +108,11 @@ class ShowEditor
             'newTopic' => $tid === null,
             'tid' => $tid !== null ? $tid : "",
             'cid' => $cid !== null ? $cid : "",
-            'action' => $this->url->replace(["forum_actn" => "post"])->relative(),
-            'previewUrl' => $this->url->replace(["forum_actn" => "preview"])->relative(),
+            'action' => $request->url()->replace(["forum_actn" => "post"])->relative(),
+            'previewUrl' => $request->url()->replace(["forum_actn" => "preview"])->relative(),
             'backUrl' => $tid === null
-                ? $this->url->relative()
-                : $this->url->replace(["forum_topic" => $tid])->relative(),
+                ? $request->url()->relative()
+                : $request->url()->replace(["forum_topic" => $tid])->relative(),
             'headingKey' => $tid === null ? 'msg_new_topic' : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment'),
             'comment' => $comment,
             'csrfTokenInput' => $this->csrfProtector->tokenInput(),

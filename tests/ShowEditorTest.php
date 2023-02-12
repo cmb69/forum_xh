@@ -28,8 +28,7 @@ use XH\CSRFProtection as CsrfProtector;
 use Fa\RequireCommand;
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
-use Forum\Infra\DateFormatter;
-use Forum\Infra\Mailer;
+use Forum\Infra\Request;
 use Forum\Infra\Url;
 use Forum\Infra\View;
 use Forum\Value\Comment;
@@ -54,7 +53,6 @@ class ShowEditorTest extends TestCase
         $faRequireCommand = $this->createStub(RequireCommand::class);
         $this->authorizer = $this->createStub(Authorizer::class);
         $this->sut = new ShowEditor(
-            new Url("/", "Forum", []),
             $lang,
             "./",
             $this->contents,
@@ -68,27 +66,33 @@ class ShowEditorTest extends TestCase
     public function testRendersCommentFormForNewPost(): void
     {
         $this->authorizer->method('isUser')->willReturn(true);
-        $response = ($this->sut)("test");
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url("/", "Forum", []));
+        $response = ($this->sut)("test", $request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersCommentForm(): void
     {
-        $_GET = ['forum_topic' => "1234", 'forum_comment' => "3456"];
         $this->contents->method('cleanId')->willReturnOnConsecutiveCalls("1234", "3456");
         $this->contents->method('getTopic')->willReturn(["3456" => $this->comment()]);
         $this->authorizer->method('isUser')->willReturn(true);
         $this->authorizer->method('mayModify')->willReturn(true);
-        $response = ($this->sut)("test");
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url("/", "Forum", []));
+        $request->method("get")->willReturnMap([["forum_topic", "1234"], ["forum_comment", "3456"]]);
+        $response = ($this->sut)("test", $request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersCommentFormForReply(): void
     {
-        $_GET = ['forum_topic' => "1234"];
         $this->contents->method('cleanId')->willReturnOnConsecutiveCalls("1234", null);
         $this->authorizer->method('isUser')->willReturn(true);
-        $response = ($this->sut)("test");
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url("/", "Forum", []));
+        $request->method("get")->willReturnMap([["forum_topic", "1234"]]);
+        $response = ($this->sut)("test", $request);
         Approvals::verifyHtml($response->output());
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2012-2021 Christoph M. Becker
+ * Copyright 2023 Christoph M. Becker
  *
  * This file is part of Forum_XH.
  *
@@ -19,24 +19,30 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Forum;
+namespace Forum\Infra;
 
-use Forum\Infra\Request;
-use Forum\Infra\Response;
-use Forum\Logic\BbCode;
-
-class ShowPreview
+class Request
 {
-    /** @var BbCode */
-    private $bbCode;
+    /** @var Url */
+    private $url;
 
-    public function __construct(BbCode $bbCode)
+    public function __construct(Url $url)
     {
-        $this->bbCode = $bbCode;
+        $this->url = $url;
     }
 
-    public function __invoke(Request $request): Response
+    public function url(): Url
     {
-        return new Response($this->bbCode->convert($request->get("forum_bbcode") ?? ""), null, true);
+        return $this->url;
+    }
+
+    public function get(string $key): ?string
+    {
+        return $_GET[$key] ?? null;
+    }
+
+    public function post(string $key): ?string
+    {
+        return $_POST[$key] ?? null;
     }
 }

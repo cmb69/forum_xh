@@ -30,6 +30,7 @@ use Fa\RequireCommand;
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\DateFormatter;
+use Forum\Infra\Request;
 use Forum\Infra\Url;
 use Forum\Infra\View;
 use Forum\Logic\BbCode;
@@ -60,7 +61,6 @@ class ShowForumTest extends TestCase
         $dateFormatter = $this->createStub(DateFormatter::class);
         $this->authorizer = $this->createStub(Authorizer::class);
         $this->sut = new ShowForum(
-            new Url("/", "Forum", []),
             "./",
             $this->contents,
             $this->bbcode,
@@ -75,17 +75,21 @@ class ShowForumTest extends TestCase
     public function testRendersForumOverview(): void
     {
         $this->contents->method('getSortedTopics')->willReturn(["1234" => $this->topic()]);
-        $response = ($this->sut)("test");
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url("/", "Forum", []));
+        $response = ($this->sut)("test", $request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersTopicOverview(): void
     {
-        $_GET = ['forum_topic' => "1234"];
         $this->contents->method('cleanId')->willReturn("1234");
         $this->contents->method('hasTopic')->willReturn(true);
         $this->contents->method('getTopicWithTitle')->willReturn(["Topic Title", ["2345" => $this->comment()]]);
-        $response = ($this->sut)("test");
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url("/", "Forum", []));
+        $request->method("get")->willReturnMap([["forum_topic", "1234"]]);
+        $response = ($this->sut)("test", $request);
         Approvals::verifyHtml($response->output());
     }
 

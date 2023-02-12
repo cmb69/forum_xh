@@ -35,14 +35,14 @@ function forum(string $forum)
     }
     switch ($_GET['forum_actn'] ?? "") {
         default:
-            return Dic::makeShowForum()($forum)->fire();
+            return Dic::makeShowForum()($forum, Dic::makeRequest())->fire();
         case "delete":
-            return Dic::makeDeleteComment()($forum)->fire();
+            return Dic::makeDeleteComment()($forum, Dic::makeRequest())->fire();
         case "edit":
-            return Dic::makeShowEditor()($forum)->fire();
+            return Dic::makeShowEditor()($forum, Dic::makeRequest())->fire();
         case "post":
-            return Dic::makePostComment()($forum)->fire();
+            return Dic::makePostComment()($forum, Dic::makeRequest())->fire();
         case "preview":
-            return Dic::makeShowPreview()()->fire();
+            return Dic::makeShowPreview()(Dic::makeRequest())->fire();
     }
 }

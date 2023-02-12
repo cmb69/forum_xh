@@ -25,14 +25,12 @@ use XH\CSRFProtection;
 
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
+use Forum\Infra\Request;
 use Forum\Infra\Response;
 use Forum\Infra\Url;
 
 class DeleteComment
 {
-    /** @var Url */
-    private $url;
-
     /** @var Contents */
     private $contents;
 
@@ -43,26 +41,24 @@ class DeleteComment
     private $authorizer;
 
     public function __construct(
-        Url $url,
         Contents $contents,
         CSRFProtection $csrfProtector,
         Authorizer $authorizer
     ) {
-        $this->url = $url;
         $this->contents = $contents;
         $this->csrfProtector = $csrfProtector;
         $this->authorizer = $authorizer;
     }
 
-    public function __invoke(string $forum): Response
+    public function __invoke(string $forum, Request $request): Response
     {
         $this->csrfProtector->check();
-        $tid = $this->contents->cleanId($_POST['forum_topic']);
-        $cid = $this->contents->cleanId($_POST['forum_comment']);
+        $tid = $this->contents->cleanId($request->post("forum_topic") ?? "");
+        $cid = $this->contents->cleanId($request->post("forum_comment") ?? "");
         $url = $tid !== null && $cid !== null && $this->contents->deleteComment($forum, $tid, $cid, $this->authorizer)
-            ? $this->url->replace(["forum_topic" => $tid])
-            : $this->url;
-        if (isset($_GET['forum_ajax'])) {
+            ? $request->url()->replace(["forum_topic" => $tid])
+            : $request->url();
+        if ($request->get("forum_ajax") !== null) {
             $url = $url->replace(['forum_ajax' => ""]);
         }
         return new Response("", $url->absolute());

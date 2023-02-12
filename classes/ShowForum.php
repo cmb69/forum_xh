@@ -26,6 +26,7 @@ use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\DateFormatter;
+use Forum\Infra\Request;
 use Forum\Infra\Response;
 use Forum\Infra\Url;
 use Forum\Infra\View;
@@ -35,9 +36,6 @@ use Forum\Value\Topic;
 
 class ShowForum
 {
-    /** @var Url */
-    private $url;
-
     /** @var string */
     private $pluginFolder;
 
@@ -63,7 +61,6 @@ class ShowForum
     private $authorizer;
 
     public function __construct(
-        Url $url,
         string $pluginFolder,
         Contents $contents,
         BbCode $bbcode,
@@ -73,7 +70,6 @@ class ShowForum
         DateFormatter $dateFormatter,
         Authorizer $authorizer
     ) {
-        $this->url = $url;
         $this->pluginFolder = $pluginFolder;
         $this->contents = $contents;
         $this->bbcode = $bbcode;
@@ -83,29 +79,37 @@ class ShowForum
         $this->dateFormatter = $dateFormatter;
         $this->authorizer = $authorizer;
     }
-    public function __invoke(string $forum): Response
+    public function __invoke(string $forum, Request $request): Response
     {
-        if (empty($_GET['forum_topic'])
-            || ($tid = $this->contents->cleanId($_GET['forum_topic'])) === null
+        if (empty($request->get("forum_topic"))
+            || ($tid = $this->contents->cleanId($request->get("forum_topic"))) === null
             || !$this->contents->hasTopic($forum, $tid)
         ) {
-            $response = new Response($this->renderTopicsView($forum), null, isset($_GET['forum_ajax']));
+            $response = new Response(
+                $this->renderTopicsView($forum, $request),
+                null,
+                $request->get("forum_ajax") !== null
+            );
         } else {
-            $response = new Response($this->renderTopicView($forum, $tid), null, isset($_GET['forum_ajax']));
+            $response = new Response(
+                $this->renderTopicView($forum, $tid, $request),
+                null,
+                $request->get("forum_ajax") !== null
+            );
         }
         $response->addScript("{$this->pluginFolder}forum");
         return $response;
     }
 
-    private function renderTopicsView(string $forum): string
+    private function renderTopicsView(string $forum, Request $request): string
     {
         $topics = $this->contents->getSortedTopics($forum);
         return $this->view->render('topics', [
             'isUser' => $this->authorizer->isUser(),
-            'href' => $this->url->replace(["forum_actn" => "edit"])->relative(),
+            'href' => $request->url()->replace(["forum_actn" => "edit"])->relative(),
             'topics' => $topics,
-            'topicUrl' => function ($tid) {
-                return $this->url->replace(["forum_topic" => $tid])->relative();
+            'topicUrl' => function ($tid) use ($request) {
+                return $request->url()->replace(["forum_topic" => $tid])->relative();
             },
             'topicDate' => function (Topic $topic) {
                 return $this->dateFormatter->format($topic->time());
@@ -113,11 +117,11 @@ class ShowForum
         ]);
     }
 
-    private function renderTopicView(string $forum, string $tid): string
+    private function renderTopicView(string $forum, string $tid, Request $request): string
     {
         $this->faRequireCommand->execute();
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
-        $editUrl = $this->url->replace(["forum_actn" => "edit", "forum_topic" => $tid]);
+        $editUrl = $request->url()->replace(["forum_actn" => "edit", "forum_topic" => $tid]);
 
         $this->csrfProtector->store();
         return $this->view->render('topic', [
@@ -126,9 +130,9 @@ class ShowForum
             'tid' => $tid,
             'csrfTokenInput' => $this->csrfProtector->tokenInput(),
             'isUser' => $this->authorizer->isUser(),
-            'replyUrl' => $this->url->replace(["forum_actn" => "edit", "forum_topic" => $tid])->relative(),
-            'deleteUrl' => $this->url->replace(["forum_actn" => "delete"])->relative(),
-            'href' => $this->url->relative(),
+            'replyUrl' => $request->url()->replace(["forum_actn" => "edit", "forum_topic" => $tid])->relative(),
+            'deleteUrl' => $request->url()->replace(["forum_actn" => "delete"])->relative(),
+            'href' => $request->url()->relative(),
             'mayDeleteComment' => function (Comment $comment) {
                 return $this->authorizer->mayModify($comment);
             },

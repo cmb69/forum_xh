@@ -22,6 +22,7 @@
 namespace Forum;
 
 use PHPUnit\Framework\TestCase;
+use Forum\Infra\Request;
 use Forum\Logic\BbCode;
 
 class ShowPreviewTest extends TestCase
@@ -40,9 +41,10 @@ class ShowPreviewTest extends TestCase
 
     public function testRendersBbCodeAndExits(): void
     {
-        $_GET = ['forum_bbcode' => "something"];
         $this->bbCode->method('convert')->willReturn("else");
-        $response = ($this->sut)();
+        $request = $this->createStub(Request::class);
+        $request->method("get")->willReturnMap([["forum_bbcode" => "something"]]);
+        $response = ($this->sut)($request);
         $this->assertEquals("else", $response->output());
         $this->assertTrue($response->exit());
     }

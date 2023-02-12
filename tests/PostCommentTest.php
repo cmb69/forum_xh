@@ -29,6 +29,7 @@ use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Mailer;
+use Forum\Infra\Request;
 use Forum\Infra\Url;
 
 class PostCommentTest extends TestCase
@@ -51,7 +52,6 @@ class PostCommentTest extends TestCase
         $dateFormatter = $this->createStub(DateFormatter::class);
         $this->authorizer = $this->createStub(Authorizer::class);
         $this->sut = new PostComment(
-            new Url("/", "Forum", []),
             XH_includeVar("./config/config.php", 'plugin_cf')['forum'],
             $lang,
             $this->contents,
@@ -64,20 +64,28 @@ class PostCommentTest extends TestCase
 
     public function testCreatesNewTopicAndRedirects(): void
     {
-        $_POST = ['forum_title' => "A new Topic", 'forum_text' => "A comment"];
         $this->contents->method('getId')->willReturn("3456");
         $this->contents->expects($this->once())->method('createComment');
         $this->authorizer->method('isUser')->willReturn(true);
-        $response = ($this->sut)("test");
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url("/", "Forum", []));
+        $request->method("post")->willReturnMap([["forum_title", "A new Topic"], ["forum_text", "A comment"]]);
+        $response = ($this->sut)("test", $request);
         $this->assertEquals("http://example.com/index.php?Forum&forum_topic=3456", $response->location());
     }
 
     public function testUpdatesCommentAndRedirects(): void
     {
-        $_POST = ['forum_topic' => "1234", 'forum_comment' => "3456", 'forum_text' => "A changed comment"];
         $this->contents->method('cleanId')->willReturn("1234");
         $this->authorizer->method('isUser')->willReturn(true);
-        $response = ($this->sut)("test");
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url("/", "Forum", []));
+        $request->method("post")->willReturnMap([
+            ["forum_topic", "1234"],
+            ["forum_comment", "3456"],
+            ["forum_text", "A comment"]
+        ]);
+        $response = ($this->sut)("test", $request);
         $this->assertEquals("http://example.com/index.php?Forum&forum_topic=1234", $response->location());
     }
 }
