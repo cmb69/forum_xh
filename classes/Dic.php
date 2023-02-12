@@ -83,6 +83,18 @@ class Dic
         );
     }
 
+    public static function makeDeleteComment(): DeleteComment
+    {
+        global $pth;
+
+        return new DeleteComment(
+            self::makeUrl(),
+            new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
+            self::makeCsrfProtector(),
+            new Authorizer()
+        );
+    }
+
     public static function makeShowPreview(): ShowPreview
     {
         return new ShowPreview(self::makeBbCode());

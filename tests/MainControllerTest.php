@@ -85,16 +85,6 @@ class MainControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
-    public function testDeleteActionDeletesCommentAndRedirects(): void
-    {
-        $_POST = ['forum_topic' => "1234", 'forum_comment' => "3456"];
-        $this->contents->method('cleanId')->willReturnOnConsecutiveCalls("1234", "3456");
-        $this->contents->expects($this->once())->method('deleteComment');
-        $this->authorizer->method('isUser')->willReturn(true);
-        $response = $this->sut->deleteAction("test");
-        $this->assertEquals("http://example.com/index.php?Forum", $response->location());
-    }
-
     public function testReplyActionRendersCommentForm(): void
     {
         $_GET = ['forum_topic' => "1234"];

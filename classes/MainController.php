@@ -100,20 +100,6 @@ class MainController
         return $response;
     }
 
-    public function deleteAction(string $forum): Response
-    {
-        $this->csrfProtector->check();
-        $tid = $this->contents->cleanId($_POST['forum_topic']);
-        $cid = $this->contents->cleanId($_POST['forum_comment']);
-        $url = $tid && $cid && $this->contents->deleteComment($forum, $tid, $cid, $this->authorizer)
-            ? $this->url->replace(["forum_topic" => $tid])
-            : $this->url;
-        if (isset($_GET['forum_ajax'])) {
-            $url = $url->replace(['forum_ajax' => ""]);
-        }
-        return new Response("", $url->absolute());
-    }
-
     private function renderCommentForm(string $forum, ?string $tid = null, ?string $cid = null): string
     {
         if ($this->authorizer->isVisitor()) {
