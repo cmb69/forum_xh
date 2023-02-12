@@ -31,6 +31,7 @@ use Forum\Infra\DateFormatter;
 use Forum\Infra\Mailer;
 use Forum\Infra\Url;
 use Forum\Infra\View;
+use Forum\Logic\BbCode;
 use Forum\Value\Comment;
 use Forum\Value\Topic;
 
@@ -42,7 +43,7 @@ class MainControllerTest extends TestCase
     /** @var Contents&MockObject */
     private $contents;
 
-    /** @var BBCode&MockObject */
+    /** @var BbCode&MockObject */
     private $bbcode;
 
     /** @var Authorizer&MockObject */
@@ -52,7 +53,7 @@ class MainControllerTest extends TestCase
     {
         $lang = XH_includeVar("./languages/en.php", 'plugin_tx')['forum'];
         $this->contents = $this->createStub(Contents::class);
-        $this->bbcode = $this->createStub(BBCode::class);
+        $this->bbcode = $this->createStub(BbCode::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
         $faRequireCommand = $this->createStub(RequireCommand::class);

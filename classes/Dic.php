@@ -29,6 +29,7 @@ use Forum\Infra\Mailer;
 use Forum\Infra\SystemChecker;
 use Forum\Infra\Url;
 use Forum\Infra\View;
+use Forum\Logic\BbCode;
 
 class Dic
 {
@@ -42,7 +43,7 @@ class Dic
             $plugin_tx['forum'],
             "{$pth['folder']['plugins']}forum/",
             new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
-            new BBCode(
+            new BbCode(
                 $plugin_tx['forum'],
                 "{$pth['folder']['plugins']}forum/images/",
                 $plugin_tx['forum']['title_iframe']

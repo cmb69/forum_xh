@@ -19,13 +19,13 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Forum;
+namespace Forum\Logic;
 
 use PHPUnit\Framework\TestCase;
 
-class BBCodeTest extends TestCase
+class BbCodeTest extends TestCase
 {
-    /** @var BBCode */
+    /** @var BbCode */
     private $bbcode;
 
     protected function setUp(): void
@@ -39,7 +39,7 @@ class BBCodeTest extends TestCase
             'lbl_surprised' => 'surprised',
             'lbl_unhappy' => 'unhappy'
         );
-        $this->bbcode = new BBCode($lang, './', "External <content>");
+        $this->bbcode = new BbCode($lang, './', "External <content>");
     }
 
     /** @dataProvider dataForConversion */

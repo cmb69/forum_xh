@@ -19,11 +19,11 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Forum;
+namespace Forum\Logic;
 
 use function XH_hsc;
 
-class BBCode
+class BbCode
 {
     /** @var array<string,string> */
     private $lang;

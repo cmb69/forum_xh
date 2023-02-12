@@ -29,6 +29,7 @@ use Forum\Infra\Mailer;
 use Forum\Infra\Response;
 use Forum\Infra\Url;
 use Forum\Infra\View;
+use Forum\Logic\BbCode;
 use Forum\Value\Comment;
 use Forum\Value\Topic;
 
@@ -49,7 +50,7 @@ class MainController
     /** @var Contents */
     private $contents;
 
-    /** @var BBCode */
+    /** @var BbCode */
     private $bbcode;
 
     /** @var CSRFProtection */
@@ -80,7 +81,7 @@ class MainController
         array $lang,
         string $pluginFolder,
         Contents $contents,
-        BBCode $bbcode,
+        BbCode $bbcode,
         CSRFProtection $csrfProtector,
         View $view,
         FaRequireCommand $faRequireCommand,
