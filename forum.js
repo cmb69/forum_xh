@@ -141,14 +141,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         function preview() {
             var request = new XMLHttpRequest;
-            request.open("POST", this.getAttribute("data-url"), true);
+            request.open("GET", this.getAttribute("data-url") + "&forum_bbcode=" + encodeURIComponent(textarea.value), true);
             request.onload = (function () {
                 if (this.status >= 200 && this.status < 300) {
                     form.getElementsByClassName("forum_preview_container")[0].innerHTML = this.response;
                 }
             });
-            request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-            request.send("data=" + encodeURIComponent(textarea.value));
+            request.send();
         }
 
         var commands = {

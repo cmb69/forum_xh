@@ -313,6 +313,6 @@ class MainController
 
     public function previewAction(): Response
     {
-        return new Response($this->bbcode->convert($_POST['data']), null, true);
+        return new Response($this->bbcode->convert($_GET['forum_bbcode']), null, true);
     }
 }
