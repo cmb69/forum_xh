@@ -23,6 +23,7 @@ namespace Forum;
 
 use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
+use Forum\Infra\Authorizer;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Session;
 use Forum\Infra\View;
@@ -96,8 +97,8 @@ class Plugin
             new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
             new FaRequireCommand(),
             new MailService($plugin_cf['forum']),
-            new Session(),
-            new DateFormatter()
+            new DateFormatter(),
+            new Authorizer()
         );
         $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'default';
         $action .= 'Action';

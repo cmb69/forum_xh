@@ -25,6 +25,7 @@ use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStream;
+use Forum\Infra\Authorizer;
 use Forum\Value\Comment;
 use Forum\Value\Topic;
 
@@ -78,7 +79,9 @@ class ContentsTest extends TestCase
         $actual = $this->getComment($this->forum, $tid, $cid);
         $this->assertEquals($comment, $actual);
 
-        $this->contents->deleteComment($this->forum, $tid, $cid, $user);
+        $authorizer = $this->createStub(Authorizer::class);
+        $authorizer->method('mayModify')->willReturn(true);
+        $this->contents->deleteComment($this->forum, $tid, $cid, $authorizer);
 
         $actual = $this->getComment($this->forum, $tid, $cid);
         $this->assertEmpty($actual);
@@ -99,7 +102,9 @@ class ContentsTest extends TestCase
         $comment2 = new Comment($user2, 2, 'bar');
         $this->contents->createComment($this->forum, $tid, $title, $cid2, $comment2);
 
-        $this->contents->deleteComment($this->forum, $tid, $cid1, $user1);
+        $authorizer = $this->createStub(Authorizer::class);
+        $authorizer->method('mayModify')->willReturn(true);
+        $this->contents->deleteComment($this->forum, $tid, $cid1, $authorizer);
 
         $expected = new Topic($title, 1, $user2, 2);
         $this->assertEquals($expected, $this->contents->getSortedTopics($this->forum)[$tid]);

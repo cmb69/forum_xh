@@ -23,6 +23,7 @@ namespace Forum;
 
 use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
+use Forum\Infra\Authorizer;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Session;
 use Forum\Infra\View;
@@ -64,11 +65,11 @@ class MainController
     /** @var MailService */
     private $mailService;
 
-    /** @var Session */
-    private $session;
-
     /** @var DateFormatter */
     private $dateFormatter;
+
+    /** @var Authorizer */
+    private $authorizer;
 
     /**
      * @param array<string,string> $config
@@ -86,8 +87,8 @@ class MainController
         View $view,
         FaRequireCommand $faRequireCommand,
         MailService $mailService,
-        Session $session,
-        DateFormatter $dateFormatter
+        DateFormatter $dateFormatter,
+        Authorizer $authorizer
     ) {
         $this->forum = $forum;
         $this->url = $url;
@@ -100,8 +101,8 @@ class MainController
         $this->view = $view;
         $this->faRequireCommand = $faRequireCommand;
         $this->mailService = $mailService;
-        $this->session = $session;
         $this->dateFormatter = $dateFormatter;
+        $this->authorizer = $authorizer;
     }
 
     public function defaultAction(): Response
@@ -122,7 +123,7 @@ class MainController
     {
         $topics = $this->contents->getSortedTopics($forum);
         return $this->view->render('topics', [
-            'isUser' => $this->user() !== false,
+            'isUser' => $this->authorizer->isUser(),
             'href' => $this->url->replace(["forum_actn" => "new"])->relative(),
             'topics' => $topics,
             'topicUrl' => function ($tid) {
@@ -146,11 +147,11 @@ class MainController
             'topic' => $topic,
             'tid' => $tid,
             'csrfTokenInput' => $this->csrfProtector->tokenInput(),
-            'isUser' => $this->user() !== false,
+            'isUser' => $this->authorizer->isUser(),
             'replyUrl' => $this->url->replace(["forum_actn" => "reply", "forum_topic" => $tid])->relative(),
             'href' => $this->url->relative(),
             'mayDeleteComment' => function (Comment $comment) {
-                return defined('XH_ADM') && XH_ADM || $comment->user() == $this->user();
+                return $this->authorizer->mayModify($comment);
             },
             'commentDate' => function (Comment $comment) {
                 return $this->dateFormatter->format($comment->time());
@@ -188,7 +189,7 @@ class MainController
     private function postComment(string $forum, ?string $tid = null, ?string $cid = null)
     {
         if (!isset($tid) && empty($_POST['forum_title'])
-            || ($this->user() === false && !(defined('XH_ADM') && XH_ADM)) || empty($_POST['forum_text'])
+            || $this->authorizer->isVisitor() || empty($_POST['forum_text'])
         ) {
             return false;
         }
@@ -199,7 +200,7 @@ class MainController
             return false;
         }
 
-        $comment = new Comment($this->user(), time(), $_POST['forum_text']);
+        $comment = new Comment($this->authorizer->username(), time(), $_POST['forum_text']);
         if (!isset($cid)) {
             $cid = $this->contents->getId();
             $title = isset($_POST['forum_title'])
@@ -211,7 +212,7 @@ class MainController
             $subject = $this->lang['mail_subject_edit'];
         }
 
-        if (!(defined('XH_ADM') && XH_ADM) && $this->config['mail_address']) {
+        if (!$this->authorizer->isAdmin() && $this->config['mail_address']) {
             $url = $this->url->replace(["forum_topic" => $tid])->absolute();
             $date = $this->dateFormatter->format($comment->time());
             $attribution = sprintf($this->lang['mail_attribution'], $comment->user(), $date);
@@ -242,8 +243,7 @@ class MainController
         $this->csrfProtector->check();
         $tid = $this->contents->cleanId($_POST['forum_topic']);
         $cid = $this->contents->cleanId($_POST['forum_comment']);
-        $user = defined('XH_ADM') && XH_ADM ? true : $this->user();
-        $url = $tid && $cid && $this->contents->deleteComment($this->forum, $tid, $cid, $user)
+        $url = $tid && $cid && $this->contents->deleteComment($this->forum, $tid, $cid, $this->authorizer)
             ? $this->url->replace(["forum_topic" => $tid])
             : $this->url;
         return new Response("", $url->absolute());
@@ -251,7 +251,7 @@ class MainController
 
     private function renderCommentForm(string $forum, ?string $tid = null, ?string $cid = null): string
     {
-        if ($this->user() === false && (!defined('XH_ADM') || !XH_ADM)) {
+        if ($this->authorizer->isVisitor()) {
             return "";
         }
         $this->faRequireCommand->execute();
@@ -259,7 +259,7 @@ class MainController
         $comment = '';
         if ($tid !== null && $cid !== null) {
             $topics = $this->contents->getTopic($forum, $tid);
-            if ($topics[$cid]->user() == $this->user() || (defined('XH_ADM') && XH_ADM)) {
+            if ($this->authorizer->mayModify($topics[$cid])) {
                 $comment = $topics[$cid]->comment();
             }
             //$newTopic = true; // FIXME: hack to force overview link to be shown
@@ -310,20 +310,6 @@ class MainController
             $texts[strtoupper($key)] = $this->lang['msg_' . $key];
         }
         return $texts;
-    }
-
-    /** @return string|false */
-    private function user()
-    {
-        $name = $this->session->get('Name');
-        if ($name !== null) {
-            return $name;
-        }
-        $name = $this->session->get('username');
-        if ($name !== null) {
-            return $name;
-        }
-        return false;
     }
 
     public function replyAction(): Response

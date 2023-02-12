@@ -12,8 +12,8 @@ require_once "../fa/classes/RequireCommand.php";
 require_once "./classes/value/Comment.php";
 require_once "./classes/value/Topic.php";
 
+require_once "./classes/infra/Authorizer.php";
 require_once "./classes/infra/DateFormatter.php";
-require_once "./classes/infra/Session.php";
 require_once "./classes/infra/View.php";
 require_once "./classes/infra/SystemChecker.php";
 

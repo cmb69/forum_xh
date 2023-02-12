@@ -21,9 +21,42 @@
 
 namespace Forum\Infra;
 
-class Session
+use Forum\Value\Comment;
+
+class Authorizer
 {
-    public function get(string $key): ?string
+    public function isAdmin(): bool
+    {
+        return defined('XH_ADM') && XH_ADM;
+    }
+
+    public function isUser(): bool
+    {
+        return $this->get('Name') || $this->get('username');
+    }
+
+    public function isVisitor(): bool
+    {
+        return !($this->isAdmin() || $this->isUser());
+    }
+
+    public function username(): string
+    {
+        if ($this->get('Name')) {
+            return $this->get('Name');
+        }
+        if ($this->get('username')) {
+            return $this->get('username');
+        }
+        return "";
+    }
+
+    public function mayModify(Comment $comment): bool
+    {
+        return $this->isAdmin() || $comment->user() === $this->username();
+    }
+
+    private function get(string $key): ?string
     {
         XH_startSession();
         return isset($_SESSION[$key]) ? $_SESSION[$key] : null;

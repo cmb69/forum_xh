@@ -26,8 +26,8 @@ use PHPUnit\Framework\TestCase;
 
 use XH\CSRFProtection as CsrfProtector;
 use Fa\RequireCommand;
+use Forum\Infra\Authorizer;
 use Forum\Infra\DateFormatter;
-use Forum\Infra\Session;
 use Forum\Infra\View;
 use Forum\Value\Comment;
 use Forum\Value\Topic;
@@ -43,8 +43,8 @@ class MainControllerTest extends TestCase
     /** @var BBCode&MockObject */
     private $bbcode;
 
-    /** @var Session&MockObject */
-    private $session;
+    /** @var Authorizer&MockObject */
+    private $authorizer;
 
     public function setUp(): void
     {
@@ -55,8 +55,8 @@ class MainControllerTest extends TestCase
         $view = new View("./views/", $lang);
         $faRequireCommand = $this->createStub(RequireCommand::class);
         $mailService = $this->createStub(MailService::class);
-        $this->session = $this->createStub(Session::class);
         $dateFormatter = $this->createStub(DateFormatter::class);
+        $this->authorizer = $this->createStub(Authorizer::class);
         $this->sut = new MainController(
             "test",
             new Url("/", "Forum", []),
@@ -69,8 +69,8 @@ class MainControllerTest extends TestCase
             $view,
             $faRequireCommand,
             $mailService,
-            $this->session,
-            $dateFormatter
+            $dateFormatter,
+            $this->authorizer
         );
     }
 
@@ -93,7 +93,7 @@ class MainControllerTest extends TestCase
 
     public function testNewActionRendersCommentForm(): void
     {
-        $this->session->method('get')->willReturn("cmb");
+        $this->authorizer->method('isUser')->willReturn(true);
         $response = $this->sut->newAction();
         Approvals::verifyHtml($response->output());
     }
@@ -103,7 +103,7 @@ class MainControllerTest extends TestCase
         $_POST = ['forum_title' => "A new Topic", 'forum_text' => "A comment"];
         $this->contents->method('getId')->willReturn("3456");
         $this->contents->expects($this->once())->method('createComment');
-        $this->session->method('get')->willReturn("cmb");
+        $this->authorizer->method('isUser')->willReturn(true);
         $response = $this->sut->postAction();
         $this->assertEquals("http://example.com/index.php?Forum&forum_topic=3456", $response->location());
     }
@@ -112,7 +112,7 @@ class MainControllerTest extends TestCase
     {
         $_POST = ['forum_topic' => "1234", 'forum_comment' => "3456", 'forum_text' => "A changed comment"];
         $this->contents->method('cleanId')->willReturn("1234");
-        $this->session->method('get')->willReturn("cmb");
+        $this->authorizer->method('isUser')->willReturn(true);
         $response = $this->sut->postAction();
         $this->assertEquals("http://example.com/index.php?Forum&forum_topic=1234", $response->location());
     }
@@ -122,7 +122,8 @@ class MainControllerTest extends TestCase
         $_GET = ['forum_topic' => "1234", 'forum_comment' => "3456"];
         $this->contents->method('cleanId')->willReturnOnConsecutiveCalls("1234", "3456");
         $this->contents->method('getTopic')->willReturn(["3456" => $this->comment()]);
-        $this->session->method('get')->willReturn("cmb");
+        $this->authorizer->method('isUser')->willReturn(true);
+        $this->authorizer->method('mayModify')->willReturn(true);
         $response = $this->sut->editAction();
         Approvals::verifyHtml($response->output());
     }
@@ -132,7 +133,7 @@ class MainControllerTest extends TestCase
         $_POST = ['forum_topic' => "1234", 'forum_comment' => "3456"];
         $this->contents->method('cleanId')->willReturnOnConsecutiveCalls("1234", "3456");
         $this->contents->expects($this->once())->method('deleteComment');
-        $this->session->method('get')->willReturn("cmb");
+        $this->authorizer->method('isUser')->willReturn(true);
         $response = $this->sut->deleteAction();
         $this->assertEquals("http://example.com/index.php?Forum", $response->location());
     }
@@ -141,7 +142,7 @@ class MainControllerTest extends TestCase
     {
         $_GET = ['forum_topic' => "1234"];
         $this->contents->method('cleanId')->willReturn("1234");
-        $this->session->method('get')->willReturn("cmb");
+        $this->authorizer->method('isUser')->willReturn(true);
         $response = $this->sut->replyAction();
         Approvals::verifyHtml($response->output());
     }

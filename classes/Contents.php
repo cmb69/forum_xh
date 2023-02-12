@@ -21,6 +21,7 @@
 
 namespace Forum;
 
+use Forum\Infra\Authorizer;
 use Forum\Value\Comment;
 use Forum\Value\Topic;
 
@@ -227,11 +228,8 @@ class Contents
         $this->lock($forum, LOCK_UN);
     }
 
-    /**
-     * @param string|bool $user
-     * @return string|null|false
-     */
-    public function deleteComment(string $forum, string $tid, string $cid, $user)
+    /** @return string|null|false */
+    public function deleteComment(string $forum, string $tid, string $cid, Authorizer $authorizer)
     {
         if (!$tid || !$cid) {
             return false;
@@ -239,7 +237,7 @@ class Contents
         $this->lock($forum, LOCK_EX);
         $topics = $this->getTopics($forum);
         $comments = $this->getTopic($forum, $tid);
-        if (!($user === true || $user == $comments[$cid]->user())) {
+        if (!$authorizer->mayModify($comments[$cid])) {
             return false;
         }
         unset($comments[$cid]);
