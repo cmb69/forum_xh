@@ -11,6 +11,7 @@ use Forum\Value\Comment;
  * @var string $csrfTokenInput
  * @var bool $isUser
  * @var string $replyUrl
+ * @var string $deleteUrl
  * @var string $href
  * @var callable $mayDeleteComment
  * @var callable $commentDate
@@ -24,9 +25,8 @@ use Forum\Value\Comment;
 <?php foreach ($topic as $cid => $comment):?>
     <div>
 <?php   if ($mayDeleteComment($comment)):?>
-      <form class="forum_delete" action="<?=$this->esc($href)?>" method="POST" data-message="<?=$this->text('msg_confirm_delete')?>">
+      <form class="forum_delete" action="<?=$this->esc($deleteUrl)?>" method="POST" data-message="<?=$this->text('msg_confirm_delete')?>">
       <?=$this->raw($csrfTokenInput)?>
-        <input type="hidden" name="forum_actn" value="delete">
         <input type="hidden" name="forum_topic" value="<?=$this->esc($tid)?>">
         <input type="hidden" name="forum_comment" value="<?=$this->esc($cid)?>">
         <button title="<?=$this->text('lbl_delete')?>"><i class="fa fa-trash"></i></button>

@@ -146,6 +146,7 @@ class MainController
             'csrfTokenInput' => $this->csrfProtector->tokenInput(),
             'isUser' => $this->authorizer->isUser(),
             'replyUrl' => $this->url->replace(["forum_actn" => "reply", "forum_topic" => $tid])->relative(),
+            'deleteUrl' => $this->url->replace(["forum_actn" => "delete"])->relative(),
             'href' => $this->url->relative(),
             'mayDeleteComment' => function (Comment $comment) {
                 return $this->authorizer->mayModify($comment);

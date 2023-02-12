@@ -33,7 +33,7 @@ function forum(string $forum)
         return XH_message('fail', $ptx['msg_invalid_name'], $forum);
     }
     $controller = Dic::makeMainController();
-    $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'default';
+    $action = isset($_GET['forum_actn']) ? $_GET['forum_actn'] : 'default';
     $action .= 'Action';
     if (!is_callable([$controller, $action])) {
         $action = 'defaultAction';
