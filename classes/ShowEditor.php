@@ -29,7 +29,7 @@ use Forum\Infra\Response;
 use Forum\Infra\Url;
 use Forum\Infra\View;
 
-class MainController
+class ShowEditor
 {
     /** @var Url */
     private $url;
@@ -78,7 +78,7 @@ class MainController
         $this->authorizer = $authorizer;
     }
 
-    public function editAction(string $forum): Response
+    public function __invoke(string $forum): Response
     {
         $tid = $this->contents->cleanId($_GET['forum_topic'] ?? "");
         $cid = $this->contents->cleanId($_GET['forum_comment'] ?? "");

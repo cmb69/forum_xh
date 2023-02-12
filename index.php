@@ -33,21 +33,15 @@ function forum(string $forum)
         return XH_message('fail', $ptx['msg_invalid_name'], $forum);
     }
     switch ($_GET['forum_actn'] ?? "") {
-        case "default":
-        case "":
+        default:
             return Dic::makeShowForum()($forum)->fire();
         case "delete":
             return Dic::makeDeleteComment()($forum)->fire();
+        case "edit":
+            return Dic::makeShowEditor()($forum)->fire();
         case "post":
             return Dic::makePostComment()($forum)->fire();
         case "preview":
             return Dic::makeShowPreview()()->fire();
     }
-    $controller = Dic::makeMainController();
-    $action = $_GET['forum_actn'] ?? 'default';
-    $action .= 'Action';
-    if (!is_callable([$controller, $action])) {
-        $action = 'defaultAction';
-    }
-    return $controller->{$action}($forum)->fire();
 }

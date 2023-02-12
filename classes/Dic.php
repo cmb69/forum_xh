@@ -34,22 +34,6 @@ use Forum\Logic\BbCode;
 
 class Dic
 {
-    public static function makeMainController(): MainController
-    {
-        global $pth, $plugin_tx;
-
-        return new MainController(
-            self::makeUrl(),
-            $plugin_tx['forum'],
-            "{$pth['folder']['plugins']}forum/",
-            new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
-            self::makeCsrfProtector(),
-            new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
-            new FaRequireCommand(),
-            new Authorizer()
-        );
-    }
-
     public static function makeShowForum(): ShowForum
     {
         global $pth, $plugin_tx;
@@ -63,6 +47,22 @@ class Dic
             new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
             new FaRequireCommand(),
             new DateFormatter(),
+            new Authorizer()
+        );
+    }
+
+    public static function makeShowEditor(): ShowEditor
+    {
+        global $pth, $plugin_tx;
+
+        return new ShowEditor(
+            self::makeUrl(),
+            $plugin_tx['forum'],
+            "{$pth['folder']['plugins']}forum/",
+            new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
+            self::makeCsrfProtector(),
+            new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
+            new FaRequireCommand(),
             new Authorizer()
         );
     }

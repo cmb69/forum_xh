@@ -34,7 +34,7 @@ use Forum\Infra\Url;
 use Forum\Infra\View;
 use Forum\Value\Comment;
 
-class MainControllerTest extends TestCase
+class ShowEditorTest extends TestCase
 {
     /** @var MainController */
     private $sut;
@@ -52,10 +52,8 @@ class MainControllerTest extends TestCase
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
         $faRequireCommand = $this->createStub(RequireCommand::class);
-        $mailer = $this->createStub(Mailer::class);
-        $dateFormatter = $this->createStub(DateFormatter::class);
         $this->authorizer = $this->createStub(Authorizer::class);
-        $this->sut = new MainController(
+        $this->sut = new ShowEditor(
             new Url("/", "Forum", []),
             $lang,
             "./",
@@ -67,30 +65,30 @@ class MainControllerTest extends TestCase
         );
     }
 
-    public function testEditActionRendersCommentFormForNewPost(): void
+    public function testRendersCommentFormForNewPost(): void
     {
         $this->authorizer->method('isUser')->willReturn(true);
-        $response = $this->sut->editAction("test");
+        $response = ($this->sut)("test");
         Approvals::verifyHtml($response->output());
     }
 
-    public function testEditActionRendersCommentForm(): void
+    public function testRendersCommentForm(): void
     {
         $_GET = ['forum_topic' => "1234", 'forum_comment' => "3456"];
         $this->contents->method('cleanId')->willReturnOnConsecutiveCalls("1234", "3456");
         $this->contents->method('getTopic')->willReturn(["3456" => $this->comment()]);
         $this->authorizer->method('isUser')->willReturn(true);
         $this->authorizer->method('mayModify')->willReturn(true);
-        $response = $this->sut->editAction("test");
+        $response = ($this->sut)("test");
         Approvals::verifyHtml($response->output());
     }
 
-    public function testEditActionRendersCommentFormForReply(): void
+    public function testRendersCommentFormForReply(): void
     {
         $_GET = ['forum_topic' => "1234"];
         $this->contents->method('cleanId')->willReturnOnConsecutiveCalls("1234", null);
         $this->authorizer->method('isUser')->willReturn(true);
-        $response = $this->sut->editAction("test");
+        $response = ($this->sut)("test");
         Approvals::verifyHtml($response->output());
     }
 
