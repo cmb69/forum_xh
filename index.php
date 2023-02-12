@@ -35,19 +35,19 @@ function forum(string $forum)
     $controller = Dic::makeMainController();
     $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'default';
     $action .= 'Action';
-    if (method_exists($controller, $action)) {
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
-            header('X-Location: ' . CMSIMPLE_URL . "?{$_SERVER['QUERY_STRING']}");
-            while (ob_get_level()) {
-                ob_end_clean();
-            }
-            $controller->{$action}($forum)->fire();
-            exit;
-        } else {
-            ob_start();
-            $controller->{$action}($forum)->fire();
-            return (string) ob_get_clean();
-        }
+    if (!is_callable([$controller, $action])) {
+        $action = 'defaultAction';
     }
-    return "";
+    if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+        header('X-Location: ' . CMSIMPLE_URL . "?{$_SERVER['QUERY_STRING']}");
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        $controller->{$action}($forum)->fire();
+        exit;
+    } else {
+        ob_start();
+        $controller->{$action}($forum)->fire();
+        return (string) ob_get_clean();
+    }
 }
