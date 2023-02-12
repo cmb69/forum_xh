@@ -19,4 +19,35 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-\Forum\Plugin::run();
+use Forum\Dic;
+
+const FORUM_VERSION = "1.0beta5";
+
+/** @return string|never */
+function forum(string $forum)
+{
+    global $plugin_tx;
+
+    $ptx = $plugin_tx['forum'];
+    if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
+        return XH_message('fail', $ptx['msg_invalid_name'], $forum);
+    }
+    $controller = Dic::makeMainController();
+    $action = isset($_REQUEST['forum_actn']) ? $_REQUEST['forum_actn'] : 'default';
+    $action .= 'Action';
+    if (method_exists($controller, $action)) {
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+            header('X-Location: ' . CMSIMPLE_URL . "?{$_SERVER['QUERY_STRING']}");
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
+            $controller->{$action}($forum)->fire();
+            exit;
+        } else {
+            ob_start();
+            $controller->{$action}($forum)->fire();
+            return (string) ob_get_clean();
+        }
+    }
+    return "";
+}

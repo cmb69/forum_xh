@@ -2,6 +2,8 @@
 
 const CMSIMPLE_URL = "http://example.com/index.php";
 
+const FORUM_VERSION = "1.0beta5";
+
 require_once './vendor/autoload.php';
 
 require_once "../../cmsimple/classes/CSRFProtection.php";
@@ -22,6 +24,5 @@ require_once './classes/BBCode.php';
 require_once './classes/Contents.php';
 require_once "./classes/InfoController.php";
 require_once "./classes/MainController.php";
-require_once "./classes/Plugin.php";
 require_once "./classes/Response.php";
 require_once "./classes/Url.php";

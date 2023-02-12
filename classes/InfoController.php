@@ -63,7 +63,7 @@ class InfoController
     public function defaultAction(): string
     {
         return $this->view->render('info', [
-            'version' => Plugin::VERSION,
+            'version' => FORUM_VERSION,
             'checks' => $this->getChecks(),
         ]);
     }
