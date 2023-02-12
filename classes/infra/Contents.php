@@ -29,9 +29,6 @@ class Contents
     /** @var string */
     private $dataFolder;
 
-    /** @var array<string,resource> */
-    private $lockHandles = array();
-
     public function __construct(string $dataFolder)
     {
         if (substr($dataFolder, -1) != '/') {
@@ -60,23 +57,24 @@ class Contents
         return $filename;
     }
 
-    /** @return void */
-    private function lock(string $forum, int $op)
+    /** @return resource */
+    private function lock(string $forum, bool $exclusive)
     {
         $filename = $this->dataFolder($forum) . '.lock';
         touch($filename);
-        switch ($op) {
-            case LOCK_SH:
-            case LOCK_EX:
-                $this->lockHandles[$forum] = fopen($filename, 'r+b');
-                flock($this->lockHandles[$forum], $op);
-                break;
-            case LOCK_UN:
-                flock($this->lockHandles[$forum], $op);
-                fclose($this->lockHandles[$forum]);
-                unset($this->lockHandles[$forum]);
-                break;
-        }
+        $stream = fopen($filename, 'r+b');
+        flock($stream, $exclusive ? LOCK_EX : LOCK_SH);
+        return $stream;
+    }
+
+    /**
+     * @param resource $stream
+     * @return void
+     */
+    private function unlock($stream)
+    {
+        flock($stream, LOCK_UN);
+        fclose($stream);
     }
 
     /** @return array<string,Topic> */
@@ -169,9 +167,9 @@ class Contents
     /** @return array<string,Topic> */
     public function getSortedTopics(string $forum): array
     {
-        $this->lock($forum, LOCK_SH);
+        $lock = $this->lock($forum, false);
         $topics = $this->getTopics($forum);
-        $this->lock($forum, LOCK_UN);
+        $this->unlock($lock);
         uasort($topics, function ($a, $b) {
             return $b->time() - $a->time();
         });
@@ -181,17 +179,17 @@ class Contents
     /** @return array{0:string,1:array<string,Comment>} */
     public function getTopicWithTitle(string $forum, string $tid): array
     {
-        $this->lock($forum, LOCK_SH);
+        $lock = $this->lock($forum, false);
         $topics = $this->getTopics($forum);
         $topic = $this->getTopic($forum, $tid);
-        $this->lock($forum, LOCK_UN);
+        $this->unlock($lock);
         return array($topics[$tid]->title(), $topic);
     }
 
     /** @return void */
     public function createComment(string $forum, string $tid, ?string $title, string $cid, Comment $comment)
     {
-        $this->lock($forum, LOCK_EX);
+        $lock = $this->lock($forum, true);
 
         $comments = $this->getTopic($forum, $tid);
         $comments[$cid] = $comment;
@@ -206,24 +204,24 @@ class Contents
         );
         $this->setTopics($forum, $topics);
 
-        $this->lock($forum, LOCK_UN);
+        $this->unlock($lock);
     }
 
     /** @return void */
     public function updateComment(string $forum, string $tid, string $cid, Comment $comment)
     {
-        $this->lock($forum, LOCK_EX);
+        $lock = $this->lock($forum, true);
 
         $comments = $this->getTopic($forum, $tid);
         if ($comment->user() != $comments[$cid]->user() && !(defined('XH_ADM') && XH_ADM)) {
-            $this->lock($forum, LOCK_UN);
+            $this->unlock($lock);
             return; // TODO throw exception
         }
         $newComment = new Comment($comment->user(), $comments[$cid]->time(), $comment->comment());
         $comments[$cid] = $newComment;
         $this->setTopic($forum, $tid, $comments);
 
-        $this->lock($forum, LOCK_UN);
+        $this->unlock($lock);
     }
 
     public function deleteComment(string $forum, string $tid, string $cid, Authorizer $authorizer): ?string
@@ -231,7 +229,7 @@ class Contents
         if (!$tid || !$cid) {
             return null;
         }
-        $this->lock($forum, LOCK_EX);
+        $lock = $this->lock($forum, true);
         $topics = $this->getTopics($forum);
         $comments = $this->getTopic($forum, $tid);
         if (!$authorizer->mayModify($comments[$cid])) {
@@ -249,7 +247,7 @@ class Contents
             $tid = null;
         }
         $this->setTopics($forum, $topics);
-        $this->lock($forum, LOCK_UN);
+        $this->unlock($lock);
         return $tid;
     }
 }
