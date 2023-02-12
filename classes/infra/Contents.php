@@ -94,9 +94,10 @@ class Contents
         } else {
             $data = array();
         }
+        assert(is_array($data));
         $topics = [];
         foreach ($data as $tid => $topic) {
-            assert(is_string($tid));
+            assert(is_string($tid) && is_array($topic));
             $topics[$tid] = new Topic(...array_values($topic));
         }
         return $topics;
@@ -135,9 +136,10 @@ class Contents
         } else {
             $data = array();
         }
+        assert(is_array($data));
         $topic = [];
         foreach ($data as $cid => $comment) {
-            assert(is_string($cid));
+            assert(is_string($cid) && is_array($comment));
             $topic[$cid] = new Comment(...array_values($comment));
         }
         return $topic;
