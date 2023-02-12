@@ -43,15 +43,9 @@ class Contents
         if (isset($forum)) {
             $filename .= $forum . '/';
         }
-        if (file_exists($filename)) {
-            if (!is_dir($filename)) {
-                e('cntopen', 'folder', $filename); // exception
-            }
-        } else {
+        if (!file_exists($filename)) {
             if (mkdir($filename, 0777, true)) {
                 chmod($filename, 0777);
-            } else {
-                e('cntsave', 'folder', $filename); // exception
             }
         }
         return $filename;
@@ -105,18 +99,15 @@ class Contents
 
     /**
      * @param array<string,Topic> $topics
-     * @return void
      */
-    private function setTopics(string $forum, array $topics)
+    private function setTopics(string $forum, array $topics): bool
     {
         $data = [];
         foreach ($topics as $tid => $topic) {
             $data[$tid] = $topic->toArray();
         }
         $filename = $this->dataFolder($forum) . 'topics.dat';
-        if (!file_put_contents($filename, serialize($data))) {
-            e('cntsave', 'file', $filename); // throw exeption
-        }
+        return file_put_contents($filename, serialize($data)) !== false;
     }
 
     public function hasTopic(string $forum, string $tid): bool
@@ -147,9 +138,8 @@ class Contents
 
     /**
      * @param array<string,Comment> $topic
-     * @return void
      */
-    private function setTopic(string $forum, string $tid, array $topic)
+    private function setTopic(string $forum, string $tid, array $topic): bool
     {
         $data = [];
         foreach ($topic as $cid => $comment) {
@@ -157,9 +147,7 @@ class Contents
         }
         $filename = $this->dataFolder($forum) . $tid . '.dat';
         $contents = serialize($data);
-        if (!file_put_contents($filename, $contents)) {
-            e('cntsave', 'file', $filename); // exception
-        }
+        return file_put_contents($filename, $contents) !== false;
     }
 
     public function getId(): string
@@ -194,15 +182,15 @@ class Contents
         return array($topics[$tid]->title(), $topic);
     }
 
-    /** @return void */
-    public function createComment(string $forum, string $tid, ?string $title, string $cid, Comment $comment)
+    public function createComment(string $forum, string $tid, ?string $title, string $cid, Comment $comment): bool
     {
         $lock = $this->lock($forum, true);
-
         $comments = $this->getTopic($forum, $tid);
         $comments[$cid] = $comment;
-        $this->setTopic($forum, $tid, $comments);
-
+        if (!$this->setTopic($forum, $tid, $comments)) {
+            $this->unlock($lock);
+            return false;
+        }
         $topics = $this->getTopics($forum);
         $topics[$tid] = new Topic(
             $title !== null ? $title : $topics[$tid]->title(),
@@ -210,26 +198,24 @@ class Contents
             $comment->user(),
             $comment->time()
         );
-        $this->setTopics($forum, $topics);
-
+        $res = $this->setTopics($forum, $topics);
         $this->unlock($lock);
+        return $res;
     }
 
-    /** @return void */
-    public function updateComment(string $forum, string $tid, string $cid, Comment $comment)
+    public function updateComment(string $forum, string $tid, string $cid, Comment $comment): bool
     {
         $lock = $this->lock($forum, true);
-
         $comments = $this->getTopic($forum, $tid);
         if ($comment->user() != $comments[$cid]->user() && !(defined('XH_ADM') && XH_ADM)) {
             $this->unlock($lock);
-            return; // TODO throw exception
+            return false;
         }
         $newComment = new Comment($comment->user(), $comments[$cid]->time(), $comment->comment());
         $comments[$cid] = $newComment;
-        $this->setTopic($forum, $tid, $comments);
-
+        $res = $this->setTopic($forum, $tid, $comments);
         $this->unlock($lock);
+        return $res;
     }
 
     public function deleteComment(string $forum, string $tid, string $cid, Authorizer $authorizer): ?string
@@ -245,7 +231,10 @@ class Contents
         }
         unset($comments[$cid]);
         if (count($comments) > 0) {
-            $this->setTopic($forum, $tid, $comments);
+            if (!$this->setTopic($forum, $tid, $comments)) {
+                $this->unlock($lock);
+                return null;
+            }
             $comment = array_pop($comments);
             $topic = new Topic($topics[$tid]->title(), count($comments) + 1, $comment->user(), $comment->time());
             $topics[$tid] = $topic;
@@ -254,8 +243,8 @@ class Contents
             unset($topics[$tid]);
             $tid = null;
         }
-        $this->setTopics($forum, $topics);
+        $res = $this->setTopics($forum, $topics);
         $this->unlock($lock);
-        return $tid;
+        return $res ? $tid : null;
     }
 }
