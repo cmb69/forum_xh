@@ -73,10 +73,7 @@ class Dic
     {
         global $_XH_csrfProtection;
 
-        if (isset($_XH_csrfProtection)) {
-            return $_XH_csrfProtection;
-        }
-        return new CsrfProtector('forum_token');
+        return $_XH_csrfProtection ?? new CsrfProtector('forum_token');
     }
 
     private static function makeUrl(): Url

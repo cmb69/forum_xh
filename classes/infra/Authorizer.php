@@ -59,6 +59,6 @@ class Authorizer
     private function get(string $key): ?string
     {
         XH_startSession();
-        return isset($_SESSION[$key]) ? $_SESSION[$key] : null;
+        return $_SESSION[$key] ?? null;
     }
 }

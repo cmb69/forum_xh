@@ -175,7 +175,7 @@ class MainController
     public function postAction(string $forum): Response
     {
         $this->csrfProtector->check();
-        $forumtopic = isset($_POST['forum_topic']) ? $_POST['forum_topic'] : null;
+        $forumtopic = $_POST['forum_topic'] ?? null;
         if (!empty($_POST['forum_comment'])) {
             $tid = $this->postComment($forum, $forumtopic, $_POST['forum_comment']);
         } else {
@@ -203,8 +203,7 @@ class MainController
         $comment = new Comment($this->authorizer->username(), time(), $_POST['forum_text']);
         if (!isset($cid)) {
             $cid = $this->contents->getId();
-            $title = isset($_POST['forum_title'])
-                ? $_POST['forum_title'] : null;
+            $title = $_POST['forum_title'] ?? null;
             $this->contents->createComment($forum, $tid, $title, $cid, $comment);
             $subject = $this->lang['mail_subject_new'];
         } else {

@@ -33,12 +33,12 @@ function forum(string $forum)
         return XH_message('fail', $ptx['msg_invalid_name'], $forum);
     }
     $controller = Dic::makeMainController();
-    $action = isset($_GET['forum_actn']) ? $_GET['forum_actn'] : 'default';
+    $action = $_GET['forum_actn'] ?? 'default';
     $action .= 'Action';
     if (!is_callable([$controller, $action])) {
         $action = 'defaultAction';
     }
-    if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+    if (($_SERVER['HTTP_X_REQUESTED_WITH'] ?? null) === 'XMLHttpRequest') {
         while (ob_get_level()) {
             ob_end_clean();
         }

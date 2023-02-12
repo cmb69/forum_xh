@@ -64,7 +64,7 @@ class ContentsTest extends TestCase
     private function getComment($forum, $tid, $cid)
     {
         $topic = $this->contents->getTopic($forum, $tid);
-        return isset($topic[$cid]) ? $topic[$cid] : array();
+        return $topic[$cid] ?? [];
     }
 
     public function testCreateAndDeleteComment()
