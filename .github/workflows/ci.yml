@@ -20,7 +20,14 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: 'cmsimplexh/plugins/forum'
-      - name: phive install
+      - name: Cache tools
+        id: cache-tools
+        uses: actions/cache@v3
+        with:
+          path: cmsimplexh/plugins/forum/tools
+          key: tools-${{matrix.version}}-${{hashFiles('cmsimplexh/plugins/forum/.phive')}}
+      - if: ${{steps.cache-tools.outputs.cache-hit != 'true'}}
+        name: phive install
         run: cd cmsimplexh/plugins/forum && phive --no-progress install --trust-gpg-keys 0x31C7E470E2138192,0x4AA394086372C20A,0xA4E55EA12C7C085C,0xCF1A108D0E7AE720,0xD5F0CB76E2DD74F8
       - name: composer install
         run: cd cmsimplexh/plugins/forum && composer install
