@@ -37,6 +37,8 @@ class ShowPreview
 
     public function __invoke(Request $request): Response
     {
-        return Response::create($this->bbCode->convert($request->get("forum_bbcode") ?? ""))->withExit();
+        $bbCode = $request->url()->param("forum_bbcode");
+        $bbCode = is_string($bbCode) ? $bbCode : "";
+        return Response::create($this->bbCode->convert($bbCode))->withExit();
     }
 }

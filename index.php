@@ -20,6 +20,7 @@
  */
 
 use Forum\Dic;
+use Forum\Infra\Request;
 use Forum\Infra\Responder;
 
 const FORUM_VERSION = "1.0beta5";
@@ -36,14 +37,14 @@ function forum(string $forum)
     }
     switch ($_GET['forum_actn'] ?? "") {
         default:
-            return Responder::respond(Dic::makeShowForum()($forum, Dic::makeRequest()));
+            return Responder::respond(Dic::makeShowForum()($forum, Request::current()));
         case "delete":
-            return Responder::respond(Dic::makeDeleteComment()($forum, Dic::makeRequest()));
+            return Responder::respond(Dic::makeDeleteComment()($forum, Request::current()));
         case "edit":
-            return Responder::respond(Dic::makeShowEditor()($forum, Dic::makeRequest()));
+            return Responder::respond(Dic::makeShowEditor()($forum, Request::current()));
         case "post":
-            return Responder::respond(Dic::makePostComment()($forum, Dic::makeRequest()));
+            return Responder::respond(Dic::makePostComment()($forum, Request::current()));
         case "preview":
-            return Responder::respond(Dic::makeShowPreview()(Dic::makeRequest()));
+            return Responder::respond(Dic::makeShowPreview()(Request::current()));
     }
 }

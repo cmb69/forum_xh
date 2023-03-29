@@ -28,10 +28,11 @@ use XH\CSRFProtection as CsrfProtector;
 use Fa\RequireCommand;
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
+use Forum\Infra\FakeRequest;
 use Forum\Infra\Request;
-use Forum\Infra\Url;
 use Forum\Infra\View;
 use Forum\Value\Comment;
+use Forum\Value\Url;
 
 class ShowEditorTest extends TestCase
 {
@@ -66,8 +67,7 @@ class ShowEditorTest extends TestCase
     public function testRendersCommentFormForNewPost(): void
     {
         $this->authorizer->method('isUser')->willReturn(true);
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn(new Url("/", "Forum", []));
+        $request = new FakeRequest(["query" => "Forum"]);
         $response = ($this->sut)("test", $request);
         Approvals::verifyHtml($response->output());
     }
@@ -78,9 +78,7 @@ class ShowEditorTest extends TestCase
         $this->contents->method('getTopic')->willReturn(["3456" => $this->comment()]);
         $this->authorizer->method('isUser')->willReturn(true);
         $this->authorizer->method('mayModify')->willReturn(true);
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn(new Url("/", "Forum", []));
-        $request->method("get")->willReturnMap([["forum_topic", "1234"], ["forum_comment", "3456"]]);
+        $request = new FakeRequest(["query" => "Forum&forum_topic=1234&forum_comment=3456"]);
         $response = ($this->sut)("test", $request);
         Approvals::verifyHtml($response->output());
     }
@@ -89,9 +87,7 @@ class ShowEditorTest extends TestCase
     {
         $this->contents->method('cleanId')->willReturnOnConsecutiveCalls("1234", null);
         $this->authorizer->method('isUser')->willReturn(true);
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn(new Url("/", "Forum", []));
-        $request->method("get")->willReturnMap([["forum_topic", "1234"]]);
+        $request = new FakeRequest(["query" => "Forum&forum_topic=1234"]);
         $response = ($this->sut)("test", $request);
         Approvals::verifyHtml($response->output());
     }

@@ -21,28 +21,63 @@
 
 namespace Forum\Infra;
 
+use Forum\Value\Url;
+
 class Request
 {
-    /** @var Url */
-    private $url;
-
-    public function __construct(Url $url)
+    /** @codeCoverageIgnore */
+    public static function current(): self
     {
-        $this->url = $url;
+        return new self;
     }
 
     public function url(): Url
     {
-        return $this->url;
+        $rest = $this->query();
+        if ($rest !== "") {
+            $rest = "?" . $rest;
+        }
+        return Url::from(CMSIMPLE_URL . $rest);
     }
 
-    public function get(string $key): ?string
+    /** @return array{string,string} */
+    public function deletePost(): array
     {
-        return $_GET[$key] ?? null;
+        return [
+            $this->postString("forum_topic"),
+            $this->postString("forum_comment"),
+        ];
     }
 
-    public function post(string $key): ?string
+    /** @return array{title:string|null,topic:string|null,comment:string|null,text:string} */
+    public function commentPost(): array
     {
-        return $_POST[$key] ?? null;
+        return [
+            "title" => $this->postString("forum_title") ?: null,
+            "topic" => $this->postString("forum_topic") ?: null,
+            "comment" => $this->postString("forum_comment") ?: null,
+            "text" => $this->postString("forum_text"),
+        ];
+    }
+
+    private function postString(string $name): string
+    {
+        $post = $this->post();
+        return isset($post[$name]) && is_string($post[$name]) ? $post[$name] : "";
+    }
+
+    /** @codeCoverageIgnore */
+    protected function query(): string
+    {
+        return $_SERVER["QUERY_STRING"];
+    }
+
+    /**
+     * @return array<string,string|array<string>>
+     * @codeCoverageIgnore
+     */
+    protected function post()
+    {
+        return $_POST;
     }
 }

@@ -79,23 +79,20 @@ class PostComment
     public function __invoke(string $forum, Request $request): Response
     {
         $this->csrfProtector->check();
-        $forumtopic = $request->post("forum_topic");
-        if (!empty($request->post("forum_comment"))) {
-            $tid = $this->postComment($forum, $forumtopic, $request->post("forum_comment"), $request);
-        } else {
-            $tid = $this->postComment($forum, $forumtopic, null, $request);
-        }
-        $url = $tid !== null ? $request->url()->replace(["forum_topic" => $tid]) : $request->url();
-        if ($request->get("forum_ajax") !== null) {
-            $url = $url->replace(['forum_ajax' => ""]);
+        $post = $request->commentPost();
+        $tid = $this->postComment($forum, $post["topic"], $post["comment"], $request);
+        $url = $tid !== null ? $request->url()->with("forum_topic", $tid) : $request->url();
+        if ($request->url()->param("forum_ajax") !== null) {
+            $url = $url->with("forum_ajax", "");
         }
         return Response::redirect($url->absolute());
     }
 
     private function postComment(string $forum, ?string $tid, ?string $cid, Request $request): ?string
     {
-        if (!isset($tid) && empty($request->post("forum_title"))
-            || $this->authorizer->isVisitor() || empty($request->post("forum_text"))
+        $post = $request->commentPost();
+        if (!isset($tid) && empty($post["title"])
+            || $this->authorizer->isVisitor() || empty($post["text"])
         ) {
             return null;
         }
@@ -106,10 +103,10 @@ class PostComment
             return null;
         }
 
-        $comment = new Comment($this->authorizer->username(), time(), $request->post("forum_text"));
+        $comment = new Comment($this->authorizer->username(), time(), $post["text"]);
         if (!isset($cid)) {
             $cid = $this->contents->getId();
-            $title = $request->post("forum_title");
+            $title = $post["title"];
             $this->contents->createComment($forum, $tid, $title, $cid, $comment);
             $subject = $this->lang['mail_subject_new'];
         } else {
@@ -118,7 +115,7 @@ class PostComment
         }
 
         if (!$this->authorizer->isAdmin() && $this->config['mail_address']) {
-            $url = $request->url()->replace(["forum_topic" => $tid])->absolute();
+            $url = $request->url()->with("forum_topic", $tid)->absolute();
             $date = $this->dateFormatter->format($comment->time());
             $attribution = sprintf($this->lang['mail_attribution'], $comment->user(), $date);
             $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment->comment());

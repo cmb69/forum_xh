@@ -52,13 +52,14 @@ class DeleteComment
     public function __invoke(string $forum, Request $request): Response
     {
         $this->csrfProtector->check();
-        $tid = $this->contents->cleanId($request->post("forum_topic") ?? "");
-        $cid = $this->contents->cleanId($request->post("forum_comment") ?? "");
+        [$tid, $cid] = $request->deletePost();
+        $tid = $this->contents->cleanId($tid);
+        $cid = $this->contents->cleanId($cid);
         $url = $tid !== null && $cid !== null && $this->contents->deleteComment($forum, $tid, $cid, $this->authorizer)
-            ? $request->url()->replace(["forum_topic" => $tid])
+            ? $request->url()->with("forum_topic", $tid)
             : $request->url();
-        if ($request->get("forum_ajax") !== null) {
-            $url = $url->replace(['forum_ajax' => ""]);
+        if ($request->url()->param("forum_ajax") !== null) {
+            $url = $url->with("forum_ajax");
         }
         return Response::redirect($url->absolute());
     }

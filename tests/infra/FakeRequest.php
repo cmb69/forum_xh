@@ -19,33 +19,24 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Forum;
+namespace Forum\Infra;
 
-use Forum\Infra\FakeRequest;
-use PHPUnit\Framework\TestCase;
-use Forum\Infra\Request;
-use Forum\Logic\BbCode;
-
-class ShowPreviewTest extends TestCase
+class FakeRequest extends Request
 {
-    /** @var ShowPreview */
-    private $sut;
+    private $options;
 
-    /** @var BbCode&MockObject */
-    private $bbCode;
-
-    public function setUp(): void
+    public function __construct(array $options)
     {
-        $this->bbCode = $this->createStub(BbCode::class);
-        $this->sut = new ShowPreview($this->bbCode);
+        $this->options = $options;
     }
 
-    public function testRendersBbCodeAndExits(): void
+    protected function query(): string
     {
-        $this->bbCode->method('convert')->willReturn("else");
-        $request = new FakeRequest(["query" => "&forum_bbcode=something"]);
-        $response = ($this->sut)($request);
-        $this->assertEquals("else", $response->output());
-        $this->assertTrue($response->exit());
+        return $this->options["query"] ?? "";
+    }
+
+    protected function post()
+    {
+        return $this->options["post"] ?? [];
     }
 }

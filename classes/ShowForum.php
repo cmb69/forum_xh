@@ -27,13 +27,13 @@ use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Request;
-use Forum\Infra\Url;
 use Forum\Infra\View;
 use Forum\Logic\BbCode;
 use Forum\Value\Comment;
 use Forum\Value\Html;
 use Forum\Value\Response;
 use Forum\Value\Topic;
+use Forum\Value\Url;
 
 class ShowForum
 {
@@ -82,15 +82,17 @@ class ShowForum
     }
     public function __invoke(string $forum, Request $request): Response
     {
-        if (empty($request->get("forum_topic"))
-            || ($tid = $this->contents->cleanId($request->get("forum_topic"))) === null
+        $topic = $request->url()->param("forum_topic");
+        $topic = is_string($topic) ? $topic : "";
+        if (empty($topic)
+            || ($tid = $this->contents->cleanId($topic)) === null
             || !$this->contents->hasTopic($forum, $tid)
         ) {
             $response = Response::create($this->renderTopicsView($forum, $request));
         } else {
             $response = Response::create($this->renderTopicView($forum, $tid, $request));
         }
-        if ($request->get("forum_ajax") !== null) {
+        if ($request->url()->param("forum_ajax") !== null) {
             $response = $response->withExit();
         }
         $response = $response->withScript("{$this->pluginFolder}forum");
@@ -102,7 +104,7 @@ class ShowForum
         $topics = $this->contents->getSortedTopics($forum);
         return $this->view->render('topics', [
             'isUser' => $this->authorizer->isUser(),
-            'href' => $request->url()->replace(["forum_actn" => "edit"])->relative(),
+            'href' => $request->url()->with("forum_actn", "edit")->relative(),
             'topics' => $this->topicRecords($request->url(), $topics),
         ]);
     }
@@ -120,7 +122,7 @@ class ShowForum
                 "user" => $topic->user(),
                 "comments" => $topic->comments(),
                 "date" => $this->dateFormatter->format($topic->time()),
-                "url" => $url->replace(["forum_topic" => $tid])->relative(),
+                "url" => $url->with("forum_topic", $tid)->relative(),
             ];
         }, array_keys($topics), array_values($topics));
     }
@@ -129,7 +131,7 @@ class ShowForum
     {
         $this->faRequireCommand->execute();
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
-        $editUrl = $request->url()->replace(["forum_actn" => "edit", "forum_topic" => $tid]);
+        $editUrl = $request->url()->with("forum_actn", "edit")->with("forum_topic", $tid);
 
         $this->csrfProtector->store();
         return $this->view->render('topic', [
@@ -138,8 +140,8 @@ class ShowForum
             'tid' => $tid,
             'csrfTokenInput' => Html::of((string) $this->csrfProtector->tokenInput()),
             'isUser' => $this->authorizer->isUser(),
-            'replyUrl' => $request->url()->replace(["forum_actn" => "edit", "forum_topic" => $tid])->relative(),
-            'deleteUrl' => $request->url()->replace(["forum_actn" => "delete"])->relative(),
+            'replyUrl' => $request->url()->with("forum_actn", "edit")->with("forum_topic", $tid)->relative(),
+            'deleteUrl' => $request->url()->with("forum_actn", "delete")->relative(),
             'href' => $request->url()->relative(),
         ]);
     }
@@ -157,7 +159,7 @@ class ShowForum
                 "mayDeleteComment" => $this->authorizer->mayModify($comment),
                 "commentDate" => $this->dateFormatter->format($comment->time()),
                 "html" => Html::of($this->bbcode->convert($comment->comment())),
-                "commentEditUrl" => $editUrl->replace(["forum_comment" => $cid])->relative(),
+                "commentEditUrl" => $editUrl->with("forum_comment", $cid)->relative(),
             ];
         }, array_keys($comments), array_values($comments));
     }

@@ -27,9 +27,7 @@ use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Mailer;
-use Forum\Infra\Request;
 use Forum\Infra\SystemChecker;
-use Forum\Infra\Url;
 use Forum\Infra\View;
 use Forum\Logic\BbCode;
 
@@ -133,11 +131,6 @@ class Dic
         );
     }
 
-    public static function makeRequest(): Request
-    {
-        return new Request(self::makeUrl());
-    }
-
     private static function makeBbCode(): BbCode
     {
         /**
@@ -159,16 +152,5 @@ class Dic
         global $_XH_csrfProtection;
 
         return $_XH_csrfProtection ?? new CsrfProtector('forum_token');
-    }
-
-    private static function makeUrl(): Url
-    {
-        /**
-         * @var string $sn
-         * @var string $su
-         */
-        global $sn, $su;
-
-        return new Url($sn, $su, []);
     }
 }

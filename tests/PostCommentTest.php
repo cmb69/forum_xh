@@ -28,9 +28,10 @@ use XH\CSRFProtection as CsrfProtector;
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\DateFormatter;
+use Forum\Infra\FakeRequest;
 use Forum\Infra\Mailer;
 use Forum\Infra\Request;
-use Forum\Infra\Url;
+use Forum\Value\Url;
 
 class PostCommentTest extends TestCase
 {
@@ -67,25 +68,27 @@ class PostCommentTest extends TestCase
         $this->contents->method('getId')->willReturn("3456");
         $this->contents->expects($this->once())->method('createComment');
         $this->authorizer->method('isUser')->willReturn(true);
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn(new Url("/", "Forum", []));
-        $request->method("post")->willReturnMap([["forum_title", "A new Topic"], ["forum_text", "A comment"]]);
+        $request = new FakeRequest([
+            "query" => "Forum",
+            "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment"],
+        ]);
         $response = ($this->sut)("test", $request);
-        $this->assertEquals("http://example.com/index.php?Forum&forum_topic=3456", $response->location());
+        $this->assertEquals("http://example.com/?Forum&forum_topic=3456", $response->location());
     }
 
     public function testUpdatesCommentAndRedirects(): void
     {
         $this->contents->method('cleanId')->willReturn("1234");
         $this->authorizer->method('isUser')->willReturn(true);
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn(new Url("/", "Forum", []));
-        $request->method("post")->willReturnMap([
-            ["forum_topic", "1234"],
-            ["forum_comment", "3456"],
-            ["forum_text", "A comment"]
+        $request = new FakeRequest([
+            "query" => "Forum",
+            "post" => [
+                "forum_topic" => "1234",
+                "forum_comment" => "3456",
+                "forum_text" => "A comment",
+            ]
         ]);
         $response = ($this->sut)("test", $request);
-        $this->assertEquals("http://example.com/index.php?Forum&forum_topic=1234", $response->location());
+        $this->assertEquals("http://example.com/?Forum&forum_topic=1234", $response->location());
     }
 }

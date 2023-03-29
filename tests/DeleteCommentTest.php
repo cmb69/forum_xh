@@ -27,8 +27,9 @@ use XH\CSRFProtection as CsrfProtector;
 
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
+use Forum\Infra\FakeRequest;
 use Forum\Infra\Request;
-use Forum\Infra\Url;
+use Forum\Value\Url;
 
 class DeleteCommentTest extends TestCase
 {
@@ -58,10 +59,11 @@ class DeleteCommentTest extends TestCase
         $this->contents->method('cleanId')->willReturnOnConsecutiveCalls("1234", "3456");
         $this->contents->expects($this->once())->method('deleteComment');
         $this->authorizer->method('isUser')->willReturn(true);
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn(new Url("/", "Forum", []));
-        $request->method('post')->willReturnMap([['forum_topic', "1234"], ['forum_comment', "3456"]]);
+        $request = new FakeRequest([
+            "query" => "Forum",
+            "post" => ["forum_topic" => "1234", "forum_comment" =>  "3456"],
+        ]);
         $response = ($this->sut)("test", $request);
-        $this->assertEquals("http://example.com/index.php?Forum", $response->location());
+        $this->assertEquals("http://example.com/?Forum", $response->location());
     }
 }

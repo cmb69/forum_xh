@@ -75,11 +75,15 @@ class ShowEditor
 
     public function __invoke(string $forum, Request $request): Response
     {
-        $tid = $this->contents->cleanId($request->get("forum_topic") ?? "");
-        $cid = $this->contents->cleanId($request->get("forum_comment") ?? "");
+        $tid = $request->url()->param("forum_topic");
+        $tid = is_string($tid) ? $tid : "";
+        $tid = $this->contents->cleanId($tid);
+        $cid = $request->url()->param("forum_comment");
+        $cid = is_string($cid) ? $cid : "";
+        $cid = $this->contents->cleanId($cid);
         $output = $this->renderCommentForm($forum, $tid, $cid, $request);
         $response = Response::create($output)->withScript("{$this->pluginFolder}forum");
-        if ($request->get("forum_ajax") !== null) {
+        if ($request->url()->param("forum_ajax") !== null) {
             $response = $response->withExit();
         }
         return $response;
@@ -109,11 +113,11 @@ class ShowEditor
             'newTopic' => $tid === null,
             'tid' => $tid !== null ? $tid : "",
             'cid' => $cid !== null ? $cid : "",
-            'action' => $request->url()->replace(["forum_actn" => "post"])->relative(),
-            'previewUrl' => $request->url()->replace(["forum_actn" => "preview"])->relative(),
+            'action' => $request->url()->with("forum_actn", "post")->relative(),
+            'previewUrl' => $request->url()->with("forum_actn", "preview")->relative(),
             'backUrl' => $tid === null
-                ? $request->url()->relative()
-                : $request->url()->replace(["forum_topic" => $tid])->relative(),
+                ? $request->url()->without("forum_topic")->relative()
+                : $request->url()->with("forum_topic", $tid)->relative(),
             'headingKey' => $tid === null ? 'msg_new_topic' : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment'),
             'comment' => $comment,
             'csrfTokenInput' => $this->csrfProtector->tokenInput(),
