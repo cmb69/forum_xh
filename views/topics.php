@@ -1,38 +1,35 @@
 <?php
 
 use Forum\Infra\View;
-use Forum\Value\Topic;
 
 /**
  * @var View $this
  * @var bool $isUser
  * @var string $href
- * @var callable $topicUrl
- * @var callable $topicDate
- * @var array<string,Topic> $topics
+ * @var list<array{tid:string,title:string,user:string,comments:int,date:string,url:string}> $topics
  */
 ?>
 <div class="forum_container">
   <h6 class="forum_heading"><?=$this->text('msg_topics')?></h6>
   <div class="forum_topics">
-<?php foreach ($topics as $tid => $topic):?>
+<?foreach ($topics as $topic):?>
   <div>
     <div class="forum_title">
-      <a href="<?=$this->esc($topicUrl($tid))?>"><?=$this->esc($topic->title())?></a>
+      <a href="<?=$topic['url']?>"><?=$topic['title']?></a>
     </div>
     <div class="forum_details">
-      <span><?=$this->plural('msg_comments', $topic->comments())?></span>
+      <span><?=$this->plural('msg_comments', $topic['comments'])?></span>
       <span class="forum_separator"><?=$this->text('lbl_separator')?></span>
-      <span><?=$this->text('msg_topic_details', $topic->user())?></span>
+      <span><?=$this->text('msg_topic_details', $topic['user'])?></span>
       <span class="forum_separator"><?=$this->text('lbl_separator')?></span>
-      <span class="forum_date"><?=$this->esc($topicDate($topic))?></span>
+      <span class="forum_date"><?=$topic['date']?></span>
     </div>
   </div>
-<?php endforeach?>
+<?endforeach?>
   </div>
-<?php if ($isUser):?>
+<?if ($isUser):?>
   <div class="forum_navlink">
-    <a href="<?=$this->esc($href)?>"><?=$this->text('msg_start_topic')?></a>
+    <a href="<?=$href?>"><?=$this->text('msg_start_topic')?></a>
   </div>
-<?php endif?>
+<?endif?>
 </div>

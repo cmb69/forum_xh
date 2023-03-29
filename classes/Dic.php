@@ -48,7 +48,7 @@ class Dic
             new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
             self::makeBbCode(),
             self::makeCsrfProtector(),
-            new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
+            new View("{$pth['folder']['plugins']}forum/views/", $plugin_tx['forum']),
             new FaRequireCommand(),
             new DateFormatter(),
             new Authorizer()
@@ -68,7 +68,7 @@ class Dic
             "{$pth['folder']['plugins']}forum/",
             new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
             self::makeCsrfProtector(),
-            new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum']),
+            new View("{$pth['folder']['plugins']}forum/views/", $plugin_tx['forum']),
             new FaRequireCommand(),
             new Authorizer()
         );
@@ -129,7 +129,7 @@ class Dic
             $contentFolder,
             $plugin_tx['forum'],
             new SystemChecker(),
-            new View("{$pth['folder']['plugins']}forum/views", $plugin_tx['forum'])
+            new View("{$pth['folder']['plugins']}forum/views/", $plugin_tx['forum'])
         );
     }
 

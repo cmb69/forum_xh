@@ -21,74 +21,62 @@
 
 namespace Forum\Infra;
 
-use function array_map;
-use function extract;
-use function ob_get_clean;
-use function ob_start;
-use function sprintf;
-use function XH_hsc;
-use function XH_numberSuffix;
+use Forum\Value\Html;
 
 final class View
 {
     /** @var string */
-    private $templateDir;
+    private $templateFolder;
 
     /** @var array<string,string> */
-    private $lang;
+    private $text;
 
-    /** @param array<string,string> $lang */
-    public function __construct(string $templateDir, array $lang)
+    /** @param array<string,string> $text */
+    public function __construct(string $templateFolder, array $text)
     {
-        $this->templateDir = $templateDir;
-        $this->lang = $lang;
+        $this->templateFolder = $templateFolder;
+        $this->text = $text;
     }
 
     /** @param scalar $args */
     public function text(string $key, ...$args): string
     {
-        $args = array_map([$this, "esc"], $args);
-        return sprintf($this->esc($this->lang[$key]), ...$args);
+        return sprintf($this->esc($this->text[$key]), ...$args);
     }
 
     /** @param scalar $args */
     public function plural(string $key, int $count, ...$args): string
     {
-        if ($count == 0) {
-            $key .= '_0';
-        } else {
-            $key .= XH_numberSuffix($count);
-        }
-        $args = array_map([$this, "esc"], $args);
-        return sprintf($this->esc($this->lang[$key]), $count, ...$args);
+        $key .= $count === 0 ? "_0" : XH_numberSuffix($count);
+        return sprintf($this->esc($this->text[$key]), $count, ...$args);
     }
 
     /** @param scalar $args */
     public function message(string $type, string $key, ...$args): string
     {
-        return sprintf('<p class="xh_%s">%s</p>', $type, $this->text($key, ...$args));
+        return XH_message($type, $key, ...$args);
     }
 
     /** @param array<string,mixed> $_data */
     public function render(string $_template, array $_data): string
     {
+        array_walk_recursive($_data, function (&$value) {
+            assert(is_null($value) || is_scalar($value) || $value instanceof Html);
+            if (is_string($value)) {
+                $value = $this->esc($value);
+            } elseif ($value instanceof Html) {
+                $value = $value->string();
+            }
+        });
         extract($_data);
         ob_start();
-        include "{$this->templateDir}/{$_template}.php";
-        $result = ob_get_clean();
-        assert($result !== false);
-        return $result;
+        include $this->templateFolder . $_template . ".php";
+        return (string) ob_get_clean();
     }
 
     /** @param scalar $value */
     public function esc($value): string
     {
         return XH_hsc((string) $value);
-    }
-
-    /** @param scalar $value */
-    public function raw($value): string
-    {
-        return (string) $value;
     }
 }

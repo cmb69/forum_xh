@@ -32,6 +32,7 @@ use Forum\Infra\Url;
 use Forum\Infra\View;
 use Forum\Logic\BbCode;
 use Forum\Value\Comment;
+use Forum\Value\Html;
 use Forum\Value\Topic;
 
 class ShowForum
@@ -107,14 +108,26 @@ class ShowForum
         return $this->view->render('topics', [
             'isUser' => $this->authorizer->isUser(),
             'href' => $request->url()->replace(["forum_actn" => "edit"])->relative(),
-            'topics' => $topics,
-            'topicUrl' => function ($tid) use ($request) {
-                return $request->url()->replace(["forum_topic" => $tid])->relative();
-            },
-            'topicDate' => function (Topic $topic) {
-                return $this->dateFormatter->format($topic->time());
-            },
+            'topics' => $this->topicRecords($request->url(), $topics),
         ]);
+    }
+
+    /**
+     * @param array<string,Topic> $topics
+     * @return list<array{tid:string,title:string,user:string,comments:int,date:string,url:string}>
+     */
+    private function topicRecords(Url $url, array $topics): array
+    {
+        return array_map(function (string $tid, Topic $topic) use ($url) {
+            return [
+                "tid" => $tid,
+                "title" => $topic->title(),
+                "user" => $topic->user(),
+                "comments" => $topic->comments(),
+                "date" => $this->dateFormatter->format($topic->time()),
+                "url" => $url->replace(["forum_topic" => $tid])->relative(),
+            ];
+        }, array_keys($topics), array_values($topics));
     }
 
     private function renderTopicView(string $forum, string $tid, Request $request): string
@@ -126,25 +139,31 @@ class ShowForum
         $this->csrfProtector->store();
         return $this->view->render('topic', [
             'title' => $title,
-            'topic' => $topic,
+            'topic' => $this->commentRecords($editUrl, $topic),
             'tid' => $tid,
-            'csrfTokenInput' => $this->csrfProtector->tokenInput(),
+            'csrfTokenInput' => Html::of((string) $this->csrfProtector->tokenInput()),
             'isUser' => $this->authorizer->isUser(),
             'replyUrl' => $request->url()->replace(["forum_actn" => "edit", "forum_topic" => $tid])->relative(),
             'deleteUrl' => $request->url()->replace(["forum_actn" => "delete"])->relative(),
             'href' => $request->url()->relative(),
-            'mayDeleteComment' => function (Comment $comment) {
-                return $this->authorizer->mayModify($comment);
-            },
-            'commentDate' => function (Comment $comment) {
-                return $this->dateFormatter->format($comment->time());
-            },
-            'html' => function (Comment $comment) {
-                return $this->bbcode->convert($comment->comment());
-            },
-            'commentEditUrl' => function ($cid) use ($editUrl) {
-                return $editUrl->replace(["forum_comment" => $cid])->relative();
-            },
         ]);
+    }
+
+    /**
+     * @param array<string,Comment> $comments
+     * @return list<array{cid:string,user:string,mayDeleteComment:bool,commentDate:string,html:Html,commentEditUrl:string}>
+     */
+    private function commentRecords(Url $editUrl, array $comments): array
+    {
+        return array_map(function (string $cid, Comment $comment) use ($editUrl) {
+            return [
+                "cid" => $cid,
+                "user" => $comment->user(),
+                "mayDeleteComment" => $this->authorizer->mayModify($comment),
+                "commentDate" => $this->dateFormatter->format($comment->time()),
+                "html" => Html::of($this->bbcode->convert($comment->comment())),
+                "commentEditUrl" => $editUrl->replace(["forum_comment" => $cid])->relative(),
+            ];
+        }, array_keys($comments), array_values($comments));
     }
 }

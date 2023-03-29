@@ -12,6 +12,7 @@ require_once '../../cmsimple/functions.php';
 require_once "../fa/classes/RequireCommand.php";
 
 require_once "./classes/value/Comment.php";
+require_once "./classes/value/Html.php";
 require_once "./classes/value/Topic.php";
 
 require_once "./classes/infra/Authorizer.php";
