@@ -21,10 +21,9 @@
 
 namespace Forum;
 
-use XH\CSRFProtection;
-
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
+use Forum\Infra\CsrfProtector;
 use Forum\Infra\Request;
 use Forum\Value\Response;
 
@@ -33,7 +32,7 @@ class DeleteComment
     /** @var Contents */
     private $contents;
 
-    /** @var CSRFProtection */
+    /** @var CSRFProtector */
     private $csrfProtector;
 
     /** @var Authorizer */
@@ -41,7 +40,7 @@ class DeleteComment
 
     public function __construct(
         Contents $contents,
-        CSRFProtection $csrfProtector,
+        CsrfProtector $csrfProtector,
         Authorizer $authorizer
     ) {
         $this->contents = $contents;

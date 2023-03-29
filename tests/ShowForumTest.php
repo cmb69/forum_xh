@@ -22,21 +22,17 @@
 namespace Forum;
 
 use ApprovalTests\Approvals;
-use PHPUnit\Framework\TestCase;
-
-use XH\CSRFProtection as CsrfProtector;
 use Fa\RequireCommand;
-
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\DateFormatter;
+use Forum\Infra\FakeCsrfProtector;
 use Forum\Infra\FakeRequest;
-use Forum\Infra\Request;
 use Forum\Infra\View;
 use Forum\Logic\BbCode;
 use Forum\Value\Comment;
 use Forum\Value\Topic;
-use Forum\Value\Url;
+use PHPUnit\Framework\TestCase;
 
 class ShowForumTest extends TestCase
 {
@@ -56,7 +52,7 @@ class ShowForumTest extends TestCase
     {
         $this->contents = $this->createStub(Contents::class);
         $this->bbcode = $this->createStub(BbCode::class);
-        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector = new FakeCsrfProtector;
         $view = new View("./views/", XH_includeVar("./languages/en.php", 'plugin_tx')['forum']);
         $faRequireCommand = $this->createStub(RequireCommand::class);
         $dateFormatter = $this->createStub(DateFormatter::class);

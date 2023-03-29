@@ -12,7 +12,7 @@ use Forum\Infra\View;
  * @var string $backUrl
  * @var string $headingKey
  * @var string $comment
- * @var string $csrfTokenInput
+ * @var array{name:string,value:string} $token
  * @var string|false $i18n
  * @var array<string,string> $emoticons
  */
@@ -20,7 +20,7 @@ use Forum\Infra\View;
 <div class="forum_container">
   <form class="forum_comment" action="<?=$action?>" method="post" accept-charset="UTF-8" data-i18n="<?=$i18n?>">
     <div class="forum_preview_container"></div>
-    <?=$csrfTokenInput?>
+    <input type="hidden" name="<?=$token['name']?>" value="<?=$token['value']?>">
 <?if ($newTopic):?>
     <h6 class="forum_heading"><?=$this->text($headingKey)?></h6>
     <div class="forum_title">

@@ -21,10 +21,10 @@
 
 namespace Forum;
 
-use XH\CSRFProtection as CsrfProtector;
 use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
+use Forum\Infra\CsrfProtector;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Mailer;
 use Forum\Infra\SystemChecker;
@@ -45,7 +45,7 @@ class Dic
             "{$pth['folder']['plugins']}forum/",
             new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
             self::makeBbCode(),
-            self::makeCsrfProtector(),
+            new CsrfProtector,
             new View("{$pth['folder']['plugins']}forum/views/", $plugin_tx['forum']),
             new FaRequireCommand(),
             new DateFormatter(),
@@ -65,7 +65,7 @@ class Dic
             $plugin_tx['forum'],
             "{$pth['folder']['plugins']}forum/",
             new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
-            self::makeCsrfProtector(),
+            new CsrfProtector,
             new View("{$pth['folder']['plugins']}forum/views/", $plugin_tx['forum']),
             new FaRequireCommand(),
             new Authorizer()
@@ -85,7 +85,7 @@ class Dic
             $plugin_cf['forum'],
             $plugin_tx['forum'],
             new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
-            self::makeCsrfProtector(),
+            new CsrfProtector,
             new Mailer($plugin_cf['forum']),
             new DateFormatter(),
             new Authorizer()
@@ -99,7 +99,7 @@ class Dic
 
         return new DeleteComment(
             new Contents("{$pth['folder']['content']}{$pth['folder']['base']}forum/"),
-            self::makeCsrfProtector(),
+            new CsrfProtector,
             new Authorizer()
         );
     }
@@ -144,13 +144,5 @@ class Dic
             "{$pth['folder']['plugins']}forum/images/",
             $plugin_tx['forum']['title_iframe']
         );
-    }
-
-    private static function makeCsrfProtector(): CsrfProtector
-    {
-        /** @var CsrfProtector|null $_XH_csrfProtection */
-        global $_XH_csrfProtection;
-
-        return $_XH_csrfProtection ?? new CsrfProtector('forum_token');
     }
 }

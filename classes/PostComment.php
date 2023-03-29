@@ -21,10 +21,9 @@
 
 namespace Forum;
 
-use XH\CSRFProtection;
-
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
+use Forum\Infra\CsrfProtector;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Mailer;
 use Forum\Infra\Request;
@@ -42,7 +41,7 @@ class PostComment
     /** @var Contents */
     private $contents;
 
-    /** @var CSRFProtection */
+    /** @var CSRFProtector */
     private $csrfProtector;
 
     /** @var Mailer */
@@ -62,7 +61,7 @@ class PostComment
         array $config,
         array $lang,
         Contents $contents,
-        CSRFProtection $csrfProtector,
+        CsrfProtector $csrfProtector,
         Mailer $mailer,
         DateFormatter $dateFormatter,
         Authorizer $authorizer

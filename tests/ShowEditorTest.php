@@ -22,17 +22,14 @@
 namespace Forum;
 
 use ApprovalTests\Approvals;
-use PHPUnit\Framework\TestCase;
-
-use XH\CSRFProtection as CsrfProtector;
 use Fa\RequireCommand;
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
+use Forum\Infra\FakeCsrfProtector;
 use Forum\Infra\FakeRequest;
-use Forum\Infra\Request;
 use Forum\Infra\View;
 use Forum\Value\Comment;
-use Forum\Value\Url;
+use PHPUnit\Framework\TestCase;
 
 class ShowEditorTest extends TestCase
 {
@@ -49,7 +46,7 @@ class ShowEditorTest extends TestCase
     {
         $lang = XH_includeVar("./languages/en.php", 'plugin_tx')['forum'];
         $this->contents = $this->createStub(Contents::class);
-        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector = new FakeCsrfProtector;
         $view = new View("./views/", $lang);
         $faRequireCommand = $this->createStub(RequireCommand::class);
         $this->authorizer = $this->createStub(Authorizer::class);

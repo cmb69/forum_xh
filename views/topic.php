@@ -7,7 +7,7 @@ use Forum\Infra\View;
  * @var string $title
  * @var list<array{cid:string,user:string,mayDeleteComment:bool,commentDate:string,html:string,commentEditUrl:string}> $topic
  * @var string $tid
- * @var string $csrfTokenInput
+ * @var array{name:string,value:string} $token
  * @var bool $isUser
  * @var string $replyUrl
  * @var string $deleteUrl
@@ -21,7 +21,7 @@ use Forum\Infra\View;
     <div>
 <?  if ($comment['mayDeleteComment']):?>
       <form class="forum_delete" action="<?=$deleteUrl?>" method="POST" data-message="<?=$this->text('msg_confirm_delete')?>">
-      <?=$csrfTokenInput?>
+        <input type="hidden" name="<?=$token['name']?>" value="<?=$token['value']?>">
         <input type="hidden" name="forum_topic" value="<?=$tid?>">
         <input type="hidden" name="forum_comment" value="<?=$comment['cid']?>">
         <button title="<?=$this->text('lbl_delete')?>"><i class="fa fa-trash"></i></button>

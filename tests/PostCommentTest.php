@@ -21,17 +21,13 @@
 
 namespace Forum;
 
-use PHPUnit\Framework\TestCase;
-
-use XH\CSRFProtection as CsrfProtector;
-
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\DateFormatter;
+use Forum\Infra\FakeCsrfProtector;
 use Forum\Infra\FakeRequest;
 use Forum\Infra\Mailer;
-use Forum\Infra\Request;
-use Forum\Value\Url;
+use PHPUnit\Framework\TestCase;
 
 class PostCommentTest extends TestCase
 {
@@ -48,7 +44,7 @@ class PostCommentTest extends TestCase
     {
         $lang = XH_includeVar("./languages/en.php", 'plugin_tx')['forum'];
         $this->contents = $this->createStub(Contents::class);
-        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector = new FakeCsrfProtector;
         $mailer = $this->createStub(Mailer::class);
         $dateFormatter = $this->createStub(DateFormatter::class);
         $this->authorizer = $this->createStub(Authorizer::class);

@@ -21,10 +21,10 @@
 
 namespace Forum;
 
-use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
+use Forum\Infra\CsrfProtector;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Request;
 use Forum\Infra\View;
@@ -46,7 +46,7 @@ class ShowForum
     /** @var BbCode */
     private $bbcode;
 
-    /** @var CSRFProtection */
+    /** @var CSRFProtector */
     private $csrfProtector;
 
     /** @var View */
@@ -65,7 +65,7 @@ class ShowForum
         string $pluginFolder,
         Contents $contents,
         BbCode $bbcode,
-        CSRFProtection $csrfProtector,
+        CsrfProtector $csrfProtector,
         View $view,
         FaRequireCommand $faRequireCommand,
         DateFormatter $dateFormatter,
@@ -138,7 +138,7 @@ class ShowForum
             'title' => $title,
             'topic' => $this->commentRecords($editUrl, $topic),
             'tid' => $tid,
-            'csrfTokenInput' => Html::of((string) $this->csrfProtector->tokenInput()),
+            'csrfToken' => $this->csrfProtector->token(),
             'isUser' => $this->authorizer->isUser(),
             'replyUrl' => $request->url()->with("forum_actn", "edit")->with("forum_topic", $tid)->relative(),
             'deleteUrl' => $request->url()->with("forum_actn", "delete")->relative(),

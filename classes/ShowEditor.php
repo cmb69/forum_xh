@@ -21,10 +21,10 @@
 
 namespace Forum;
 
-use XH\CSRFProtection;
 use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
+use Forum\Infra\CsrfProtector;
 use Forum\Infra\Request;
 use Forum\Infra\View;
 use Forum\Value\Response;
@@ -40,7 +40,7 @@ class ShowEditor
     /** @var Contents */
     private $contents;
 
-    /** @var CSRFProtection */
+    /** @var CSRFProtector */
     private $csrfProtector;
 
     /** @var View */
@@ -59,7 +59,7 @@ class ShowEditor
         array $lang,
         string $pluginFolder,
         Contents $contents,
-        CSRFProtection $csrfProtector,
+        CsrfProtector $csrfProtector,
         View $view,
         FaRequireCommand $faRequireCommand,
         Authorizer $authorizer
@@ -120,7 +120,7 @@ class ShowEditor
                 : $request->url()->with("forum_topic", $tid)->relative(),
             'headingKey' => $tid === null ? 'msg_new_topic' : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment'),
             'comment' => $comment,
-            'csrfTokenInput' => $this->csrfProtector->tokenInput(),
+            'token' => $this->csrfProtector->token(),
             'i18n' => json_encode($this->jsTexts()),
             'emoticons' => $emoticons,
         ]);

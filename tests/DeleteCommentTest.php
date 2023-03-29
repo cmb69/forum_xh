@@ -21,15 +21,11 @@
 
 namespace Forum;
 
-use PHPUnit\Framework\TestCase;
-
-use XH\CSRFProtection as CsrfProtector;
-
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
+use Forum\Infra\FakeCsrfProtector;
 use Forum\Infra\FakeRequest;
-use Forum\Infra\Request;
-use Forum\Value\Url;
+use PHPUnit\Framework\TestCase;
 
 class DeleteCommentTest extends TestCase
 {
@@ -45,7 +41,7 @@ class DeleteCommentTest extends TestCase
     public function setUp(): void
     {
         $this->contents = $this->createStub(Contents::class);
-        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector = new FakeCsrfProtector;
         $this->authorizer = $this->createStub(Authorizer::class);
         $this->sut = new DeleteComment(
             $this->contents,
