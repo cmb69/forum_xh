@@ -26,9 +26,8 @@ use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\Request;
-use Forum\Infra\Response;
-use Forum\Infra\Url;
 use Forum\Infra\View;
+use Forum\Value\Response;
 
 class ShowEditor
 {
@@ -79,8 +78,10 @@ class ShowEditor
         $tid = $this->contents->cleanId($request->get("forum_topic") ?? "");
         $cid = $this->contents->cleanId($request->get("forum_comment") ?? "");
         $output = $this->renderCommentForm($forum, $tid, $cid, $request);
-        $response = new Response($output, null, $request->get("forum_ajax") !== null);
-        $response->addScript("{$this->pluginFolder}forum");
+        $response = Response::create($output)->withScript("{$this->pluginFolder}forum");
+        if ($request->get("forum_ajax") !== null) {
+            $response = $response->withExit();
+        }
         return $response;
     }
 

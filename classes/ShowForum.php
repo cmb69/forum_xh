@@ -27,12 +27,12 @@ use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Request;
-use Forum\Infra\Response;
 use Forum\Infra\Url;
 use Forum\Infra\View;
 use Forum\Logic\BbCode;
 use Forum\Value\Comment;
 use Forum\Value\Html;
+use Forum\Value\Response;
 use Forum\Value\Topic;
 
 class ShowForum
@@ -86,19 +86,14 @@ class ShowForum
             || ($tid = $this->contents->cleanId($request->get("forum_topic"))) === null
             || !$this->contents->hasTopic($forum, $tid)
         ) {
-            $response = new Response(
-                $this->renderTopicsView($forum, $request),
-                null,
-                $request->get("forum_ajax") !== null
-            );
+            $response = Response::create($this->renderTopicsView($forum, $request));
         } else {
-            $response = new Response(
-                $this->renderTopicView($forum, $tid, $request),
-                null,
-                $request->get("forum_ajax") !== null
-            );
+            $response = Response::create($this->renderTopicView($forum, $tid, $request));
         }
-        $response->addScript("{$this->pluginFolder}forum");
+        if ($request->get("forum_ajax") !== null) {
+            $response = $response->withExit();
+        }
+        $response = $response->withScript("{$this->pluginFolder}forum");
         return $response;
     }
 

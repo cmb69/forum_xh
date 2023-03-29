@@ -19,62 +19,53 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Forum\Infra;
+namespace Forum\Value;
 
 class Response
 {
+    public static function create(string $output): self
+    {
+        $that = new self;
+        $that->output = $output;
+        return $that;
+    }
+
+    public static function redirect(string $location): self
+    {
+        $that = new self;
+        $that->location = $location;
+        return $that;
+    }
+
     /** @var string */
-    private $output;
+    private $output = "";
 
     /** @var string|null */
-    private $location;
+    private $location = null;
 
     /** @var bool */
-    private $exit;
+    private $exit = false;
 
     /** @var string */
     private $hjs = "";
 
-    public function __construct(string $output, ?string $location = null, bool $exit = false)
-    {
-        $this->output = $output;
-        $this->location = $location;
-        $this->exit = $exit;
-    }
-
-    /** @return void */
-    public function addScript(string $basename)
+    public function withScript(string $basename): self
     {
         if (is_file("$basename.min.js")) {
             $filename = "$basename.min.js";
         } else {
             $filename = "$basename.js";
         }
-        $this->hjs .= "<script type=\"module\" src=\"$filename\"></script>";
+        $that = clone $this;
+        $that->hjs .= "<script type=\"module\" src=\"$filename\"></script>";
+        return $that;
     }
 
-    /** @return string|never */
-    public function fire()
+    public function withExit(): self
     {
-        /** @var string $hjs */
-        global $hjs;
-
-        if ($this->location !== null) {
-            while (ob_get_level()) {
-                ob_end_clean();
-            }
-            header("Location: {$this->location}", true, 303);
-            exit;
-        }
-        if ($this->exit) {
-            while (ob_get_level()) {
-                ob_end_clean();
-            }
-            echo $this->output;
-            exit;
-        }
-        $hjs .= $this->hjs;
-        return $this->output;
+        $that = clone $this;
+        $that->exit = true;
+        return $that;
     }
 
     public function output(): string
@@ -82,8 +73,7 @@ class Response
         return $this->output;
     }
 
-    /** @return string|null */
-    public function location()
+    public function location(): ?string
     {
         return $this->location;
     }
@@ -91,5 +81,10 @@ class Response
     public function exit(): bool
     {
         return $this->exit;
+    }
+
+    public function hjs(): ?string
+    {
+        return $this->hjs;
     }
 }

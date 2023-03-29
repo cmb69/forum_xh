@@ -28,9 +28,8 @@ use Forum\Infra\Contents;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Mailer;
 use Forum\Infra\Request;
-use Forum\Infra\Response;
-use Forum\Infra\Url;
 use Forum\Value\Comment;
+use Forum\Value\Response;
 
 class PostComment
 {
@@ -90,7 +89,7 @@ class PostComment
         if ($request->get("forum_ajax") !== null) {
             $url = $url->replace(['forum_ajax' => ""]);
         }
-        return new Response("", $url->absolute());
+        return Response::redirect($url->absolute());
     }
 
     private function postComment(string $forum, ?string $tid, ?string $cid, Request $request): ?string

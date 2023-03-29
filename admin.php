@@ -20,6 +20,7 @@
  */
 
 use Forum\Dic;
+use Forum\Infra\Responder;
 
 /**
  * @var string $admin
@@ -32,7 +33,7 @@ if (XH_wantsPluginAdministration('forum')) {
     $o .= print_plugin_admin('off');
     switch ($admin) {
         case '':
-            $o .= Dic::makeShowInfo()()->fire();
+            $o .= Responder::respond(Dic::makeShowInfo()());
             break;
         default:
             $o .= plugin_admin_common();

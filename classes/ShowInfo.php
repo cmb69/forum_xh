@@ -21,9 +21,9 @@
 
 namespace Forum;
 
-use Forum\Infra\Response;
 use Forum\Infra\SystemChecker;
 use Forum\Infra\View;
+use Forum\Value\Response;
 
 class ShowInfo
 {
@@ -67,7 +67,7 @@ class ShowInfo
             'version' => FORUM_VERSION,
             'checks' => $this->getChecks(),
         ]);
-        return new Response($output);
+        return Response::create($output);
     }
 
     /** @return list<array{state:string,label:string,stateLabel:string}> */

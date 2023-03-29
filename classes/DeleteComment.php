@@ -26,8 +26,7 @@ use XH\CSRFProtection;
 use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\Request;
-use Forum\Infra\Response;
-use Forum\Infra\Url;
+use Forum\Value\Response;
 
 class DeleteComment
 {
@@ -61,6 +60,6 @@ class DeleteComment
         if ($request->get("forum_ajax") !== null) {
             $url = $url->replace(['forum_ajax' => ""]);
         }
-        return new Response("", $url->absolute());
+        return Response::redirect($url->absolute());
     }
 }

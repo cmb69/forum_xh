@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2012-2023 Christoph M. Becker
+ * Copyright 2023 Christoph M. Becker
  *
  * This file is part of Forum_XH.
  *
@@ -19,24 +19,36 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Forum;
+namespace Forum\Infra;
 
-use Forum\Infra\Request;
-use Forum\Logic\BbCode;
 use Forum\Value\Response;
 
-class ShowPreview
+class Responder
 {
-    /** @var BbCode */
-    private $bbCode;
-
-    public function __construct(BbCode $bbCode)
+    /** @return string|never */
+    public static function respond(Response $response)
     {
-        $this->bbCode = $bbCode;
+        global $hjs;
+
+        if ($response->location() !== null) {
+            self::purgeOutputBuffers();
+            header("Location: " . $response->location(), true, 303);
+            exit;
+        }
+        if ($response->exit()) {
+            self::purgeOutputBuffers();
+            echo $response->output();
+            exit;
+        }
+        $hjs .= $response->hjs();
+        return $response->output();
     }
 
-    public function __invoke(Request $request): Response
+    /** @return void */
+    private static function purgeOutputBuffers()
     {
-        return Response::create($this->bbCode->convert($request->get("forum_bbcode") ?? ""))->withExit();
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
     }
 }
