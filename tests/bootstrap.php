@@ -11,25 +11,18 @@ require_once '../../cmsimple/functions.php';
 
 require_once "../fa/classes/RequireCommand.php";
 
-require_once "./classes/value/Comment.php";
-require_once "./classes/value/Html.php";
-require_once "./classes/value/Topic.php";
-
-require_once "./classes/infra/Authorizer.php";
-require_once './classes/infra/Contents.php';
-require_once "./classes/infra/DateFormatter.php";
-require_once "./classes/infra/Mailer.php";
-require_once "./classes/infra/Request.php";
-require_once "./classes/infra/Response.php";
-require_once "./classes/infra/Url.php";
-require_once "./classes/infra/View.php";
-require_once "./classes/infra/SystemChecker.php";
-
-require_once "./classes/logic/BbCode.php";
-
-require_once "./classes/DeleteComment.php";
-require_once "./classes/PostComment.php";
-require_once "./classes/ShowEditor.php";
-require_once "./classes/ShowForum.php";
-require_once "./classes/ShowInfo.php";
-require_once "./classes/ShowPreview.php";
+spl_autoload_register(function (string $className) {
+    $parts = explode("\\", $className);
+    if ($parts[0] !== "Forum") {
+        return;
+    }
+    if (count($parts) === 3) {
+        $parts[1] = strtolower($parts[1]);
+    }
+    $filename = implode("/", array_slice($parts, 1)) . ".php";
+    if (is_readable("./classes/$filename")) {
+        include_once "./classes/$filename";
+    } elseif (is_readable("./tests/$filename")) {
+        include_once "./tests/$filename";
+    }
+});
