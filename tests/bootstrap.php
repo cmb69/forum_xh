@@ -1,7 +1,7 @@
 <?php
 
 const CMSIMPLE_URL = "http://example.com/index.php";
-
+const CMSIMPLE_ROOT = "/";
 const FORUM_VERSION = "1.0beta5";
 
 require_once './vendor/autoload.php';
