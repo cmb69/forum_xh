@@ -11,19 +11,13 @@
 
   <target name="sniff" description="checks adherence to the coding standards">
     <exec executable="phpcs" passthru="true" checkreturn="true">
-      <arg value="--standard=PSR2"/>
-      <arg line="--runtime-set ignore_warnings_on_exit true"/>
-      <arg file="classes"/>
-      <arg file="admin.php"/>
-      <arg file="index.php"/>
-      <arg file="tests"/>
+      <arg line="--standard=PSR2 --runtime-set ignore_warnings_on_exit true classes admin.php index.php"/>
     </exec>
   </target>
 
   <target name="stan" description="run static analysis">
     <exec executable="phpstan" passthru="true" checkreturn="true">
-      <arg value="--ansi"/>
-      <arg value="analyze"/>
+      <arg line="--ansi analyze"/>
     </exec>
   </target>
 
@@ -31,61 +25,32 @@
     <exec executable="phpunit" passthru="true" checkreturn="true"/>
   </target>
 
+  <target name="check" description="runs all checks" depends="sniff,stan,test"/>
+
   <target name="coverage" description="generates coverage report">
     <exec executable="phpunit" passthru="true" checkreturn="true">
       <arg line="--coverage-html coverage"/>
     </exec>
   </target>
 
-  <target name="minify" description="minifies JS files">
-    <condition property="dir" value=".">
-      <not>
-        <isset property="dir"/>
-      </not>
-    </condition>
-    <exec executable="uglifyjs" checkreturn="true">
-      <arg file="${dir}/forum.js"/>
-      <arg value="--compress"/>
-      <arg value="--mangle"/>
-      <arg value="--output"/>
-      <arg file="${dir}/forum.min.js"/>
-    </exec>
-  </target>
-
   <target name="gen-help" description="builds help.htm from README.md">
     <exec executable="pandoc" passthru="true" checkreturn="true">
-      <arg value="-s"/>
-      <arg value="--eol=lf"/>
-      <arg value="--template=help/template.htm"/>
-      <arg value="-Vlang=en"/>
-      <arg line="-Vpagetitle=&quot;User Manual&quot;"/>
-      <arg value="-o"/>
-      <arg file="help/help.htm"/>
-      <arg file="README.md"/>
-      <arg line="-t html"/>
+      <arg line="-s --eol=lf --template=help/template.htm -Vlang=en -Vpagetitle=&quot;User Manual&quot; -o help/help.htm README.md -t html"/>
     </exec>
     <exec executable="pandoc" passthru="true" checkreturn="true">
-      <arg value="-s"/>
-      <arg value="--eol=lf"/>
-      <arg value="--template=help/template.htm"/>
-      <arg value="-Vlang=de"/>
-      <arg line="-Vpagetitle=&quot;Benutzerhandbuch&quot;"/>
-      <arg value="-o"/>
-      <arg file="help/help_de.htm"/>
-      <arg file="README_DE.md"/>
-      <arg line="-t html"/>
+      <arg line="-s --eol=lf --template=help/template.htm -Vlang=de -Vpagetitle=&quot;Benutzerhandbuch&quot; -o help/help_de.htm README_DE.md -t html"/>
     </exec>
   </target>
 
   <target name="build" description="builds a distributable ZIP archive">
-    <exec executable="git" checkreturn="true">
+    <exec executable="git" passthru="true" checkreturn="true">
       <arg line="archive -o export.zip HEAD"/>
     </exec>
     <unzip file="export.zip" todir="export"/>
     <delete file="export.zip"/>
-    <phingcall target="minify">
-      <property name="dir" value="export"/>
-    </phingcall>
+    <exec executable="uglifyjs" passthru="true" checkreturn="true">
+      <arg line="export/forum.js --compress --mangle --output export/forum.min.js"/>
+    </exec>
     <move todir="dist">
       <fileset dir="export">
         <exclude name=".github/**"/>

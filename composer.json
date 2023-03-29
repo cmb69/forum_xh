@@ -1,6 +1,7 @@
 {
     "require-dev": {
         "mikey179/vfsstream": "1.6.*",
-        "approvals/approval-tests": "*@dev"
+        "approvals/approval-tests": "*@dev",
+        "phpunit/phpunit": "^9.5"
     }
 }
