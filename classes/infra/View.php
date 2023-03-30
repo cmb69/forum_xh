@@ -63,6 +63,12 @@ final class View
         return XH_message($type, $key, ...$args) . "\n";
     }
 
+    /** @param mixed $value */
+    public function json($value): string
+    {
+        return (string) json_encode($value, JSON_HEX_AMP | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    }
+
     /** @param array<string,mixed> $_data */
     public function render(string $_template, array $_data): string
     {

@@ -44,12 +44,6 @@ class ContentsTest extends TestCase
         $this->contents = new Contents(vfsStream::url('test'));
     }
 
-    public function testCleanId(): void
-    {
-        $id = $this->contents->getId();
-        $this->assertNotNull($this->contents->cleanId($id));
-    }
-
     private function getComment(string $forum, string $tid, string $cid): ?Comment
     {
         $topic = $this->contents->getTopic($forum, $tid);

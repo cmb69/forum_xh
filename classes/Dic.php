@@ -35,10 +35,9 @@ class Dic
 {
     public static function makeForum(): Forum
     {
-        global $pth, $plugin_cf, $plugin_tx;
+        global $pth, $plugin_cf;
         return new Forum(
             $plugin_cf["forum"],
-            $plugin_tx["forum"],
             $pth["folder"]["plugins"] . "forum/",
             new Contents(self::contentFolder()),
             self::makeBbCode(),

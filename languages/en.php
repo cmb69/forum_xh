@@ -14,8 +14,6 @@ $plugin_tx['forum']['msg_comments_2_4']="%d comments";
 $plugin_tx['forum']['msg_comments_5']="%d comments";
 $plugin_tx['forum']['msg_confirm_delete']="This comment will be deleted!";
 $plugin_tx['forum']['msg_title']="Title";
-$plugin_tx['forum']['msg_title_missing']="Enter a topic title!";
-$plugin_tx['forum']['msg_comment_missing']="Enter your comment!";
 $plugin_tx['forum']['msg_enter_url']="Enter URL:";
 $plugin_tx['forum']['msg_invalid_name']="\"%s\" is an invalid forum name (may contain a-z, 0-9 and - only)!";
 

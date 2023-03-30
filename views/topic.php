@@ -5,12 +5,11 @@ use Forum\Infra\View;
 /**
  * @var View $this
  * @var string $title
- * @var list<array{cid:string,user:string,mayDeleteComment:bool,commentDate:string,html:string,commentEditUrl:string}> $topic
+ * @var list<array{cid:string,user:string,mayDeleteComment:bool,commentDate:string,html:string,commentEditUrl:string,deleteUrl:string}> $topic
  * @var string $tid
  * @var array{name:string,value:string} $token
  * @var bool $isUser
  * @var string $replyUrl
- * @var string $deleteUrl
  * @var string $href
  */
 ?>
@@ -20,11 +19,9 @@ use Forum\Infra\View;
 <?foreach ($topic as $comment):?>
     <div>
 <?  if ($comment['mayDeleteComment']):?>
-      <form class="forum_delete" action="<?=$deleteUrl?>" method="POST" data-message="<?=$this->text('msg_confirm_delete')?>">
+      <form class="forum_delete" action="<?=$comment['deleteUrl']?>" method="POST" data-message="<?=$this->text('msg_confirm_delete')?>">
         <input type="hidden" name="<?=$token['name']?>" value="<?=$token['value']?>">
-        <input type="hidden" name="forum_topic" value="<?=$tid?>">
-        <input type="hidden" name="forum_comment" value="<?=$comment['cid']?>">
-        <button title="<?=$this->text('lbl_delete')?>"><i class="fa fa-trash"></i></button>
+        <button name="forum_do" title="<?=$this->text('lbl_delete')?>"><i class="fa fa-trash"></i></button>
       </form>
       <a class="forum_edit" href="<?=$comment['commentEditUrl']?>">
         <button title="<?=$this->text('lbl_edit')?>"><i class="fa fa-pencil"></i></button>

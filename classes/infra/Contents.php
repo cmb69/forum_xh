@@ -155,11 +155,6 @@ class Contents
         return uniqid();
     }
 
-    public function cleanId(string $id): ?string
-    {
-        return preg_match('/^[a-f0-9]{13}+$/u', $id) ? $id : null;
-    }
-
     /** @return array<string,Topic> */
     public function getSortedTopics(string $forum): array
     {

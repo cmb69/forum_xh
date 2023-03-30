@@ -40,22 +40,54 @@ class Request
         return Url::from(CMSIMPLE_URL . $rest);
     }
 
-    /** @return array{string,string} */
-    public function deletePost(): array
+    public function action(): string
     {
-        return [
-            $this->postString("forum_topic"),
-            $this->postString("forum_comment"),
-        ];
+        $action = $this->url()->param("forum_action");
+        if (!is_string($action)) {
+            return "";
+        }
+        if (!strncmp($action, "do_", strlen("do_"))) {
+            return "";
+        }
+        $post = $this->post();
+        if (isset($post["forum_do"])) {
+            return "do_$action";
+        }
+        return $action;
     }
 
-    /** @return array{title:string|null,topic:string|null,comment:string|null,text:string} */
+    public function topic(): ?string
+    {
+        $topic = $this->url()->param("forum_topic");
+        if (!is_string($topic)) {
+            return null;
+        }
+        return preg_match('/^[a-f0-9]{13}+$/u', $topic) ? $topic : null;
+    }
+
+    public function comment(): ?string
+    {
+        $comment = $this->url()->param("forum_comment");
+        if (!is_string($comment)) {
+            return null;
+        }
+        return preg_match('/^[a-f0-9]{13}+$/u', $comment) ? $comment : null;
+    }
+
+    public function bbCode(): string
+    {
+        $bbCode = $this->url()->param("forum_bbcode");
+        if (!is_string($bbCode)) {
+            return "";
+        }
+        return $bbCode;
+    }
+
+    /** @return array{title:string|null,text:string} */
     public function commentPost(): array
     {
         return [
             "title" => $this->postString("forum_title") ?: null,
-            "topic" => $this->postString("forum_topic") ?: null,
-            "comment" => $this->postString("forum_comment") ?: null,
             "text" => $this->postString("forum_text"),
         ];
     }

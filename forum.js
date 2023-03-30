@@ -226,17 +226,6 @@ function initEditor() {
     };
 
     form.onsubmit = (function () {
-        var title = document.getElementById('forum_title');
-        if (title && title.value.length === 0) {
-            alert(i18n.TITLE_MISSING);
-            title.focus();
-            return false;
-        }
-        if (textarea.textLength === 0) {
-            alert(i18n.COMMENT_MISSING);
-            textarea.focus();
-            return false;
-        }
         var container = document.getElementsByClassName("forum_container")[0];
         submitForm(form, container);
         return false;

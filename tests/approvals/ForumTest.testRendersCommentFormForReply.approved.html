@@ -1,9 +1,9 @@
 <div class="forum_container">
-  <form class="forum_comment" action="/?Forum&amp;forum_actn=post&amp;forum_topic=1234" method="post" accept-charset="UTF-8" data-i18n="{&quot;TITLE_MISSING&quot;:&quot;Enter a topic title!&quot;,&quot;COMMENT_MISSING&quot;:&quot;Enter your comment!&quot;,&quot;ENTER_URL&quot;:&quot;Enter URL:&quot;}">
+  <form class="forum_comment" action="/?Forum&amp;forum_action=edit&amp;forum_topic=0123456789abc" method="post" accept-charset="UTF-8" data-i18n='{"ENTER_URL":"Enter URL:"}'>
     <div class="forum_preview_container"></div>
     <input type="hidden" name="xh_csrf_token" value="e3c1b42a6098b48a39f9f54ddb3388f7">
     <h6 class="forum_heading">Add your comment</h6>
-    <input type="hidden" name="forum_topic" value="1234">
+    <input type="hidden" name="forum_topic" value="0123456789abc">
     <input type="hidden" name="forum_comment" value="">
     <script type="text/x-template" id="forum_toolbar">
       <div>
@@ -34,15 +34,15 @@
         <button type="button" class="forum_list_item_button" title="List Item"><i class="fa fa-asterisk"></i></button>
         <button type="button" class="forum_quotes_button" title="Quotes"><i class="fa fa-quote-right"></i></button>
         <button type="button" class="forum_code_button" title="Code"><i class="fa fa-code"></i></button>
-        <button type="button" class="forum_preview_button" title="Preview" data-url="/?Forum&amp;forum_actn=preview&amp;forum_topic=1234"><i class="fa fa-eye"></i></button>
+        <button type="button" class="forum_preview_button" title="Preview" data-url="/?Forum&amp;forum_action=preview&amp;forum_topic=0123456789abc"><i class="fa fa-eye"></i></button>
       </div>
     </script>
-    <textarea name="forum_text" cols="80" rows="10"></textarea>
+    <textarea name="forum_text" cols="80" rows="10" required></textarea>
     <p class="forum_submit">
-      <input type="submit" class="submit" value="Submit">
+      <button class="submit" name="forum_do">Submit</button>
     </p>
   </form>
   <div class="forum_navlink">
-    <a href="/?Forum&amp;forum_actn=edit&amp;forum_topic=1234">Back to overview</a>
+    <a href="/?Forum&amp;forum_topic=0123456789abc">Back to overview</a>
   </div>
 </div>

@@ -61,7 +61,6 @@ class ForumTest extends TestCase
         $this->mailer = new FakeMailer($this->conf, $dateFormatter, $view);
         return new Forum(
             $this->conf,
-            XH_includeVar("./languages/en.php", 'plugin_tx')['forum'],
             "./",
             $this->contents,
             $this->bbcode,
@@ -77,7 +76,7 @@ class ForumTest extends TestCase
     public function testReportsInvalidTopicName(): void
     {
         $request = new FakeRequest;
-        $response = ($this->sut())("invalid_name", $request);
+        $response = ($this->sut())($request, "invalid_name");
         Approvals::verifyHtml($response->output());
     }
 
@@ -85,68 +84,66 @@ class ForumTest extends TestCase
     {
         $this->contents->method('getSortedTopics')->willReturn(["1234" => $this->topic()]);
         $request = new FakeRequest(["query" => "Forum"]);
-        $response = ($this->sut())("test", $request);
+        $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersTopicOverview(): void
     {
-        $this->contents->method('cleanId')->willReturn("1234");
         $this->contents->method('hasTopic')->willReturn(true);
         $this->contents->method('getTopicWithTitle')->willReturn(["Topic Title", ["2345" => $this->comment()]]);
-        $request = new FakeRequest(["query" => "Forum&forum_topic=1234"]);
-        $response = ($this->sut())("test", $request);
+        $this->authorizer->method("mayModify")->willReturn(true);
+        $request = new FakeRequest(["query" => "Forum&forum_topic=0123456789abc"]);
+        $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersCommentFormForNewPost(): void
     {
         $this->authorizer->method('isUser')->willReturn(true);
-        $request = new FakeRequest(["query" => "Forum&forum_actn=edit"]);
-        $response = ($this->sut())("test", $request);
+        $request = new FakeRequest(["query" => "Forum&forum_action=edit"]);
+        $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersCommentForm(): void
     {
-        $this->contents->method('cleanId')->willReturnOnConsecutiveCalls("1234", "3456");
-        $this->contents->method('getTopic')->willReturn(["3456" => $this->comment()]);
+        $this->contents->method('getTopic')->willReturn(["3456789abcdef" => $this->comment()]);
         $this->authorizer->method('isUser')->willReturn(true);
         $this->authorizer->method('mayModify')->willReturn(true);
-        $request = new FakeRequest(["query" => "Forum&forum_actn=edit&forum_topic=1234&forum_comment=3456"]);
-        $response = ($this->sut())("test", $request);
+        $request = new FakeRequest(["query" => "Forum&forum_action=edit&forum_topic=0123456789abc&forum_comment=3456"]);
+        $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersCommentFormForReply(): void
     {
-        $this->contents->method('cleanId')->willReturnOnConsecutiveCalls("1234", null);
         $this->authorizer->method('isUser')->willReturn(true);
-        $request = new FakeRequest(["query" => "Forum&forum_actn=edit&forum_topic=1234"]);
-        $response = ($this->sut())("test", $request);
+        $request = new FakeRequest(["query" => "Forum&forum_action=edit&forum_topic=0123456789abc"]);
+        $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersBbCodeAndExits(): void
     {
         $this->bbcode->method('convert')->willReturn("else");
-        $request = new FakeRequest(["query" => "&forum_actn=preview&forum_bbcode=something"]);
-        $response = ($this->sut())("test", $request);
+        $request = new FakeRequest(["query" => "&forum_action=preview&forum_bbcode=something"]);
+        $response = ($this->sut())($request, "test");
         $this->assertEquals("else", $response->output());
         $this->assertTrue($response->exit());
     }
 
     public function testCreatesNewTopicAndRedirects(): void
     {
-        $this->contents->method('getId')->willReturn("3456");
+        $this->contents->method('getId')->willReturn("3456789abcdef");
         $this->contents->expects($this->once())->method('createComment');
         $this->authorizer->method('isUser')->willReturn(true);
         $request = new FakeRequest([
-            "query" => "Forum&forum_actn=post",
-            "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment"],
+            "query" => "Forum&forum_action=edit",
+            "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment", "forum_do" => ""],
         ]);
-        $response = ($this->sut())("test", $request);
-        $this->assertEquals("http://example.com/?Forum&forum_topic=3456", $response->location());
+        $response = ($this->sut())($request, "test");
+        $this->assertEquals("http://example.com/?Forum&forum_topic=3456789abcdef", $response->location());
     }
 
     public function testCreatesNewTopicAndSendsMail(): void
@@ -156,40 +153,37 @@ class ForumTest extends TestCase
         $this->authorizer->method('isUser')->willReturn(true);
         $this->conf = ["mail_address" => "webmaster@example.com"] + $this->conf;
         $request = new FakeRequest([
-            "query" => "Forum&forum_actn=post",
-            "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment"],
+            "query" => "Forum&forum_action=edit",
+            "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment", "forum_do" => ""],
         ]);
-        ($this->sut())("test", $request);
+        ($this->sut())($request, "test");
         Approvals::verifyList($this->mailer->lastMail());
     }
 
     public function testUpdatesCommentAndRedirects(): void
     {
-        $this->contents->method('cleanId')->willReturn("1234");
         $this->authorizer->method('isUser')->willReturn(true);
         $request = new FakeRequest([
-            "query" => "Forum&forum_actn=post",
+            "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=edit",
             "post" => [
-                "forum_topic" => "1234",
-                "forum_comment" => "3456",
                 "forum_text" => "A comment",
+                "forum_do" => "",
             ]
         ]);
-        $response = ($this->sut())("test", $request);
-        $this->assertEquals("http://example.com/?Forum&forum_topic=1234", $response->location());
+        $response = ($this->sut())($request, "test");
+        $this->assertEquals("http://example.com/?Forum&forum_topic=0123456789abc", $response->location());
     }
 
     public function testDeletesCommentAndRedirects(): void
     {
-        $this->contents->method('cleanId')->willReturnOnConsecutiveCalls("1234", "3456");
         $this->contents->expects($this->once())->method('deleteComment');
         $this->authorizer->method('isUser')->willReturn(true);
         $request = new FakeRequest([
-            "query" => "Forum&forum_actn=delete",
-            "post" => ["forum_topic" => "1234", "forum_comment" =>  "3456"],
+            "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=delete",
+            "post" => ["forum_do" => ""],
         ]);
-        $response = ($this->sut())("test", $request);
-        $this->assertEquals("http://example.com/?Forum", $response->location());
+        $response = ($this->sut())($request, "test");
+        $this->assertEquals("http://example.com/?Forum&forum_topic=0123456789abc", $response->location());
     }
 
     private function topic(): Topic

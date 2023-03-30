@@ -13,19 +13,19 @@ use Forum\Infra\View;
  * @var string $headingKey
  * @var string $comment
  * @var array{name:string,value:string} $token
- * @var string|false $i18n
+ * @var array<string,string> $i18n
  * @var array<string,string> $emoticons
  */
 ?>
 <div class="forum_container">
-  <form class="forum_comment" action="<?=$action?>" method="post" accept-charset="UTF-8" data-i18n="<?=$i18n?>">
+  <form class="forum_comment" action="<?=$action?>" method="post" accept-charset="UTF-8" data-i18n='<?=$this->json($i18n)?>'>
     <div class="forum_preview_container"></div>
     <input type="hidden" name="<?=$token['name']?>" value="<?=$token['value']?>">
 <?if ($newTopic):?>
     <h6 class="forum_heading"><?=$this->text($headingKey)?></h6>
     <div class="forum_title">
       <label for="forum_title"><?=$this->text('msg_title')?></label>
-      <input type="text" id="forum_title" name="forum_title">
+      <input type="text" id="forum_title" name="forum_title" required>
     </div>
 <?else:?>
     <h6 class="forum_heading"><?=$this->text($headingKey)?></h6>
@@ -64,9 +64,9 @@ use Forum\Infra\View;
         <button type="button" class="forum_preview_button" title="<?=$this->text('lbl_preview')?>" data-url="<?=$previewUrl?>"><i class="fa fa-eye"></i></button>
       </div>
     </script>
-    <textarea name="forum_text" cols="80" rows="10"><?=$comment?></textarea>
+    <textarea name="forum_text" cols="80" rows="10" required><?=$comment?></textarea>
     <p class="forum_submit">
-      <input type="submit" class="submit" value="<?=$this->text('lbl_submit')?>">
+      <button class="submit" name="forum_do"><?=$this->text('lbl_submit')?></button>
     </p>
   </form>
   <div class="forum_navlink">

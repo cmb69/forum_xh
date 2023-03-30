@@ -41,9 +41,6 @@ class Forum
     /** @var array<string,string> */
     private $config;
 
-    /** @var array<string,string> */
-    private $lang;
-
     /** @var string */
     private $pluginFolder;
 
@@ -71,13 +68,9 @@ class Forum
     /** @var Authorizer */
     private $authorizer;
 
-    /**
-     * @param array<string,string> $config
-     * @param array<string,string> $lang
-     */
+    /** @param array<string,string> $config */
     public function __construct(
         array $config,
-        array $lang,
         string $pluginFolder,
         Contents $contents,
         BbCode $bbcode,
@@ -89,7 +82,6 @@ class Forum
         Authorizer $authorizer
     ) {
         $this->config = $config;
-        $this->lang = $lang;
         $this->pluginFolder = $pluginFolder;
         $this->contents = $contents;
         $this->bbcode = $bbcode;
@@ -101,38 +93,32 @@ class Forum
         $this->authorizer = $authorizer;
     }
 
-    public function __invoke(string $forum, Request $request): Response
+    public function __invoke(Request $request, string $forum): Response
     {
         if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
             return Response::create($this->view->message("fail", "msg_invalid_name", $forum));
         }
-        $action = $request->url()->param("forum_actn");
-        $action = is_string($action) ? $action : "";
-        switch ($action) {
+        switch ($request->action()) {
             default:
-                return $this->show($forum, $request);
-            case "delete":
-                return $this->deleteComment($forum, $request);
+                return $this->show($request, $forum);
+            case "do_delete":
+                return $this->deleteComment($request, $forum);
             case "edit":
-                return $this->showEditor($forum, $request);
-            case "post":
-                return $this->post($forum, $request);
+                return $this->showEditor($request, $forum);
+            case "do_edit":
+                return $this->post($request, $forum);
             case "preview":
                 return $this->preview($request);
         }
     }
 
-    private function show(string $forum, Request $request): Response
+    private function show(Request $request, string $forum): Response
     {
-        $topic = $request->url()->param("forum_topic");
-        $topic = is_string($topic) ? $topic : "";
-        if (empty($topic)
-            || ($tid = $this->contents->cleanId($topic)) === null
-            || !$this->contents->hasTopic($forum, $tid)
-        ) {
-            $response = Response::create($this->renderTopicsView($forum, $request));
+        $tid = $request->topic();
+        if (empty($tid) || !$this->contents->hasTopic($forum, $tid)) {
+            $response = Response::create($this->renderTopicsView($request, $forum));
         } else {
-            $response = Response::create($this->renderTopicView($forum, $tid, $request));
+            $response = Response::create($this->renderTopicView($request, $forum, $tid));
         }
         if ($request->url()->param("forum_ajax") !== null) {
             $response = $response->withExit();
@@ -141,13 +127,13 @@ class Forum
         return $response;
     }
 
-    private function renderTopicsView(string $forum, Request $request): string
+    private function renderTopicsView(Request $request, string $forum): string
     {
         $topics = $this->contents->getSortedTopics($forum);
         return $this->view->render('topics', [
             'isUser' => $this->authorizer->isUser(),
-            'href' => $request->url()->with("forum_actn", "edit")->relative(),
-            'topics' => $this->topicRecords($request->url(), $topics),
+            'href' => $request->url()->with("forum_action", "edit")->relative(),
+            'topics' => $this->topicRecords($request->url()->without("forum_ajax"), $topics),
         ]);
     }
 
@@ -169,52 +155,50 @@ class Forum
         }, array_keys($topics), array_values($topics));
     }
 
-    private function renderTopicView(string $forum, string $tid, Request $request): string
+    private function renderTopicView(Request $request, string $forum, string $tid): string
     {
         $this->faRequireCommand->execute();
         list($title, $topic) = $this->contents->getTopicWithTitle($forum, $tid);
-        $editUrl = $request->url()->with("forum_actn", "edit")->with("forum_topic", $tid);
-
+        $url = $request->url()->without("forum_ajax");
+        $token = $this->csrfProtector->token();
         $this->csrfProtector->store();
         return $this->view->render('topic', [
             'title' => $title,
-            'topic' => $this->commentRecords($editUrl, $topic),
+            'topic' => $this->commentRecords($url, $topic),
             'tid' => $tid,
-            'csrfToken' => $this->csrfProtector->token(),
+            'token' => $token,
             'isUser' => $this->authorizer->isUser(),
-            'replyUrl' => $request->url()->with("forum_actn", "edit")->with("forum_topic", $tid)->relative(),
-            'deleteUrl' => $request->url()->with("forum_actn", "delete")->relative(),
-            'href' => $request->url()->relative(),
+            'replyUrl' => $url->with("forum_action", "edit")->with("forum_topic", $tid)->relative(),
+            'href' => $url->without("forum_topic")->relative(),
         ]);
     }
 
     /**
      * @param array<string,Comment> $comments
-     * @return list<array{cid:string,user:string,mayDeleteComment:bool,commentDate:string,html:Html,commentEditUrl:string}>
+     * @return list<array{cid:string,user:string,mayDeleteComment:bool,commentDate:string,html:Html,commentEditUrl:string,deleteUrl:string}>
      */
-    private function commentRecords(Url $editUrl, array $comments): array
+    private function commentRecords(Url $url, array $comments): array
     {
-        return array_map(function (string $cid, Comment $comment) use ($editUrl) {
+        return array_map(function (string $cid, Comment $comment) use ($url) {
+            $url = $url->with("forum_comment", $cid);
             return [
                 "cid" => $cid,
                 "user" => $comment->user(),
+
                 "mayDeleteComment" => $this->authorizer->mayModify($comment),
                 "commentDate" => $this->dateFormatter->format($comment->time()),
                 "html" => Html::of($this->bbcode->convert($comment->comment())),
-                "commentEditUrl" => $editUrl->with("forum_comment", $cid)->relative(),
+                "commentEditUrl" => $url->with("forum_action", "edit")->relative(),
+                "deleteUrl" => $url->with("forum_action", "delete")->relative(),
             ];
         }, array_keys($comments), array_values($comments));
     }
 
-    private function showEditor(string $forum, Request $request): Response
+    private function showEditor(Request $request, string $forum): Response
     {
-        $tid = $request->url()->param("forum_topic");
-        $tid = is_string($tid) ? $tid : "";
-        $tid = $this->contents->cleanId($tid);
-        $cid = $request->url()->param("forum_comment");
-        $cid = is_string($cid) ? $cid : "";
-        $cid = $this->contents->cleanId($cid);
-        $output = $this->renderCommentForm($forum, $tid, $cid, $request);
+        $tid = $request->topic();
+        $cid = $request->comment();
+        $output = $this->renderCommentForm($request, $forum, $tid, $cid);
         $response = Response::create($output)->withScript("{$this->pluginFolder}forum");
         if ($request->url()->param("forum_ajax") !== null) {
             $response = $response->withExit();
@@ -222,7 +206,7 @@ class Forum
         return $response;
     }
 
-    private function renderCommentForm(string $forum, ?string $tid, ?string $cid, Request $request): string
+    private function renderCommentForm(Request $request, string $forum, ?string $tid, ?string $cid): string
     {
         if ($this->authorizer->isVisitor()) {
             return "";
@@ -242,57 +226,43 @@ class Forum
         foreach ($emotions as $emotion) {
             $emoticons[$emotion] = "{$this->pluginFolder}images/emoticon_$emotion.png";
         }
+        $url = $request->url()->without("forum_ajax");
         $output = $this->view->render('form', [
             'newTopic' => $tid === null,
             'tid' => $tid !== null ? $tid : "",
             'cid' => $cid !== null ? $cid : "",
-            'action' => $request->url()->with("forum_actn", "post")->relative(),
-            'previewUrl' => $request->url()->with("forum_actn", "preview")->relative(),
+            'action' => $url->with("forum_action", "edit")->relative(),
+            'previewUrl' => $url->with("forum_action", "preview")->relative(),
             'backUrl' => $tid === null
-                ? $request->url()->without("forum_topic")->relative()
-                : $request->url()->with("forum_topic", $tid)->relative(),
+                ? $url->without("forum_action")->relative()
+                : $url->without("forum_action")->without("forum_comment")->relative(),
             'headingKey' => $tid === null ? 'msg_new_topic' : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment'),
             'comment' => $comment,
             'token' => $this->csrfProtector->token(),
-            'i18n' => json_encode($this->jsTexts()),
+            'i18n' => ["ENTER_URL" => $this->view->plain("msg_enter_url")],
             'emoticons' => $emoticons,
         ]);
         $this->csrfProtector->store();
         return $output;
     }
 
-    /** @return array<string,string> */
-    private function jsTexts()
-    {
-        $keys = ['title_missing', 'comment_missing', 'enter_url'];
-        $texts = array();
-        foreach ($keys as $key) {
-            $texts[strtoupper($key)] = $this->lang['msg_' . $key];
-        }
-        return $texts;
-    }
-
     private function preview(Request $request): Response
     {
-        $bbCode = $request->url()->param("forum_bbcode");
-        $bbCode = is_string($bbCode) ? $bbCode : "";
-        return Response::create($this->bbcode->convert($bbCode))->withExit();
+        return Response::create($this->bbcode->convert($request->bbCode()))->withExit();
     }
 
-    private function post(string $forum, Request $request): Response
+    private function post(Request $request, string $forum): Response
     {
         $this->csrfProtector->check();
-        $post = $request->commentPost();
-        $tid = $this->postComment($forum, $post["topic"], $post["comment"], $request);
-        $url = $tid !== null ? $request->url()->with("forum_topic", $tid) : $request->url();
-        if ($request->url()->param("forum_ajax") !== null) {
-            $url = $url->with("forum_ajax", "");
-        }
-        $url = $url->without("forum_actn");
+        $tid = $request->topic();
+        $cid = $request->comment();
+        $tid = $this->postComment($request, $forum, $tid, $cid);
+        $url = $tid !== null ? $request->url()->without("forum_comment")->with("forum_topic", $tid) : $request->url();
+        $url = $url->without("forum_action");
         return Response::redirect($url->absolute());
     }
 
-    private function postComment(string $forum, ?string $tid, ?string $cid, Request $request): ?string
+    private function postComment(Request $request, string $forum, ?string $tid, ?string $cid): ?string
     {
         $post = $request->commentPost();
         if (!isset($tid) && empty($post["title"])
@@ -300,11 +270,8 @@ class Forum
         ) {
             return null;
         }
-        $tid = isset($tid)
-            ? $this->contents->cleanId($tid)
-            : $this->contents->getId();
         if ($tid === null) {
-            return null;
+            $tid = $this->contents->getId();
         }
 
         $comment = new Comment($this->authorizer->username(), time(), $post["text"]);
@@ -326,19 +293,15 @@ class Forum
         return $tid;
     }
 
-    private function deleteComment(string $forum, Request $request): Response
+    private function deleteComment(Request $request, string $forum): Response
     {
         $this->csrfProtector->check();
-        [$tid, $cid] = $request->deletePost();
-        $tid = $this->contents->cleanId($tid);
-        $cid = $this->contents->cleanId($cid);
-        $url = $tid !== null && $cid !== null && $this->contents->deleteComment($forum, $tid, $cid, $this->authorizer)
-            ? $request->url()->with("forum_topic", $tid)
-            : $request->url();
-        if ($request->url()->param("forum_ajax") !== null) {
-            $url = $url->with("forum_ajax");
+        $tid = $request->topic();
+        $cid = $request->comment();
+        if ($tid !== null && $cid !== null) {
+            $this->contents->deleteComment($forum, $tid, $cid, $this->authorizer);
         }
-        $url = $url->without("forum_actn");
+        $url = $request->url()->without("forum_action")->without("forum_comment");
         return Response::redirect($url->absolute());
     }
 }

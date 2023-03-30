@@ -28,5 +28,5 @@ const FORUM_VERSION = "1.0beta5";
 /** @return string|never */
 function forum(string $forum)
 {
-    return Responder::respond(Dic::makeForum()($forum, Request::current()));
+    return Responder::respond(Dic::makeForum()(Request::current(), $forum));
 }

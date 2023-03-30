@@ -2,6 +2,13 @@
   <h6 class="forum_heading">Topic Title</h6>
   <div class="forum_topic">
     <div>
+      <form class="forum_delete" action="/?Forum&amp;forum_topic=0123456789abc&amp;forum_comment=2345&amp;forum_action=delete" method="POST" data-message="This comment will be deleted!">
+        <input type="hidden" name="xh_csrf_token" value="e3c1b42a6098b48a39f9f54ddb3388f7">
+        <button name="forum_do" title="Delete Comment"><i class="fa fa-trash"></i></button>
+      </form>
+      <a class="forum_edit" href="/?Forum&amp;forum_topic=0123456789abc&amp;forum_comment=2345&amp;forum_action=edit">
+        <button title="Edit Comment"><i class="fa fa-pencil"></i></button>
+      </a>
       <div class="forum_details">
         <span class="forum_user">cmb</span>
         <span class="forum_separator">•</span>
@@ -11,6 +18,6 @@
     </div>
   </div>
   <div class="forum_navlink">
-    <a href="/?Forum&amp;forum_topic=1234">Back to overview</a>
+    <a href="/?Forum">Back to overview</a>
   </div>
 </div>
