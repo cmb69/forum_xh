@@ -136,6 +136,23 @@ class Contents
         return $topic;
     }
 
+    public function findComment(string $forum, string $tid, string $cid): ?Comment
+    {
+        $filename = $this->dataFolder($forum) . $tid . '.dat';
+        if (is_readable($filename)
+            && ($contents = file_get_contents($filename))
+        ) {
+            $data = unserialize($contents);
+        } else {
+            $data = array();
+        }
+        assert(is_array($data));
+        if (!isset($data[$cid])) {
+            return null;
+        }
+        return new Comment(...array_values($data[$cid]));
+    }
+
     /**
      * @param array<string,Comment> $topic
      */
@@ -202,10 +219,6 @@ class Contents
     {
         $lock = $this->lock($forum, true);
         $comments = $this->getTopic($forum, $tid);
-        if ($comment->user() != $comments[$cid]->user() && !(defined('XH_ADM') && XH_ADM)) {
-            $this->unlock($lock);
-            return false;
-        }
         $newComment = new Comment($comment->user(), $comments[$cid]->time(), $comment->comment());
         $comments[$cid] = $newComment;
         $res = $this->setTopic($forum, $tid, $comments);
@@ -213,22 +226,17 @@ class Contents
         return $res;
     }
 
-    public function deleteComment(string $forum, string $tid, string $cid, Authorizer $authorizer): ?string
+    public function deleteComment(string $forum, string $tid, string $cid): bool
     {
-        if (!$tid || !$cid) {
-            return null;
-        }
+        assert($tid && $cid);
         $lock = $this->lock($forum, true);
         $topics = $this->getTopics($forum);
         $comments = $this->getTopic($forum, $tid);
-        if (!$authorizer->mayModify($comments[$cid])) {
-            return null;
-        }
         unset($comments[$cid]);
         if (count($comments) > 0) {
             if (!$this->setTopic($forum, $tid, $comments)) {
                 $this->unlock($lock);
-                return null;
+                return false;
             }
             $comment = array_pop($comments);
             $topic = new Topic($topics[$tid]->title(), count($comments) + 1, $comment->user(), $comment->time());
@@ -236,10 +244,9 @@ class Contents
         } else {
             unlink($this->dataFolder($forum) . $tid . '.dat');
             unset($topics[$tid]);
-            $tid = null;
         }
         $res = $this->setTopics($forum, $topics);
         $this->unlock($lock);
-        return $res ? $tid : null;
+        return $res;
     }
 }

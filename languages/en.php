@@ -18,6 +18,7 @@ $plugin_tx['forum']['msg_enter_url']="Enter URL:";
 $plugin_tx['forum']['msg_invalid_name']="\"%s\" is an invalid forum name (may contain a-z, 0-9 and - only)!";
 
 $plugin_tx['forum']['error_no_topic']="There is no such topic!";
+$plugin_tx['forum']['error_no_comment']="There is no such comment!";
 $plugin_tx['forum']['error_unauthorized']="You are not authorized for this action!";
 
 $plugin_tx['forum']['lbl_submit']="Submit";

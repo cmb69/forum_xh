@@ -106,7 +106,7 @@ class Forum
             case "edit":
                 return $this->showEditor($request, $forum);
             case "do_edit":
-                return $this->post($request, $forum);
+                return $this->postComment($request, $forum);
             case "preview":
                 return $this->preview($request);
         }
@@ -250,7 +250,7 @@ class Forum
         return Response::create($this->bbcode->convert($request->bbCode()))->withExit();
     }
 
-    private function post(Request $request, string $forum): Response
+    private function postComment(Request $request, string $forum): Response
     {
         if ($this->authorizer->isVisitor()) {
             return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
@@ -258,22 +258,13 @@ class Forum
         $this->csrfProtector->check();
         $tid = $request->topic();
         $cid = $request->comment();
-        $tid = $this->postComment($request, $forum, $tid, $cid);
-        $url = $tid !== null ? $request->url()->without("forum_comment")->with("forum_topic", $tid) : $request->url();
-        $url = $url->without("forum_action");
-        return Response::redirect($url->absolute());
-    }
-
-    private function postComment(Request $request, string $forum, ?string $tid, ?string $cid): ?string
-    {
         $post = $request->commentPost();
         if ($tid === null && empty($post["title"]) || empty($post["text"])) {
-            return null; // TODO should render comment form with posted content and error messages
+            return $this->respondWith($request->url(), "TODO: post submission failure"); // TODO should render comment form with posted content and error messages
         }
         if ($tid === null) {
             $tid = $this->contents->getId();
         }
-
         $comment = new Comment($this->authorizer->username(), time(), $post["text"]);
         if (!isset($cid)) {
             $cid = $this->contents->getId();
@@ -281,16 +272,23 @@ class Forum
             $this->contents->createComment($forum, $tid, $title, $cid, $comment);
             $subject = $this->view->plain("mail_subject_new");
         } else {
+            $oldComment = $this->contents->findComment($forum, $tid, $cid);
+            if ($oldComment === null) {
+                return $this->respondWith($request->url(), $this->view->error("error_no_comment"));
+            }
+            if (!$this->authorizer->mayModify($oldComment)) {
+                return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
+            }
             $this->contents->updateComment($forum, $tid, $cid, $comment);
             $subject = $this->view->plain("mail_subject_edit");
         }
-
         if (!$this->authorizer->isAdmin() && $this->config['mail_address']) {
             $url = $request->url()->with("forum_topic", $tid)->absolute();
             $this->mailer->sendMail($subject, $comment, $url);
         }
-
-        return $tid;
+        $url = $request->url()->without("forum_comment")->with("forum_topic", $tid);
+        $url = $url->without("forum_action");
+        return Response::redirect($url->absolute());
     }
 
     private function deleteComment(Request $request, string $forum): Response
@@ -302,8 +300,18 @@ class Forum
         $tid = $request->topic();
         $cid = $request->comment();
         if ($tid !== null && $cid !== null) {
-            $this->contents->deleteComment($forum, $tid, $cid, $this->authorizer);
+            $comment = $this->contents->findComment($forum, $tid, $cid);
+            if ($comment === null) {
+                return $this->respondWith($request->url(), $this->view->error("error_no_comment"));
+            }
+            if (!$this->authorizer->mayModify($comment)) {
+                return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
+            }
+            $this->contents->deleteComment($forum, $tid, $cid); // TODO report failure
+        } else {
+            // TODO report that condition
         }
+        // TODO redirect to topics overview if topic has been deleted
         $url = $request->url()->without("forum_action")->without("forum_comment");
         return Response::redirect($url->absolute());
     }

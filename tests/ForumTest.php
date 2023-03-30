@@ -186,7 +186,9 @@ class ForumTest extends TestCase
 
     public function testUpdatesCommentAndRedirects(): void
     {
+        $this->contents->method("findComment")->willReturn($this->comment());
         $this->authorizer->method('isUser')->willReturn(true);
+        $this->authorizer->method("mayModify")->willReturn(true);
         $request = new FakeRequest([
             "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=edit",
             "post" => [
@@ -209,10 +211,42 @@ class ForumTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testReportsNonExistentCommentWhenUpdating(): void
+    {
+        $this->contents->method("findComment")->willReturn(null);
+        $this->authorizer->method('isUser')->willReturn(true);
+        $request = new FakeRequest([
+            "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=edit",
+            "post" => [
+                "forum_text" => "A comment",
+                "forum_do" => "",
+            ]
+        ]);
+        $response = ($this->sut())($request, "test");
+        $this->assertEquals("<p class=\"xh_fail\">There is no such comment!</p>\n", $response->output());
+    }
+
+    public function testReportsMissingAuthorizationForPosting1(): void
+    {
+        $this->contents->method("findComment")->willReturn($this->comment());
+        $this->authorizer->method('isUser')->willReturn(true);
+        $this->authorizer->method("mayModify")->willReturn(false);
+        $request = new FakeRequest([
+            "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=edit",
+            "post" => [
+                "forum_text" => "A comment",
+                "forum_do" => "",
+            ]
+        ]);
+        $response = ($this->sut())($request, "test");
+        $this->assertEquals("<p class=\"xh_fail\">You are not authorized for this action!</p>\n", $response->output());
+    }
+
     public function testDeletesCommentAndRedirects(): void
     {
+        $this->contents->method("findComment")->willReturn($this->comment());
         $this->contents->expects($this->once())->method('deleteComment');
-        $this->authorizer->method('isUser')->willReturn(true);
+        $this->authorizer->method("mayModify")->willReturn(true);
         $request = new FakeRequest([
             "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=delete",
             "post" => ["forum_do" => ""],
@@ -221,9 +255,32 @@ class ForumTest extends TestCase
         $this->assertEquals("http://example.com/?Forum&forum_topic=0123456789abc", $response->location());
     }
 
-    public function testReportsMissingAuthorizationForDeleting(): void
+    public function testReportsGenerallyMissingAuthorizationForDeleting(): void
     {
         $this->authorizer->method('isVisitor')->willReturn(true);
+        $request = new FakeRequest([
+            "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=delete",
+            "post" => ["forum_do" => ""],
+        ]);
+        $response = ($this->sut())($request, "test");
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsNonExistentCommentWhenDeleting(): void
+    {
+        $this->contents->method("findComment")->willReturn(null);
+        $request = new FakeRequest([
+            "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=delete",
+            "post" => ["forum_do" => ""],
+        ]);
+        $response = ($this->sut())($request, "test");
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsMissingAuthorizationForDeleting(): void
+    {
+        $this->contents->method("findComment")->willReturn($this->comment());
+        $this->authorizer->method("mayModify")->willReturn(false);
         $request = new FakeRequest([
             "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=delete",
             "post" => ["forum_do" => ""],
