@@ -42,7 +42,7 @@ class Mailer
         $this->view = $view;
     }
 
-    public function sendMail(string $subject, Comment $comment, ?string $baseUrl = null): bool
+    public function sendMail(string $subject, Comment $comment, string $baseUrl): bool
     {
         $headers = array(
             'MIME-Version: 1.0',
@@ -50,9 +50,7 @@ class Mailer
             'Content-Transfer-Encoding: 8bit',
             "From: {$this->config['mail_address']}"
         );
-        if (isset($baseUrl)) {
-            $headers[] = "Content-Base: $baseUrl";
-        }
+        $headers[] = "Content-Base: $baseUrl";
         $sep = $this->config['mail_fix_headers'] ? "\n" : "\r\n";
         return $this->mail(
             $this->config['mail_address'],
