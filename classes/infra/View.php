@@ -54,7 +54,7 @@ final class View
     /** @param scalar $args */
     public function message(string $type, string $key, ...$args): string
     {
-        return XH_message($type, $key, ...$args);
+        return XH_message($type, $key, ...$args) . "\n";
     }
 
     /** @param array<string,mixed> $_data */

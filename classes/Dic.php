@@ -33,62 +33,22 @@ use Forum\Logic\BbCode;
 
 class Dic
 {
-    public static function makeShowForum(): ShowForum
+    public static function makeForum(): Forum
     {
-        global $pth;
-        return new ShowForum(
+        global $pth, $plugin_cf, $plugin_tx;
+        return new Forum(
+            $plugin_cf["forum"],
+            $plugin_tx["forum"],
             $pth["folder"]["plugins"] . "forum/",
             new Contents(self::contentFolder()),
             self::makeBbCode(),
             new CsrfProtector,
             self::makeView(),
             new FaRequireCommand(),
-            new DateFormatter(),
-            new Authorizer()
-        );
-    }
-
-    public static function makeShowEditor(): ShowEditor
-    {
-        global $pth, $plugin_tx;
-        return new ShowEditor(
-            $plugin_tx["forum"],
-            $pth["folder"]["plugins"] . "forum/",
-            new Contents(self::contentFolder()),
-            new CsrfProtector,
-            self::makeView(),
-            new FaRequireCommand(),
-            new Authorizer()
-        );
-    }
-
-    public static function makePostComment(): PostComment
-    {
-        global $pth, $plugin_cf, $plugin_tx;
-        return new PostComment(
-            $plugin_cf["forum"],
-            $plugin_tx["forum"],
-            new Contents(self::contentFolder()),
-            new CsrfProtector,
             new Mailer($plugin_cf["forum"]),
             new DateFormatter(),
             new Authorizer()
         );
-    }
-
-    public static function makeDeleteComment(): DeleteComment
-    {
-        global $pth;
-        return new DeleteComment(
-            new Contents(self::contentFolder()),
-            new CsrfProtector,
-            new Authorizer()
-        );
-    }
-
-    public static function makeShowPreview(): ShowPreview
-    {
-        return new ShowPreview(self::makeBbCode());
     }
 
     public static function makeShowInfo(): ShowInfo

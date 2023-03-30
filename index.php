@@ -28,23 +28,5 @@ const FORUM_VERSION = "1.0beta5";
 /** @return string|never */
 function forum(string $forum)
 {
-    /** @var array<string,array<string,string>> $plugin_tx */
-    global $plugin_tx;
-
-    $ptx = $plugin_tx['forum'];
-    if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
-        return XH_message('fail', $ptx['msg_invalid_name'], $forum);
-    }
-    switch ($_GET['forum_actn'] ?? "") {
-        default:
-            return Responder::respond(Dic::makeShowForum()($forum, Request::current()));
-        case "delete":
-            return Responder::respond(Dic::makeDeleteComment()($forum, Request::current()));
-        case "edit":
-            return Responder::respond(Dic::makeShowEditor()($forum, Request::current()));
-        case "post":
-            return Responder::respond(Dic::makePostComment()($forum, Request::current()));
-        case "preview":
-            return Responder::respond(Dic::makeShowPreview()(Request::current()));
-    }
+    return Responder::respond(Dic::makeForum()($forum, Request::current()));
 }

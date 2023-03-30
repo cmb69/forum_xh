@@ -33,29 +33,9 @@ class DicTest extends TestCase
         $plugin_tx = ["forum" => ["title_iframe" => ""]];
     }
 
-    public function testMakesShowForum(): void
+    public function testMakesForum(): void
     {
-        $this->assertInstanceOf(ShowForum::class, Dic::makeShowForum());
-    }
-
-    public function testMakesShowEditor(): void
-    {
-        $this->assertInstanceOf(ShowEditor::class, Dic::makeShowEditor());
-    }
-
-    public function testMakesPostComment(): void
-    {
-        $this->assertInstanceOf(PostComment::class, Dic::makePostComment());
-    }
-
-    public function testMakesDeleteComment(): void
-    {
-        $this->assertInstanceOf(DeleteComment::class, Dic::makeDeleteComment());
-    }
-
-    public function testMakesShowPreview(): void
-    {
-        $this->assertInstanceOf(ShowPreview::class, Dic::makeShowPreview());
+        $this->assertInstanceOf(Forum::class, Dic::makeForum());
     }
 
     public function testMakesShowInfo(): void
