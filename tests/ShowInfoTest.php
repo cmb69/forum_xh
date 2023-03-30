@@ -33,9 +33,8 @@ class ShowInfoTest extends TestCase
         $systemChecker = $this->createStub(SystemChecker::class);
         $lang = XH_includeVar("./languages/en.php", 'plugin_tx')['forum'];
         $sut = new ShowInfo(
-            "../",
+            "./plugins/forum/",
             "irrelevant_content_folder",
-            $lang,
             $systemChecker,
             new View("./views/", $lang)
         );

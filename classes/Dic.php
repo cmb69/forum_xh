@@ -53,11 +53,10 @@ class Dic
 
     public static function makeShowInfo(): ShowInfo
     {
-        global $pth, $plugin_tx;
+        global $pth;
         return new ShowInfo(
-            $pth["folder"]["plugins"],
+            $pth["folder"]["plugins"] . "forum/",
             self::contentFolder(),
-            $plugin_tx["forum"],
             new SystemChecker(),
             self::makeView()
         );

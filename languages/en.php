@@ -56,16 +56,15 @@ $plugin_tx['forum']['mail_subject_new']="A new comment has been posted";
 $plugin_tx['forum']['mail_subject_edit']="A comment has been edited";
 $plugin_tx['forum']['mail_attribution']="On %2\$s, %1\$s wrote:";
 
-$plugin_tx['forum']['syscheck_extension']="the PHP extension '%s' is loaded";
+$plugin_tx['forum']['syscheck_extension']="PHP extension '%s' is loaded: ";
 $plugin_tx['forum']['syscheck_fail']="failure";
-$plugin_tx['forum']['syscheck_message']="Checking that %1\$s … %2\$s";
-$plugin_tx['forum']['syscheck_phpversion']="PHP version ≥ %s";
-$plugin_tx['forum']['syscheck_plugin']="the CMSimple_XH plugin '%s' is installed";
+$plugin_tx['forum']['syscheck_phpversion']="PHP version ≥ %s: ";
+$plugin_tx['forum']['syscheck_plugin']="CMSimple_XH plugin '%s' is installed: ";
 $plugin_tx['forum']['syscheck_success']="okay";
 $plugin_tx['forum']['syscheck_title']="System check";
 $plugin_tx['forum']['syscheck_warning']="warning";
-$plugin_tx['forum']['syscheck_writable']="'%s' is writable";
-$plugin_tx['forum']['syscheck_xhversion']="CMSimple_XH version ≥ %s";
+$plugin_tx['forum']['syscheck_writable']="'%s' is writable: ";
+$plugin_tx['forum']['syscheck_xhversion']="CMSimple_XH version ≥ %s: ";
 
 $plugin_tx['forum']['cf_mail_address']="The address of the receiver of notification mails. If blank, no notification mails will be sent.";
 $plugin_tx['forum']['cf_mail_fix_headers']="Whether to fix problems with some buggy mail transfer agents. Enable it, if you don't receive the emails or if some header information (e.g. \"MIME-Version: 1.0\") is visible in the body of the mail.";
