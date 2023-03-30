@@ -115,7 +115,8 @@ class ShowInfo
     /** @return array{class:string,key:string,arg:string,statekey:string} */
     private function checkPlugin(string $plugin): array
     {
-        $state = $this->systemChecker->checkPlugin($this->pluginFolder) ? "success" : "fail";
+        $folder = dirname($this->pluginFolder) . "/$plugin";
+        $state = $this->systemChecker->checkPlugin($folder) ? "success" : "fail";
         return [
             "class" => "xh_$state",
             "key" => "syscheck_plugin",
