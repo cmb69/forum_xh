@@ -21,18 +21,28 @@
 
 namespace Forum\Infra;
 
+use Forum\Value\Comment;
+
 class Mailer
 {
     /** @var array<string,string> */
     private $config;
 
+    /** @var DateFormatter */
+    private $dateFormatter;
+
+    /** @var View */
+    private $view;
+
     /** @param array<string,string> $config */
-    public function __construct(array $config)
+    public function __construct(array $config, DateFormatter $dateFormatter, View $view)
     {
         $this->config = $config;
+        $this->dateFormatter = $dateFormatter;
+        $this->view = $view;
     }
 
-    public function sendMail(string $subject, string $message, ?string $baseUrl = null): bool
+    public function sendMail(string $subject, Comment $comment, ?string $baseUrl = null): bool
     {
         $headers = array(
             'MIME-Version: 1.0',
@@ -44,11 +54,26 @@ class Mailer
             $headers[] = "Content-Base: $baseUrl";
         }
         $sep = $this->config['mail_fix_headers'] ? "\n" : "\r\n";
-        return mail(
+        return $this->mail(
             $this->config['mail_address'],
             '=?UTF-8?B?' . base64_encode($subject) . '?=',
-            (string) preg_replace('/\r\n|\n|\r/', $sep, $message),
+            (string) preg_replace('/\r\n|\n|\r/', $sep, $this->renderMessage($comment, $baseUrl)),
             implode($sep, $headers)
         );
+    }
+
+    private function renderMessage(Comment $comment, string $url): string
+    {
+        $date = $this->dateFormatter->format($comment->time());
+        $attribution = $this->view->plain("mail_attribution", $comment->user(), $date);
+        $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment->comment());
+        assert(is_string($content));
+        return "$attribution\n\n> $content\n\n<$url>";
+    }
+
+    /** @codeCoverageIgnore */
+    protected function mail(string $to, string $subject, string $message, string $headers): bool
+    {
+        return mail($to, $subject, $message, $headers);
     }
 }

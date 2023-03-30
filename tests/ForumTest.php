@@ -27,6 +27,7 @@ use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\FakeCsrfProtector;
+use Forum\Infra\FakeMailer;
 use Forum\Infra\FakeRequest;
 use Forum\Infra\Mailer;
 use Forum\Infra\View;
@@ -37,29 +38,29 @@ use PHPUnit\Framework\TestCase;
 
 class ForumTest extends TestCase
 {
-    /** @var ShowForum */
-    private $sut;
-
-    /** @var Contents&MockObject */
+    private $conf;
     private $contents;
-
-    /** @var BbCode&MockObject */
     private $bbcode;
-
-    /** @var Authorizer&MockObject */
+    private $mailer;
     private $authorizer;
 
     public function setUp(): void
     {
+        $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["forum"];
         $this->contents = $this->createStub(Contents::class);
         $this->bbcode = $this->createStub(BbCode::class);
+        $this->authorizer = $this->createStub(Authorizer::class);
+    }
+
+    private function sut(): Forum
+    {
         $csrfProtector = new FakeCsrfProtector;
         $view = new View("./views/", XH_includeVar("./languages/en.php", 'plugin_tx')['forum']);
         $faRequireCommand = $this->createStub(RequireCommand::class);
         $dateFormatter = $this->createStub(DateFormatter::class);
-        $this->authorizer = $this->createStub(Authorizer::class);
-        $this->sut = new Forum(
-            XH_includeVar("./config/config.php", 'plugin_cf')['forum'],
+        $this->mailer = new FakeMailer($this->conf, $dateFormatter, $view);
+        return new Forum(
+            $this->conf,
             XH_includeVar("./languages/en.php", 'plugin_tx')['forum'],
             "./",
             $this->contents,
@@ -67,7 +68,7 @@ class ForumTest extends TestCase
             $csrfProtector,
             $view,
             $faRequireCommand,
-            $this->createStub(Mailer::class),
+            $this->mailer,
             $dateFormatter,
             $this->authorizer
         );
@@ -76,7 +77,7 @@ class ForumTest extends TestCase
     public function testReportsInvalidTopicName(): void
     {
         $request = new FakeRequest;
-        $response = ($this->sut)("invalid_name", $request);
+        $response = ($this->sut())("invalid_name", $request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -84,7 +85,7 @@ class ForumTest extends TestCase
     {
         $this->contents->method('getSortedTopics')->willReturn(["1234" => $this->topic()]);
         $request = new FakeRequest(["query" => "Forum"]);
-        $response = ($this->sut)("test", $request);
+        $response = ($this->sut())("test", $request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -94,7 +95,7 @@ class ForumTest extends TestCase
         $this->contents->method('hasTopic')->willReturn(true);
         $this->contents->method('getTopicWithTitle')->willReturn(["Topic Title", ["2345" => $this->comment()]]);
         $request = new FakeRequest(["query" => "Forum&forum_topic=1234"]);
-        $response = ($this->sut)("test", $request);
+        $response = ($this->sut())("test", $request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -102,7 +103,7 @@ class ForumTest extends TestCase
     {
         $this->authorizer->method('isUser')->willReturn(true);
         $request = new FakeRequest(["query" => "Forum&forum_actn=edit"]);
-        $response = ($this->sut)("test", $request);
+        $response = ($this->sut())("test", $request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -113,7 +114,7 @@ class ForumTest extends TestCase
         $this->authorizer->method('isUser')->willReturn(true);
         $this->authorizer->method('mayModify')->willReturn(true);
         $request = new FakeRequest(["query" => "Forum&forum_actn=edit&forum_topic=1234&forum_comment=3456"]);
-        $response = ($this->sut)("test", $request);
+        $response = ($this->sut())("test", $request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -122,7 +123,7 @@ class ForumTest extends TestCase
         $this->contents->method('cleanId')->willReturnOnConsecutiveCalls("1234", null);
         $this->authorizer->method('isUser')->willReturn(true);
         $request = new FakeRequest(["query" => "Forum&forum_actn=edit&forum_topic=1234"]);
-        $response = ($this->sut)("test", $request);
+        $response = ($this->sut())("test", $request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -130,7 +131,7 @@ class ForumTest extends TestCase
     {
         $this->bbcode->method('convert')->willReturn("else");
         $request = new FakeRequest(["query" => "&forum_actn=preview&forum_bbcode=something"]);
-        $response = ($this->sut)("test", $request);
+        $response = ($this->sut())("test", $request);
         $this->assertEquals("else", $response->output());
         $this->assertTrue($response->exit());
     }
@@ -144,8 +145,22 @@ class ForumTest extends TestCase
             "query" => "Forum&forum_actn=post",
             "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment"],
         ]);
-        $response = ($this->sut)("test", $request);
+        $response = ($this->sut())("test", $request);
         $this->assertEquals("http://example.com/?Forum&forum_topic=3456", $response->location());
+    }
+
+    public function testCreatesNewTopicAndSendsMail(): void
+    {
+        $this->contents->method('getId')->willReturn("3456");
+        $this->contents->expects($this->once())->method('createComment');
+        $this->authorizer->method('isUser')->willReturn(true);
+        $this->conf = ["mail_address" => "webmaster@example.com"] + $this->conf;
+        $request = new FakeRequest([
+            "query" => "Forum&forum_actn=post",
+            "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment"],
+        ]);
+        ($this->sut())("test", $request);
+        Approvals::verifyList($this->mailer->lastMail());
     }
 
     public function testUpdatesCommentAndRedirects(): void
@@ -160,7 +175,7 @@ class ForumTest extends TestCase
                 "forum_text" => "A comment",
             ]
         ]);
-        $response = ($this->sut)("test", $request);
+        $response = ($this->sut())("test", $request);
         $this->assertEquals("http://example.com/?Forum&forum_topic=1234", $response->location());
     }
 
@@ -173,7 +188,7 @@ class ForumTest extends TestCase
             "query" => "Forum&forum_actn=delete",
             "post" => ["forum_topic" => "1234", "forum_comment" =>  "3456"],
         ]);
-        $response = ($this->sut)("test", $request);
+        $response = ($this->sut())("test", $request);
         $this->assertEquals("http://example.com/?Forum", $response->location());
     }
 

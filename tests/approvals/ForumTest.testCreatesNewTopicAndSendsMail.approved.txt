@@ -1,0 +1,12 @@
+[0] -> webmaster@example.com
+[1] -> =?UTF-8?B?QSBuZXcgY29tbWVudCBoYXMgYmVlbiBwb3N0ZWQ=?=
+[2] -> On ,  wrote:
+
+> A comment
+
+<http://example.com/?Forum&forum_actn=post&forum_topic=3456>
+[3] -> MIME-Version: 1.0
+Content-type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+From: webmaster@example.com
+Content-Base: http://example.com/?Forum&forum_actn=post&forum_topic=3456

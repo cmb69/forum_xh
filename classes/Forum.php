@@ -312,20 +312,15 @@ class Forum
             $cid = $this->contents->getId();
             $title = $post["title"];
             $this->contents->createComment($forum, $tid, $title, $cid, $comment);
-            $subject = $this->lang['mail_subject_new'];
+            $subject = $this->view->plain("mail_subject_new");
         } else {
             $this->contents->updateComment($forum, $tid, $cid, $comment);
-            $subject = $this->lang['mail_subject_edit'];
+            $subject = $this->view->plain("mail_subject_edit");
         }
 
         if (!$this->authorizer->isAdmin() && $this->config['mail_address']) {
             $url = $request->url()->with("forum_topic", $tid)->absolute();
-            $date = $this->dateFormatter->format($comment->time());
-            $attribution = sprintf($this->lang['mail_attribution'], $comment->user(), $date);
-            $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment->comment());
-            assert(is_string($content));
-            $message = "$attribution\n\n> $content\n\n<$url>";
-            $this->mailer->sendMail($subject, $message, $url);
+            $this->mailer->sendMail($subject, $comment, $url);
         }
 
         return $tid;

@@ -45,7 +45,7 @@ class Dic
             new CsrfProtector,
             self::makeView(),
             new FaRequireCommand(),
-            new Mailer($plugin_cf["forum"]),
+            new Mailer($plugin_cf["forum"], new DateFormatter, self::makeView()),
             new DateFormatter(),
             new Authorizer()
         );
