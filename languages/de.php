@@ -17,6 +17,9 @@ $plugin_tx['forum']['msg_title']="Titel";
 $plugin_tx['forum']['msg_enter_url']="URL eingeben:";
 $plugin_tx['forum']['msg_invalid_name']="\"%s\" ist ein ungültiger Forenname (darf nur a-z, 0-9 and - enthalten)";
 
+$plugin_tx['forum']['error_no_topic']="Dieses Thema gibt es nicht!";
+$plugin_tx['forum']['error_unauthorized']="Sie sind nicht befugt diese Aktion auszuführen!";
+
 $plugin_tx['forum']['lbl_submit']="Sichern";
 $plugin_tx['forum']['lbl_edit']="Eintrag bearbeiten";
 $plugin_tx['forum']['lbl_delete']="Eintrag löschen";

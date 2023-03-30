@@ -49,7 +49,7 @@
     <unzip file="export.zip" todir="export"/>
     <delete file="export.zip"/>
     <exec executable="uglifyjs" passthru="true" checkreturn="true">
-      <arg line="export/forum.js --compress --mangle --output export/forum.min.js"/>
+      <arg line="export/forum.min.js --compress --mangle --output export/forum.min.js"/>
     </exec>
     <move todir="dist">
       <fileset dir="export">

@@ -28,8 +28,6 @@ class Responder
     /** @return string|never */
     public static function respond(Response $response)
     {
-        global $hjs;
-
         if ($response->location() !== null) {
             self::purgeOutputBuffers();
             header("Location: " . $response->location(), true, 303);
@@ -40,7 +38,6 @@ class Responder
             echo $response->output();
             exit;
         }
-        $hjs .= $response->hjs();
         return $response->output();
     }
 

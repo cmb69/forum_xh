@@ -61,7 +61,7 @@ class ForumTest extends TestCase
         $this->mailer = new FakeMailer($this->conf, $dateFormatter, $view);
         return new Forum(
             $this->conf,
-            "./",
+            "./plugins/forum/",
             $this->contents,
             $this->bbcode,
             $csrfProtector,
@@ -98,6 +98,14 @@ class ForumTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testReportsNonExistentTopic(): void
+    {
+        $this->contents->method('hasTopic')->willReturn(false);
+        $request = new FakeRequest(["query" => "Forum&forum_topic=0123456789abc"]);
+        $response = ($this->sut())($request, "test");
+        Approvals::verifyHtml($response->output());
+    }
+
     public function testRendersCommentFormForNewPost(): void
     {
         $this->authorizer->method('isUser')->willReturn(true);
@@ -124,6 +132,14 @@ class ForumTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testReportsMissingAuthorizationForEditing(): void
+    {
+        $this->authorizer->method('isVisitor')->willReturn(true);
+        $request = new FakeRequest(["query" => "Forum&forum_action=edit&forum_topic=0123456789abc"]);
+        $response = ($this->sut())($request, "test");
+        Approvals::verifyHtml($response->output());
+    }
+
     public function testRendersBbCodeAndExits(): void
     {
         $this->bbcode->method('convert')->willReturn("else");
@@ -131,6 +147,14 @@ class ForumTest extends TestCase
         $response = ($this->sut())($request, "test");
         $this->assertEquals("else", $response->output());
         $this->assertTrue($response->exit());
+    }
+
+    public function testReportsMissingAuthorizationForPreview(): void
+    {
+        $this->authorizer->method('isVisitor')->willReturn(true);
+        $request = new FakeRequest(["query" => "&forum_action=preview&forum_bbcode=something"]);
+        $response = ($this->sut())($request, "test");
+        Approvals::verifyHtml($response->output());
     }
 
     public function testCreatesNewTopicAndRedirects(): void
@@ -174,6 +198,17 @@ class ForumTest extends TestCase
         $this->assertEquals("http://example.com/?Forum&forum_topic=0123456789abc", $response->location());
     }
 
+    public function testReportsMissingAuthorizationForPosting(): void
+    {
+        $this->authorizer->method('isVisitor')->willReturn(true);
+        $request = new FakeRequest([
+            "query" => "Forum&forum_action=edit",
+            "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment", "forum_do" => ""],
+        ]);
+        $response = ($this->sut())($request, "test");
+        Approvals::verifyHtml($response->output());
+    }
+
     public function testDeletesCommentAndRedirects(): void
     {
         $this->contents->expects($this->once())->method('deleteComment');
@@ -184,6 +219,17 @@ class ForumTest extends TestCase
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("http://example.com/?Forum&forum_topic=0123456789abc", $response->location());
+    }
+
+    public function testReportsMissingAuthorizationForDeleting(): void
+    {
+        $this->authorizer->method('isVisitor')->willReturn(true);
+        $request = new FakeRequest([
+            "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=delete",
+            "post" => ["forum_do" => ""],
+        ]);
+        $response = ($this->sut())($request, "test");
+        Approvals::verifyHtml($response->output());
     }
 
     private function topic(): Topic

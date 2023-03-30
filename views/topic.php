@@ -11,8 +11,10 @@ use Forum\Infra\View;
  * @var bool $isUser
  * @var string $replyUrl
  * @var string $href
+ * @var string $script
  */
 ?>
+<script type="module" src="<?=$script?>"></script>
 <div class="forum_container">
   <h6 class="forum_heading"><?=$title?></h6>
   <div class="forum_topic">

@@ -7,8 +7,10 @@ use Forum\Infra\View;
  * @var bool $isUser
  * @var string $href
  * @var list<array{tid:string,title:string,user:string,comments:int,date:string,url:string}> $topics
+ * @var string $script
  */
 ?>
+<script type="module" src="<?=$script?>"></script>
 <div class="forum_container">
   <h6 class="forum_heading"><?=$this->text('msg_topics')?></h6>
   <div class="forum_topics">

@@ -15,8 +15,10 @@ use Forum\Infra\View;
  * @var array{name:string,value:string} $token
  * @var array<string,string> $i18n
  * @var array<string,string> $emoticons
+ * @var string $script
  */
 ?>
+<script type="module" src="<?=$script?>"></script>
 <div class="forum_container">
   <form class="forum_comment" action="<?=$action?>" method="post" accept-charset="UTF-8" data-i18n='<?=$this->json($i18n)?>'>
     <div class="forum_preview_container"></div>

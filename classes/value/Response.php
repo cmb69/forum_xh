@@ -46,21 +46,6 @@ class Response
     /** @var bool */
     private $exit = false;
 
-    /** @var string */
-    private $hjs = "";
-
-    public function withScript(string $basename): self
-    {
-        if (is_file("$basename.min.js")) {
-            $filename = "$basename.min.js";
-        } else {
-            $filename = "$basename.js";
-        }
-        $that = clone $this;
-        $that->hjs .= "<script type=\"module\" src=\"$filename\"></script>";
-        return $that;
-    }
-
     public function withExit(): self
     {
         $that = clone $this;
@@ -81,10 +66,5 @@ class Response
     public function exit(): bool
     {
         return $this->exit;
-    }
-
-    public function hjs(): ?string
-    {
-        return $this->hjs;
     }
 }

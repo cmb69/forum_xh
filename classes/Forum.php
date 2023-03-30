@@ -96,7 +96,7 @@ class Forum
     public function __invoke(Request $request, string $forum): Response
     {
         if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
-            return Response::create($this->view->message("fail", "msg_invalid_name", $forum));
+            return Response::create($this->view->error("msg_invalid_name", $forum));
         }
         switch ($request->action()) {
             default:
@@ -115,16 +115,13 @@ class Forum
     private function show(Request $request, string $forum): Response
     {
         $tid = $request->topic();
-        if (empty($tid) || !$this->contents->hasTopic($forum, $tid)) {
-            $response = Response::create($this->renderTopicsView($request, $forum));
-        } else {
-            $response = Response::create($this->renderTopicView($request, $forum, $tid));
+        if ($tid === null) {
+            return $this->respondWith($request->url(), $this->renderTopicsView($request, $forum));
         }
-        if ($request->url()->param("forum_ajax") !== null) {
-            $response = $response->withExit();
+        if ($this->contents->hasTopic($forum, $tid)) {
+            return $this->respondWith($request->url(), $this->renderTopicView($request, $forum, $tid));
         }
-        $response = $response->withScript("{$this->pluginFolder}forum");
-        return $response;
+        return $this->respondWith($request->url(), $this->view->error("error_no_topic"));
     }
 
     private function renderTopicsView(Request $request, string $forum): string
@@ -134,6 +131,7 @@ class Forum
             'isUser' => $this->authorizer->isUser(),
             'href' => $request->url()->with("forum_action", "edit")->relative(),
             'topics' => $this->topicRecords($request->url()->without("forum_ajax"), $topics),
+            "script" => $this->pluginFolder . "forum.min.js",
         ]);
     }
 
@@ -170,6 +168,7 @@ class Forum
             'isUser' => $this->authorizer->isUser(),
             'replyUrl' => $url->with("forum_action", "edit")->with("forum_topic", $tid)->relative(),
             'href' => $url->without("forum_topic")->relative(),
+            "script" => $this->pluginFolder . "forum.min.js",
         ]);
     }
 
@@ -196,21 +195,17 @@ class Forum
 
     private function showEditor(Request $request, string $forum): Response
     {
+        if ($this->authorizer->isVisitor()) {
+            return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
+        }
         $tid = $request->topic();
         $cid = $request->comment();
         $output = $this->renderCommentForm($request, $forum, $tid, $cid);
-        $response = Response::create($output)->withScript("{$this->pluginFolder}forum");
-        if ($request->url()->param("forum_ajax") !== null) {
-            $response = $response->withExit();
-        }
-        return $response;
+        return $this->respondWith($request->url(), $output);
     }
 
     private function renderCommentForm(Request $request, string $forum, ?string $tid, ?string $cid): string
     {
-        if ($this->authorizer->isVisitor()) {
-            return "";
-        }
         $this->faRequireCommand->execute();
 
         $comment = '';
@@ -241,6 +236,7 @@ class Forum
             'token' => $this->csrfProtector->token(),
             'i18n' => ["ENTER_URL" => $this->view->plain("msg_enter_url")],
             'emoticons' => $emoticons,
+            "script" => $this->pluginFolder . "forum.min.js",
         ]);
         $this->csrfProtector->store();
         return $output;
@@ -248,11 +244,17 @@ class Forum
 
     private function preview(Request $request): Response
     {
+        if ($this->authorizer->isVisitor()) {
+            return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
+        }
         return Response::create($this->bbcode->convert($request->bbCode()))->withExit();
     }
 
     private function post(Request $request, string $forum): Response
     {
+        if ($this->authorizer->isVisitor()) {
+            return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
+        }
         $this->csrfProtector->check();
         $tid = $request->topic();
         $cid = $request->comment();
@@ -265,10 +267,8 @@ class Forum
     private function postComment(Request $request, string $forum, ?string $tid, ?string $cid): ?string
     {
         $post = $request->commentPost();
-        if (!isset($tid) && empty($post["title"])
-            || $this->authorizer->isVisitor() || empty($post["text"])
-        ) {
-            return null;
+        if ($tid === null && empty($post["title"]) || empty($post["text"])) {
+            return null; // TODO should render comment form with posted content and error messages
         }
         if ($tid === null) {
             $tid = $this->contents->getId();
@@ -295,6 +295,9 @@ class Forum
 
     private function deleteComment(Request $request, string $forum): Response
     {
+        if ($this->authorizer->isVisitor()) {
+            return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
+        }
         $this->csrfProtector->check();
         $tid = $request->topic();
         $cid = $request->comment();
@@ -303,5 +306,13 @@ class Forum
         }
         $url = $request->url()->without("forum_action")->without("forum_comment");
         return Response::redirect($url->absolute());
+    }
+
+    private function respondWith(Url $url, string $output): Response
+    {
+        if ($url->param("forum_ajax") === null) {
+            return Response::create($output);
+        }
+        return Response::create($output)->withExit();
     }
 }

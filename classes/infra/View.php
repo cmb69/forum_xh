@@ -58,9 +58,9 @@ final class View
     }
 
     /** @param scalar $args */
-    public function message(string $type, string $key, ...$args): string
+    public function error(string $key, ...$args): string
     {
-        return XH_message($type, $key, ...$args) . "\n";
+        return XH_message("fail", $this->text[$key], ...$args) . "\n";
     }
 
     /** @param mixed $value */
