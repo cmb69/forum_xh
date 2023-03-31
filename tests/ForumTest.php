@@ -77,7 +77,10 @@ class ForumTest extends TestCase
     {
         $request = new FakeRequest;
         $response = ($this->sut())($request, "invalid_name");
-        Approvals::verifyHtml($response->output());
+        $this->assertEquals(
+            "<p class=\"xh_fail\">&quot;invalid_name&quot; is an invalid forum name (may contain a-z, 0-9 and - only)!</p>\n",
+            $response->output()
+        );
     }
 
     public function testRendersForumOverview(): void
@@ -103,13 +106,13 @@ class ForumTest extends TestCase
         $this->contents->method('hasTopic')->willReturn(false);
         $request = new FakeRequest(["query" => "Forum&forum_topic=0123456789abc"]);
         $response = ($this->sut())($request, "test");
-        Approvals::verifyHtml($response->output());
+        $this->assertEquals("<p class=\"xh_fail\">There is no such topic!</p>\n", $response->output());
     }
 
     public function testRendersCommentFormForNewPost(): void
     {
         $this->authorizer->method('isUser')->willReturn(true);
-        $request = new FakeRequest(["query" => "Forum&forum_action=edit"]);
+        $request = new FakeRequest(["query" => "Forum&forum_action=create"]);
         $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
     }
@@ -117,27 +120,31 @@ class ForumTest extends TestCase
     public function testRendersCommentForm(): void
     {
         $this->contents->method('getTopic')->willReturn(["3456789abcdef" => $this->comment()]);
+        $this->contents->method("findTopic")->willReturn($this->topic());
+        $this->contents->method("findComment")->willReturn($this->comment());
         $this->authorizer->method('isUser')->willReturn(true);
         $this->authorizer->method('mayModify')->willReturn(true);
-        $request = new FakeRequest(["query" => "Forum&forum_action=edit&forum_topic=0123456789abc&forum_comment=3456"]);
+        $request = new FakeRequest([
+            "query" => "Forum&forum_action=edit&forum_topic=0123456789abc&forum_comment=3456789abcdef",
+        ]);
         $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersCommentFormForReply(): void
     {
+        $this->contents->method("findTopic")->willReturn($this->topic());
         $this->authorizer->method('isUser')->willReturn(true);
-        $request = new FakeRequest(["query" => "Forum&forum_action=edit&forum_topic=0123456789abc"]);
+        $request = new FakeRequest(["query" => "Forum&forum_action=create&forum_topic=0123456789abc"]);
         $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
     }
 
-    public function testReportsMissingAuthorizationForEditing(): void
+    public function testReportsMissingIdForEditing(): void
     {
-        $this->authorizer->method('isVisitor')->willReturn(true);
         $request = new FakeRequest(["query" => "Forum&forum_action=edit&forum_topic=0123456789abc"]);
         $response = ($this->sut())($request, "test");
-        Approvals::verifyHtml($response->output());
+        $this->assertEquals("<p class=\"xh_fail\">ID is missing!</p>\n", $response->output());
     }
 
     public function testRendersBbCodeAndExits(): void
@@ -154,16 +161,16 @@ class ForumTest extends TestCase
         $this->authorizer->method('isVisitor')->willReturn(true);
         $request = new FakeRequest(["query" => "&forum_action=preview&forum_bbcode=something"]);
         $response = ($this->sut())($request, "test");
-        Approvals::verifyHtml($response->output());
+        $this->assertEquals("<p class=\"xh_fail\">You are not authorized for this action!</p>\n", $response->output());
     }
 
     public function testCreatesNewTopicAndRedirects(): void
     {
         $this->contents->method('getId')->willReturn("3456789abcdef");
-        $this->contents->expects($this->once())->method('createComment');
+        $this->contents->expects($this->once())->method('createComment')->willReturn(true);
         $this->authorizer->method('isUser')->willReturn(true);
         $request = new FakeRequest([
-            "query" => "Forum&forum_action=edit",
+            "query" => "Forum&forum_action=create",
             "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment", "forum_do" => ""],
         ]);
         $response = ($this->sut())($request, "test");
@@ -173,20 +180,35 @@ class ForumTest extends TestCase
     public function testCreatesNewTopicAndSendsMail(): void
     {
         $this->contents->method('getId')->willReturn("3456");
-        $this->contents->expects($this->once())->method('createComment');
+        $this->contents->expects($this->once())->method('createComment')->willReturn(true);
         $this->authorizer->method('isUser')->willReturn(true);
         $this->conf = ["mail_address" => "webmaster@example.com"] + $this->conf;
         $request = new FakeRequest([
-            "query" => "Forum&forum_action=edit",
+            "query" => "Forum&forum_action=create",
             "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment", "forum_do" => ""],
         ]);
         ($this->sut())($request, "test");
         Approvals::verifyList($this->mailer->lastMail());
     }
 
+    public function testFailsToCreateNewTopic(): void
+    {
+        $this->contents->method('getId')->willReturn("3456789abcdef");
+        $this->contents->expects($this->once())->method('createComment')->willReturn(false);
+        $this->authorizer->method('isUser')->willReturn(true);
+        $request = new FakeRequest([
+            "query" => "Forum&forum_action=create",
+            "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment", "forum_do" => ""],
+        ]);
+        $response = ($this->sut())($request, "test");
+        $this->assertEquals("<p class=\"xh_fail\">The changes could not be stored!</p>\n", $response->output());
+    }
+
     public function testUpdatesCommentAndRedirects(): void
     {
+        $this->contents->method("findTopic")->willReturn($this->topic());
         $this->contents->method("findComment")->willReturn($this->comment());
+        $this->contents->expects($this->once())->method("updateComment")->willReturn(true);
         $this->authorizer->method('isUser')->willReturn(true);
         $this->authorizer->method("mayModify")->willReturn(true);
         $request = new FakeRequest([
@@ -199,20 +221,23 @@ class ForumTest extends TestCase
         $response = ($this->sut())($request, "test");
         $this->assertEquals("http://example.com/?Forum&forum_topic=0123456789abc", $response->location());
     }
-
-    public function testReportsMissingAuthorizationForPosting(): void
+    
+    public function testReportsMissingIdWhenPosting(): void
     {
-        $this->authorizer->method('isVisitor')->willReturn(true);
         $request = new FakeRequest([
-            "query" => "Forum&forum_action=edit",
-            "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment", "forum_do" => ""],
+            "query" => "Forum&forum_topic=0123456789abc&forum_action=edit",
+            "post" => [
+                "forum_text" => "A comment",
+                "forum_do" => "",
+            ]
         ]);
         $response = ($this->sut())($request, "test");
-        Approvals::verifyHtml($response->output());
+        $this->assertEquals("<p class=\"xh_fail\">ID is missing!</p>\n", $response->output());
     }
 
     public function testReportsNonExistentCommentWhenUpdating(): void
     {
+        $this->contents->method("findTopic")->willReturn($this->topic());
         $this->contents->method("findComment")->willReturn(null);
         $this->authorizer->method('isUser')->willReturn(true);
         $request = new FakeRequest([
@@ -226,8 +251,9 @@ class ForumTest extends TestCase
         $this->assertEquals("<p class=\"xh_fail\">There is no such comment!</p>\n", $response->output());
     }
 
-    public function testReportsMissingAuthorizationForPosting1(): void
+    public function testReportsMissingAuthorizationForPosting(): void
     {
+        $this->contents->method("findTopic")->willReturn($this->topic());
         $this->contents->method("findComment")->willReturn($this->comment());
         $this->authorizer->method('isUser')->willReturn(true);
         $this->authorizer->method("mayModify")->willReturn(false);
@@ -242,10 +268,29 @@ class ForumTest extends TestCase
         $this->assertEquals("<p class=\"xh_fail\">You are not authorized for this action!</p>\n", $response->output());
     }
 
+    public function testFailsToStoreUpdate(): void
+    {
+        $this->contents->method("findTopic")->willReturn($this->topic());
+        $this->contents->method("findComment")->willReturn($this->comment());
+        $this->contents->expects($this->once())->method("updateComment")->willReturn(false);
+        $this->authorizer->method('isUser')->willReturn(true);
+        $this->authorizer->method("mayModify")->willReturn(true);
+        $request = new FakeRequest([
+            "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=edit",
+            "post" => [
+                "forum_text" => "A comment",
+                "forum_do" => "",
+            ]
+        ]);
+        $response = ($this->sut())($request, "test");
+        $this->assertEquals("<p class=\"xh_fail\">The changes could not be stored!</p>\n", $response->output());
+    }
+
     public function testDeletesCommentAndRedirects(): void
     {
         $this->contents->method("findComment")->willReturn($this->comment());
-        $this->contents->expects($this->once())->method('deleteComment');
+        $this->contents->expects($this->once())->method('deleteComment')->willReturn(true);
+        $this->contents->method("hasTopic")->willReturn(true);
         $this->authorizer->method("mayModify")->willReturn(true);
         $request = new FakeRequest([
             "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=delete",
@@ -255,15 +300,14 @@ class ForumTest extends TestCase
         $this->assertEquals("http://example.com/?Forum&forum_topic=0123456789abc", $response->location());
     }
 
-    public function testReportsGenerallyMissingAuthorizationForDeleting(): void
+    public function testReportsMissingIdWhenDeleting(): void
     {
-        $this->authorizer->method('isVisitor')->willReturn(true);
         $request = new FakeRequest([
-            "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=delete",
+            "query" => "Forum&forum_topic=0123456789abc&forum_action=delete",
             "post" => ["forum_do" => ""],
         ]);
         $response = ($this->sut())($request, "test");
-        Approvals::verifyHtml($response->output());
+        $this->assertEquals("<p class=\"xh_fail\">ID is missing!</p>\n", $response->output());
     }
 
     public function testReportsNonExistentCommentWhenDeleting(): void
@@ -274,7 +318,7 @@ class ForumTest extends TestCase
             "post" => ["forum_do" => ""],
         ]);
         $response = ($this->sut())($request, "test");
-        Approvals::verifyHtml($response->output());
+        $this->assertEquals("<p class=\"xh_fail\">There is no such comment!</p>\n", $response->output());
     }
 
     public function testReportsMissingAuthorizationForDeleting(): void
@@ -286,16 +330,29 @@ class ForumTest extends TestCase
             "post" => ["forum_do" => ""],
         ]);
         $response = ($this->sut())($request, "test");
-        Approvals::verifyHtml($response->output());
+        $this->assertEquals("<p class=\"xh_fail\">You are not authorized for this action!</p>\n", $response->output());
+    }
+
+    public function testReportsFailureToStoreDeletion(): void
+    {
+        $this->contents->method("findComment")->willReturn($this->comment());
+        $this->contents->expects($this->once())->method('deleteComment')->willReturn(false);
+        $this->authorizer->method("mayModify")->willReturn(true);
+        $request = new FakeRequest([
+            "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=delete",
+            "post" => ["forum_do" => ""],
+        ]);
+        $response = ($this->sut())($request, "test");
+        $this->assertEquals("<p class=\"xh_fail\">The changes could not be stored!</p>\n", $response->output());
     }
 
     private function topic(): Topic
     {
-        return new Topic("Topic Title", 1, "cmb", 1676130605);
+        return new Topic("0123456789abc", "Topic Title", 1, "cmb", 1676130605);
     }
 
     private function comment(): Comment
     {
-        return new Comment("cmb", 1676130605, "a comment");
+        return new Comment("3456789abcdef", "cmb", 1676130605, "a comment");
     }
 }

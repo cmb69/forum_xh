@@ -4,9 +4,9 @@ use Forum\Infra\View;
 
 /**
  * @var View $this
- * @var bool $newTopic
- * @var string $tid
- * @var string $cid
+ * @var list<array{string}> $errors
+ * @var string $title_attribute
+ * @var string $title
  * @var string $action
  * @var string $previewUrl
  * @var string $backUrl
@@ -23,17 +23,14 @@ use Forum\Infra\View;
   <form class="forum_comment" action="<?=$action?>" method="post" accept-charset="UTF-8" data-i18n='<?=$this->json($i18n)?>'>
     <div class="forum_preview_container"></div>
     <input type="hidden" name="<?=$token['name']?>" value="<?=$token['value']?>">
-<?if ($newTopic):?>
     <h6 class="forum_heading"><?=$this->text($headingKey)?></h6>
+<?foreach ($errors as $error):?>
+      <p class="xh_fail"><?=$this->text(...$error)?></p>
+<?endforeach?>
     <div class="forum_title">
       <label for="forum_title"><?=$this->text('msg_title')?></label>
-      <input type="text" id="forum_title" name="forum_title" required>
+      <input type="text" id="forum_title" name="forum_title" value="<?=$title?>" <?=$title_attribute?>>
     </div>
-<?else:?>
-    <h6 class="forum_heading"><?=$this->text($headingKey)?></h6>
-    <input type="hidden" name="forum_topic" value="<?=$tid?>">
-    <input type="hidden" name="forum_comment" value="<?=$cid?>">
-<?endif?>
     <script type="text/x-template" id="forum_toolbar">
       <div>
         <button type="button" class="forum_bold_button" title="<?=$this->text('lbl_bold')?>" accesskey="b"><i class="fa fa-bold"></i></button>

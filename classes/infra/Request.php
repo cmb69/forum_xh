@@ -83,11 +83,11 @@ class Request
         return $bbCode;
     }
 
-    /** @return array{title:string|null,text:string} */
+    /** @return array{title:string,text:string} */
     public function commentPost(): array
     {
         return [
-            "title" => $this->postString("forum_title") ?: null,
+            "title" => $this->postString("forum_title"),
             "text" => $this->postString("forum_text"),
         ];
     }

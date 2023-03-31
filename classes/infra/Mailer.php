@@ -64,7 +64,7 @@ class Mailer
     {
         $date = $this->dateFormatter->format($comment->time());
         $attribution = $this->view->plain("mail_attribution", $comment->user(), $date);
-        $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment->comment());
+        $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment->message());
         assert(is_string($content));
         return "$attribution\n\n> $content\n\n<$url>";
     }

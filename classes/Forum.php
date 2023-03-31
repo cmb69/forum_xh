@@ -30,6 +30,7 @@ use Forum\Infra\Mailer;
 use Forum\Infra\Request;
 use Forum\Infra\View;
 use Forum\Logic\BbCode;
+use Forum\Logic\Util;
 use Forum\Value\Comment;
 use Forum\Value\Html;
 use Forum\Value\Response;
@@ -101,10 +102,14 @@ class Forum
         switch ($request->action()) {
             default:
                 return $this->show($request, $forum);
+            case "create":
+                return $this->createComment($request, $forum);
             case "do_delete":
                 return $this->deleteComment($request, $forum);
             case "edit":
                 return $this->showEditor($request, $forum);
+            case "do_create":
+                return $this->doCreateComment($request, $forum);
             case "do_edit":
                 return $this->postComment($request, $forum);
             case "preview":
@@ -129,7 +134,7 @@ class Forum
         $topics = $this->contents->getSortedTopics($forum);
         return $this->view->render('topics', [
             'isUser' => $this->authorizer->isUser(),
-            'href' => $request->url()->with("forum_action", "edit")->relative(),
+            'href' => $request->url()->with("forum_action", "create")->relative(),
             'topics' => $this->topicRecords($request->url()->without("forum_ajax"), $topics),
             "script" => $this->pluginFolder . "forum.min.js",
         ]);
@@ -166,7 +171,7 @@ class Forum
             'tid' => $tid,
             'token' => $token,
             'isUser' => $this->authorizer->isUser(),
-            'replyUrl' => $url->with("forum_action", "edit")->with("forum_topic", $tid)->relative(),
+            'replyUrl' => $url->with("forum_action", "create")->with("forum_topic", $tid)->relative(),
             'href' => $url->without("forum_topic")->relative(),
             "script" => $this->pluginFolder . "forum.min.js",
         ]);
@@ -186,36 +191,59 @@ class Forum
 
                 "mayDeleteComment" => $this->authorizer->mayModify($comment),
                 "commentDate" => $this->dateFormatter->format($comment->time()),
-                "html" => Html::of($this->bbcode->convert($comment->comment())),
+                "html" => Html::of($this->bbcode->convert($comment->message())),
                 "commentEditUrl" => $url->with("forum_action", "edit")->relative(),
                 "deleteUrl" => $url->with("forum_action", "delete")->relative(),
             ];
         }, array_keys($comments), array_values($comments));
     }
 
-    private function showEditor(Request $request, string $forum): Response
+    private function createComment(Request $request, string $forum): Response
     {
+        $tid = $request->topic();
+        if ($tid === null) {
+            $topic = new Topic(null, "", 0, "", 0);
+        } else {
+            $topic = $this->contents->findTopic($forum, $tid);
+            if ($topic === null) {
+                return $this->respondWith($request->url(), $this->view->error("error_no_topic"));
+            }
+        }
+        $comment = new Comment(null, "", 0, "");
         if ($this->authorizer->isVisitor()) {
             return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
         }
-        $tid = $request->topic();
-        $cid = $request->comment();
-        $output = $this->renderCommentForm($request, $forum, $tid, $cid);
+        $output = $this->renderCommentForm($request, $topic, $comment);
         return $this->respondWith($request->url(), $output);
     }
 
-    private function renderCommentForm(Request $request, string $forum, ?string $tid, ?string $cid): string
+    private function showEditor(Request $request, string $forum): Response
+    {
+        $tid = $request->topic();
+        $cid = $request->comment();
+        if ($tid === null || $cid === null) {
+            return $this->respondWith($request->url(), $this->view->error("error_id_missing"));
+        }
+        $topic = $this->contents->findTopic($forum, $tid);
+        if ($topic === null) {
+            return $this->respondWith($request->url(), $this->view->error("error_no_topic"));
+        }
+        $comment = $this->contents->findComment($forum, $tid, $cid);
+        if ($comment === null) {
+            return $this->respondWith($request->url(), $this->view->error("error_no_comment"));
+        }
+        if (!$this->authorizer->mayModify($comment)) {
+            return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
+        }
+        $output = $this->renderCommentForm($request, $topic, $comment);
+        return $this->respondWith($request->url(), $output);
+    }
+
+    /** @param list<array{string}> $errors */
+    private function renderCommentForm(Request $request, Topic $topic, Comment $comment, array $errors = []): string
     {
         $this->faRequireCommand->execute();
 
-        $comment = '';
-        if ($tid !== null && $cid !== null) {
-            $topics = $this->contents->getTopic($forum, $tid);
-            if ($this->authorizer->mayModify($topics[$cid])) {
-                $comment = $topics[$cid]->comment();
-            }
-            //$newTopic = true; // FIXME: hack to force overview link to be shown
-        }
         $emotions = ['smile', 'wink', 'happy', 'grin', 'tongue', 'surprised', 'unhappy'];
         $emoticons = [];
         foreach ($emotions as $emotion) {
@@ -223,16 +251,18 @@ class Forum
         }
         $url = $request->url()->without("forum_ajax");
         $output = $this->view->render('form', [
-            'newTopic' => $tid === null,
-            'tid' => $tid !== null ? $tid : "",
-            'cid' => $cid !== null ? $cid : "",
-            'action' => $url->with("forum_action", "edit")->relative(),
+            "errors" => $errors,
+            'title_attribute' => $topic->id() === null ? "required" : "disabled",
+            "title" => $topic->title(),
+            'action' => $url->with("forum_action", $comment->id() !== null ? "edit" : "create")->relative(),
             'previewUrl' => $url->with("forum_action", "preview")->relative(),
-            'backUrl' => $tid === null
+            'backUrl' => $topic->id() === null
                 ? $url->without("forum_action")->relative()
                 : $url->without("forum_action")->without("forum_comment")->relative(),
-            'headingKey' => $tid === null ? 'msg_new_topic' : (isset($cid) ? 'msg_edit_comment' : 'msg_add_comment'),
-            'comment' => $comment,
+            'headingKey' => $topic->id() === null
+                ? 'msg_new_topic'
+                : ($comment->id() !== null ? 'msg_edit_comment' : 'msg_add_comment'),
+            'comment' => $comment->message(),
             'token' => $this->csrfProtector->token(),
             'i18n' => ["ENTER_URL" => $this->view->plain("msg_enter_url")],
             'emoticons' => $emoticons,
@@ -250,41 +280,73 @@ class Forum
         return Response::create($this->bbcode->convert($request->bbCode()))->withExit();
     }
 
-    private function postComment(Request $request, string $forum): Response
+    private function doCreateComment(Request $request, string $forum): Response
     {
+        $tid = $request->topic();
+        if ($tid === null) {
+            $topic = new Topic($this->contents->getId(), "", 0, "", 0);
+        } else {
+            $topic = $this->contents->findTopic($forum, $tid);
+            if ($topic === null) {
+                return $this->respondWith($request->url(), $this->view->error("error_no_topic"));
+            }
+        }
+        $comment = new Comment($this->contents->getId(), $this->authorizer->username(), time(), "");
         if ($this->authorizer->isVisitor()) {
             return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
         }
         $this->csrfProtector->check();
+        $post = $request->commentPost();
+        $topic = $topic->withTitle($post["title"]);
+        $comment = $comment->withMessage($post["text"]);
+        $errors = array_merge(Util::validateTopic($topic), Util::validateComment($comment));
+        if ($errors) {
+            return $this->respondWith($request->url(), $this->renderCommentForm($request, $topic, $comment, $errors));
+        }
+        assert($topic->id() !== null && $comment->id() !== null);
+        if (!$this->contents->createComment($forum, $topic->id(), $topic->title(), $comment->id(), $comment)) {
+            return $this->respondWith($request->url(), $this->view->error("error_store"));
+        }
+        if (!$this->authorizer->isAdmin() && $this->config['mail_address']) {
+            $url = $request->url()->with("forum_topic", $topic->id())->absolute();
+            $this->mailer->sendMail($this->view->plain("mail_subject_new"), $comment, $url);
+        }
+        $url = $request->url()->without("forum_comment")->with("forum_topic", $topic->id());
+        $url = $url->without("forum_action");
+        return Response::redirect($url->absolute());
+    }
+
+    private function postComment(Request $request, string $forum): Response
+    {
         $tid = $request->topic();
         $cid = $request->comment();
+        if ($tid === null || $cid === null) {
+            return $this->respondWith($request->url(), $this->view->error("error_id_missing"));
+        }
+        $topic = $this->contents->findTopic($forum, $tid);
+        if ($topic === null) {
+            return $this->respondWith($request->url(), $this->view->error("error_no_topic"));
+        }
+        $comment = $this->contents->findComment($forum, $tid, $cid);
+        if ($comment === null) {
+            return $this->respondWith($request->url(), $this->view->error("error_no_comment"));
+        }
+        if (!$this->authorizer->mayModify($comment)) {
+            return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
+        }
+        $this->csrfProtector->check();
         $post = $request->commentPost();
-        if ($tid === null && empty($post["title"]) || empty($post["text"])) {
-            return $this->respondWith($request->url(), "TODO: post submission failure"); // TODO should render comment form with posted content and error messages
+        $comment = $comment->withMessage($post["text"]);
+        $errors = Util::validateComment($comment);
+        if ($errors) {
+            return $this->respondWith($request->url(), $this->renderCommentForm($request, $topic, $comment, $errors));
         }
-        if ($tid === null) {
-            $tid = $this->contents->getId();
-        }
-        $comment = new Comment($this->authorizer->username(), time(), $post["text"]);
-        if (!isset($cid)) {
-            $cid = $this->contents->getId();
-            $title = $post["title"];
-            $this->contents->createComment($forum, $tid, $title, $cid, $comment);
-            $subject = $this->view->plain("mail_subject_new");
-        } else {
-            $oldComment = $this->contents->findComment($forum, $tid, $cid);
-            if ($oldComment === null) {
-                return $this->respondWith($request->url(), $this->view->error("error_no_comment"));
-            }
-            if (!$this->authorizer->mayModify($oldComment)) {
-                return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
-            }
-            $this->contents->updateComment($forum, $tid, $cid, $comment);
-            $subject = $this->view->plain("mail_subject_edit");
+        if (!$this->contents->updateComment($forum, $tid, $cid, $comment)) {
+            return $this->respondWith($request->url(), $this->view->error("error_store"));
         }
         if (!$this->authorizer->isAdmin() && $this->config['mail_address']) {
             $url = $request->url()->with("forum_topic", $tid)->absolute();
-            $this->mailer->sendMail($subject, $comment, $url);
+            $this->mailer->sendMail($this->view->plain("mail_subject_edit"), $comment, $url);
         }
         $url = $request->url()->without("forum_comment")->with("forum_topic", $tid);
         $url = $url->without("forum_action");
@@ -293,26 +355,26 @@ class Forum
 
     private function deleteComment(Request $request, string $forum): Response
     {
-        if ($this->authorizer->isVisitor()) {
+        $tid = $request->topic();
+        $cid = $request->comment();
+        if ($tid === null || $cid === null) {
+            return $this->respondWith($request->url(), $this->view->error("error_id_missing"));
+        }
+        $comment = $this->contents->findComment($forum, $tid, $cid);
+        if ($comment === null) {
+            return $this->respondWith($request->url(), $this->view->error("error_no_comment"));
+        }
+        if (!$this->authorizer->mayModify($comment)) {
             return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
         }
         $this->csrfProtector->check();
-        $tid = $request->topic();
-        $cid = $request->comment();
-        if ($tid !== null && $cid !== null) {
-            $comment = $this->contents->findComment($forum, $tid, $cid);
-            if ($comment === null) {
-                return $this->respondWith($request->url(), $this->view->error("error_no_comment"));
-            }
-            if (!$this->authorizer->mayModify($comment)) {
-                return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
-            }
-            $this->contents->deleteComment($forum, $tid, $cid); // TODO report failure
-        } else {
-            // TODO report that condition
+        if (!$this->contents->deleteComment($forum, $tid, $cid)) {
+            return $this->respondWith($request->url(), $this->view->error("error_store"));
         }
-        // TODO redirect to topics overview if topic has been deleted
         $url = $request->url()->without("forum_action")->without("forum_comment");
+        if (!$this->contents->hasTopic($forum, $tid)) {
+            $url = $url->without("forum_topic");
+        }
         return Response::redirect($url->absolute());
     }
 

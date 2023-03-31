@@ -4,9 +4,9 @@
 
 > A comment
 
-<http://example.com/?Forum&forum_action=edit&forum_topic=3456>
+<http://example.com/?Forum&forum_action=create&forum_topic=3456>
 [3] -> MIME-Version: 1.0
 Content-type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 From: webmaster@example.com
-Content-Base: http://example.com/?Forum&forum_action=edit&forum_topic=3456
+Content-Base: http://example.com/?Forum&forum_action=create&forum_topic=3456

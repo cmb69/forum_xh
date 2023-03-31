@@ -1,12 +1,12 @@
 <script type="module" src="./plugins/forum/forum.min.js"></script>
 <div class="forum_container">
-  <form class="forum_comment" action="/?Forum&amp;forum_action=edit" method="post" accept-charset="UTF-8" data-i18n='{"ENTER_URL":"Enter URL:"}'>
+  <form class="forum_comment" action="/?Forum&amp;forum_action=create" method="post" accept-charset="UTF-8" data-i18n='{"ENTER_URL":"Enter URL:"}'>
     <div class="forum_preview_container"></div>
     <input type="hidden" name="xh_csrf_token" value="e3c1b42a6098b48a39f9f54ddb3388f7">
     <h6 class="forum_heading">New Topic</h6>
     <div class="forum_title">
       <label for="forum_title">Title</label>
-      <input type="text" id="forum_title" name="forum_title" required>
+      <input type="text" id="forum_title" name="forum_title" value="" required>
     </div>
     <script type="text/x-template" id="forum_toolbar">
       <div>

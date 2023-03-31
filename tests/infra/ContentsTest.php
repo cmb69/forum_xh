@@ -56,7 +56,7 @@ class ContentsTest extends TestCase
         $title = 'hallo';
         $cid = $this->contents->getId();
         $user = 'cmb';
-        $comment = new Comment($user, time(), 'foo bar baz');
+        $comment = new Comment($cid, $user, time(), 'foo bar baz');
         $this->contents->createComment($this->forum, $tid, $title, $cid, $comment);
 
         $actual = $this->getComment($this->forum, $tid, $cid);
@@ -77,19 +77,19 @@ class ContentsTest extends TestCase
 
         $cid1 = $this->contents->getId();
         $user1 = 'cmb';
-        $comment1 = new Comment($user1, 1, 'foo');
+        $comment1 = new Comment($cid1, $user1, 1, 'foo');
         $this->contents->createComment($this->forum, $tid, $title, $cid1, $comment1);
 
         $cid2 = $this->contents->getId();
         $user2 = 'admin';
-        $comment2 = new Comment($user2, 2, 'bar');
+        $comment2 = new Comment($cid2, $user2, 2, 'bar');
         $this->contents->createComment($this->forum, $tid, $title, $cid2, $comment2);
 
         $authorizer = $this->createStub(Authorizer::class);
         $authorizer->method('mayModify')->willReturn(true);
         $this->contents->deleteComment($this->forum, $tid, $cid1, $authorizer);
 
-        $expected = new Topic($title, 1, $user2, 2);
+        $expected = new Topic($tid, $title, 1, $user2, 2);
         $this->assertEquals($expected, $this->contents->getSortedTopics($this->forum)[$tid]);
     }
 }

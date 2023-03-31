@@ -23,6 +23,9 @@ namespace Forum\Value;
 
 class Topic
 {
+    /** @var string|null */
+    private $id;
+
     /** @var string */
     private $title;
 
@@ -35,12 +38,18 @@ class Topic
     /** @var int */
     private $time;
 
-    public function __construct(string $title, int $comments, string $user, int $time)
+    public function __construct(?string $id, string $title, int $comments, string $user, int $time)
     {
+        $this->id = $id;
         $this->title = $title;
         $this->comments = $comments;
         $this->user = $user;
         $this->time = $time;
+    }
+
+    public function id(): ?string
+    {
+        return $this->id;
     }
 
     public function title(): string
@@ -61,6 +70,13 @@ class Topic
     public function time(): int
     {
         return $this->time;
+    }
+
+    public function withTitle(string $title): self
+    {
+        $that = clone $this;
+        $that->title = $title;
+        return $that;
     }
 
     /** @return array{title:string,comments:int,user:string,time:int} */
