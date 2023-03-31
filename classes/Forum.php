@@ -22,7 +22,6 @@
 namespace Forum;
 
 use Fa\RequireCommand as FaRequireCommand;
-use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\CsrfProtector;
 use Forum\Infra\DateFormatter;
@@ -66,9 +65,6 @@ class Forum
     /** @var DateFormatter */
     private $dateFormatter;
 
-    /** @var Authorizer */
-    private $authorizer;
-
     /** @param array<string,string> $config */
     public function __construct(
         array $config,
@@ -79,8 +75,7 @@ class Forum
         View $view,
         FaRequireCommand $faRequireCommand,
         Mailer $mailer,
-        DateFormatter $dateFormatter,
-        Authorizer $authorizer
+        DateFormatter $dateFormatter
     ) {
         $this->config = $config;
         $this->pluginFolder = $pluginFolder;
@@ -91,7 +86,6 @@ class Forum
         $this->faRequireCommand = $faRequireCommand;
         $this->mailer = $mailer;
         $this->dateFormatter = $dateFormatter;
-        $this->authorizer = $authorizer;
     }
 
     public function __invoke(Request $request, string $forum): Response
@@ -133,7 +127,7 @@ class Forum
     {
         $topics = $this->contents->getSortedTopics($forum);
         return $this->view->render('topics', [
-            'isUser' => $this->authorizer->isUser(),
+            'isUser' => $request->user(),
             'href' => $request->url()->with("forum_action", "create")->relative(),
             'topics' => $this->topicRecords($request->url()->without("forum_ajax"), $topics),
             "script" => $this->pluginFolder . "forum.min.js",
@@ -167,10 +161,10 @@ class Forum
         $this->csrfProtector->store();
         return $this->view->render('topic', [
             'title' => $title,
-            'topic' => $this->commentRecords($url, $topic),
+            'topic' => $this->commentRecords($request, $topic),
             'tid' => $tid,
             'token' => $token,
-            'isUser' => $this->authorizer->isUser(),
+            'isUser' => $request->user(),
             'replyUrl' => $url->with("forum_action", "create")->with("forum_topic", $tid)->relative(),
             'href' => $url->without("forum_topic")->relative(),
             "script" => $this->pluginFolder . "forum.min.js",
@@ -181,15 +175,16 @@ class Forum
      * @param array<string,Comment> $comments
      * @return list<array{cid:string,user:string,mayDeleteComment:bool,commentDate:string,html:Html,commentEditUrl:string,deleteUrl:string}>
      */
-    private function commentRecords(Url $url, array $comments): array
+    private function commentRecords(Request $request, array $comments): array
     {
-        return array_map(function (string $cid, Comment $comment) use ($url) {
+        $url = $request->url()->without("forum_ajax");
+        return array_map(function (string $cid, Comment $comment) use ($request, $url) {
             $url = $url->with("forum_comment", $cid);
             return [
                 "cid" => $cid,
                 "user" => $comment->user(),
 
-                "mayDeleteComment" => $this->authorizer->mayModify($comment),
+                "mayDeleteComment" => $this->mayModify($request, $comment),
                 "commentDate" => $this->dateFormatter->format($comment->time()),
                 "html" => Html::of($this->bbcode->convert($comment->message())),
                 "commentEditUrl" => $url->with("forum_action", "edit")->relative(),
@@ -210,7 +205,7 @@ class Forum
             }
         }
         $comment = new Comment(null, "", 0, "");
-        if ($this->authorizer->isVisitor()) {
+        if (!$request->user()) {
             return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
         }
         $output = $this->renderCommentForm($request, $topic, $comment);
@@ -232,7 +227,7 @@ class Forum
         if ($comment === null) {
             return $this->respondWith($request->url(), $this->view->error("error_no_comment"));
         }
-        if (!$this->authorizer->mayModify($comment)) {
+        if (!$this->mayModify($request, $comment)) {
             return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
         }
         $output = $this->renderCommentForm($request, $topic, $comment);
@@ -274,7 +269,7 @@ class Forum
 
     private function preview(Request $request): Response
     {
-        if ($this->authorizer->isVisitor()) {
+        if (!$request->user() && !$request->admin()) {
             return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
         }
         return Response::create($this->bbcode->convert($request->bbCode()))->withExit();
@@ -291,8 +286,8 @@ class Forum
                 return $this->respondWith($request->url(), $this->view->error("error_no_topic"));
             }
         }
-        $comment = new Comment($this->contents->getId(), $this->authorizer->username(), time(), "");
-        if ($this->authorizer->isVisitor()) {
+        $comment = new Comment($this->contents->getId(), $request->user(), time(), "");
+        if (!$request->user()) {
             return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
         }
         $this->csrfProtector->check();
@@ -307,7 +302,7 @@ class Forum
         if (!$this->contents->createComment($forum, $topic->id(), $topic->title(), $comment->id(), $comment)) {
             return $this->respondWith($request->url(), $this->view->error("error_store"));
         }
-        if (!$this->authorizer->isAdmin() && $this->config['mail_address']) {
+        if (!$request->admin() && $this->config['mail_address']) {
             $url = $request->url()->with("forum_topic", $topic->id())->absolute();
             $this->mailer->sendMail($this->view->plain("mail_subject_new"), $comment, $url);
         }
@@ -331,7 +326,7 @@ class Forum
         if ($comment === null) {
             return $this->respondWith($request->url(), $this->view->error("error_no_comment"));
         }
-        if (!$this->authorizer->mayModify($comment)) {
+        if (!$this->mayModify($request, $comment)) {
             return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
         }
         $this->csrfProtector->check();
@@ -344,7 +339,7 @@ class Forum
         if (!$this->contents->updateComment($forum, $tid, $cid, $comment)) {
             return $this->respondWith($request->url(), $this->view->error("error_store"));
         }
-        if (!$this->authorizer->isAdmin() && $this->config['mail_address']) {
+        if (!$request->admin() && $this->config['mail_address']) {
             $url = $request->url()->with("forum_topic", $tid)->absolute();
             $this->mailer->sendMail($this->view->plain("mail_subject_edit"), $comment, $url);
         }
@@ -364,7 +359,7 @@ class Forum
         if ($comment === null) {
             return $this->respondWith($request->url(), $this->view->error("error_no_comment"));
         }
-        if (!$this->authorizer->mayModify($comment)) {
+        if (!$this->mayModify($request, $comment)) {
             return $this->respondWith($request->url(), $this->view->error("error_unauthorized"));
         }
         $this->csrfProtector->check();
@@ -376,6 +371,11 @@ class Forum
             $url = $url->without("forum_topic");
         }
         return Response::redirect($url->absolute());
+    }
+
+    private function mayModify(Request $request, Comment $comment): bool
+    {
+        return $request->admin() || $request->user() === $comment->user();
     }
 
     private function respondWith(Url $url, string $output): Response

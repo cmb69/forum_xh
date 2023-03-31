@@ -22,7 +22,6 @@
 namespace Forum;
 
 use Fa\RequireCommand as FaRequireCommand;
-use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\CsrfProtector;
 use Forum\Infra\DateFormatter;
@@ -45,8 +44,7 @@ class Dic
             self::makeView(),
             new FaRequireCommand(),
             new Mailer($plugin_cf["forum"], new DateFormatter, self::makeView()),
-            new DateFormatter(),
-            new Authorizer()
+            new DateFormatter()
         );
     }
 

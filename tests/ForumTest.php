@@ -23,13 +23,11 @@ namespace Forum;
 
 use ApprovalTests\Approvals;
 use Fa\RequireCommand;
-use Forum\Infra\Authorizer;
 use Forum\Infra\Contents;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\FakeCsrfProtector;
 use Forum\Infra\FakeMailer;
 use Forum\Infra\FakeRequest;
-use Forum\Infra\Mailer;
 use Forum\Infra\View;
 use Forum\Logic\BbCode;
 use Forum\Value\Comment;
@@ -42,14 +40,12 @@ class ForumTest extends TestCase
     private $contents;
     private $bbcode;
     private $mailer;
-    private $authorizer;
 
     public function setUp(): void
     {
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["forum"];
         $this->contents = $this->createStub(Contents::class);
         $this->bbcode = $this->createStub(BbCode::class);
-        $this->authorizer = $this->createStub(Authorizer::class);
     }
 
     private function sut(): Forum
@@ -68,8 +64,7 @@ class ForumTest extends TestCase
             $view,
             $faRequireCommand,
             $this->mailer,
-            $dateFormatter,
-            $this->authorizer
+            $dateFormatter
         );
     }
 
@@ -95,8 +90,10 @@ class ForumTest extends TestCase
     {
         $this->contents->method('hasTopic')->willReturn(true);
         $this->contents->method('getTopicWithTitle')->willReturn(["Topic Title", ["2345" => $this->comment()]]);
-        $this->authorizer->method("mayModify")->willReturn(true);
-        $request = new FakeRequest(["query" => "Forum&forum_topic=0123456789abc"]);
+        $request = new FakeRequest([
+            "query" => "Forum&forum_topic=0123456789abc",
+            "session" => ["username" => "cmb"],
+        ]);
         $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
     }
@@ -111,8 +108,10 @@ class ForumTest extends TestCase
 
     public function testRendersCommentFormForNewPost(): void
     {
-        $this->authorizer->method('isUser')->willReturn(true);
-        $request = new FakeRequest(["query" => "Forum&forum_action=create"]);
+        $request = new FakeRequest([
+            "query" => "Forum&forum_action=create",
+            "session" => ["username" => "cmb"],
+        ]);
         $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
     }
@@ -122,10 +121,9 @@ class ForumTest extends TestCase
         $this->contents->method('getTopic')->willReturn(["3456789abcdef" => $this->comment()]);
         $this->contents->method("findTopic")->willReturn($this->topic());
         $this->contents->method("findComment")->willReturn($this->comment());
-        $this->authorizer->method('isUser')->willReturn(true);
-        $this->authorizer->method('mayModify')->willReturn(true);
         $request = new FakeRequest([
             "query" => "Forum&forum_action=edit&forum_topic=0123456789abc&forum_comment=3456789abcdef",
+            "session" => ["username" => "cmb"],
         ]);
         $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
@@ -134,8 +132,10 @@ class ForumTest extends TestCase
     public function testRendersCommentFormForReply(): void
     {
         $this->contents->method("findTopic")->willReturn($this->topic());
-        $this->authorizer->method('isUser')->willReturn(true);
-        $request = new FakeRequest(["query" => "Forum&forum_action=create&forum_topic=0123456789abc"]);
+        $request = new FakeRequest([
+            "query" => "Forum&forum_action=create&forum_topic=0123456789abc",
+            "session" => ["username" => "cmb"],
+        ]);
         $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
     }
@@ -150,7 +150,10 @@ class ForumTest extends TestCase
     public function testRendersBbCodeAndExits(): void
     {
         $this->bbcode->method('convert')->willReturn("else");
-        $request = new FakeRequest(["query" => "&forum_action=preview&forum_bbcode=something"]);
+        $request = new FakeRequest([
+            "query" => "&forum_action=preview&forum_bbcode=something",
+            "session" => ["username" => "cmb"],
+        ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("else", $response->output());
         $this->assertTrue($response->exit());
@@ -158,7 +161,6 @@ class ForumTest extends TestCase
 
     public function testReportsMissingAuthorizationForPreview(): void
     {
-        $this->authorizer->method('isVisitor')->willReturn(true);
         $request = new FakeRequest(["query" => "&forum_action=preview&forum_bbcode=something"]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">You are not authorized for this action!</p>\n", $response->output());
@@ -168,10 +170,10 @@ class ForumTest extends TestCase
     {
         $this->contents->method('getId')->willReturn("3456789abcdef");
         $this->contents->expects($this->once())->method('createComment')->willReturn(true);
-        $this->authorizer->method('isUser')->willReturn(true);
         $request = new FakeRequest([
             "query" => "Forum&forum_action=create",
             "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment", "forum_do" => ""],
+            "session" => ["username" => "cmb"],
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("http://example.com/?Forum&forum_topic=3456789abcdef", $response->location());
@@ -181,11 +183,11 @@ class ForumTest extends TestCase
     {
         $this->contents->method('getId')->willReturn("3456");
         $this->contents->expects($this->once())->method('createComment')->willReturn(true);
-        $this->authorizer->method('isUser')->willReturn(true);
         $this->conf = ["mail_address" => "webmaster@example.com"] + $this->conf;
         $request = new FakeRequest([
             "query" => "Forum&forum_action=create",
             "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment", "forum_do" => ""],
+            "session" => ["username" => "cmb"],
         ]);
         ($this->sut())($request, "test");
         Approvals::verifyList($this->mailer->lastMail());
@@ -195,10 +197,10 @@ class ForumTest extends TestCase
     {
         $this->contents->method('getId')->willReturn("3456789abcdef");
         $this->contents->expects($this->once())->method('createComment')->willReturn(false);
-        $this->authorizer->method('isUser')->willReturn(true);
         $request = new FakeRequest([
             "query" => "Forum&forum_action=create",
             "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment", "forum_do" => ""],
+            "session" => ["username" => "cmb"],
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">The changes could not be stored!</p>\n", $response->output());
@@ -209,14 +211,10 @@ class ForumTest extends TestCase
         $this->contents->method("findTopic")->willReturn($this->topic());
         $this->contents->method("findComment")->willReturn($this->comment());
         $this->contents->expects($this->once())->method("updateComment")->willReturn(true);
-        $this->authorizer->method('isUser')->willReturn(true);
-        $this->authorizer->method("mayModify")->willReturn(true);
         $request = new FakeRequest([
             "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=edit",
-            "post" => [
-                "forum_text" => "A comment",
-                "forum_do" => "",
-            ]
+            "post" => ["forum_text" => "A comment", "forum_do" => ""],
+            "session" => ["username" => "cmb"],
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("http://example.com/?Forum&forum_topic=0123456789abc", $response->location());
@@ -239,13 +237,10 @@ class ForumTest extends TestCase
     {
         $this->contents->method("findTopic")->willReturn($this->topic());
         $this->contents->method("findComment")->willReturn(null);
-        $this->authorizer->method('isUser')->willReturn(true);
         $request = new FakeRequest([
             "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=edit",
-            "post" => [
-                "forum_text" => "A comment",
-                "forum_do" => "",
-            ]
+            "post" => ["forum_text" => "A comment", "forum_do" => ""],
+            "session" => ["username" => "cmb"],
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">There is no such comment!</p>\n", $response->output());
@@ -255,14 +250,10 @@ class ForumTest extends TestCase
     {
         $this->contents->method("findTopic")->willReturn($this->topic());
         $this->contents->method("findComment")->willReturn($this->comment());
-        $this->authorizer->method('isUser')->willReturn(true);
-        $this->authorizer->method("mayModify")->willReturn(false);
         $request = new FakeRequest([
             "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=edit",
-            "post" => [
-                "forum_text" => "A comment",
-                "forum_do" => "",
-            ]
+            "post" => ["forum_text" => "A comment", "forum_do" => ""],
+            "session" => ["username" => "somebody"],
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">You are not authorized for this action!</p>\n", $response->output());
@@ -273,14 +264,10 @@ class ForumTest extends TestCase
         $this->contents->method("findTopic")->willReturn($this->topic());
         $this->contents->method("findComment")->willReturn($this->comment());
         $this->contents->expects($this->once())->method("updateComment")->willReturn(false);
-        $this->authorizer->method('isUser')->willReturn(true);
-        $this->authorizer->method("mayModify")->willReturn(true);
         $request = new FakeRequest([
             "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=edit",
-            "post" => [
-                "forum_text" => "A comment",
-                "forum_do" => "",
-            ]
+            "post" => ["forum_text" => "A comment", "forum_do" => ""],
+            "session" => ["username" => "cmb"],
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">The changes could not be stored!</p>\n", $response->output());
@@ -291,10 +278,10 @@ class ForumTest extends TestCase
         $this->contents->method("findComment")->willReturn($this->comment());
         $this->contents->expects($this->once())->method('deleteComment')->willReturn(true);
         $this->contents->method("hasTopic")->willReturn(true);
-        $this->authorizer->method("mayModify")->willReturn(true);
         $request = new FakeRequest([
             "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=delete",
             "post" => ["forum_do" => ""],
+            "session" => ["username" => "cmb"],
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("http://example.com/?Forum&forum_topic=0123456789abc", $response->location());
@@ -324,10 +311,10 @@ class ForumTest extends TestCase
     public function testReportsMissingAuthorizationForDeleting(): void
     {
         $this->contents->method("findComment")->willReturn($this->comment());
-        $this->authorizer->method("mayModify")->willReturn(false);
         $request = new FakeRequest([
             "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=delete",
             "post" => ["forum_do" => ""],
+            "session" => ["username" => "somebody"],
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">You are not authorized for this action!</p>\n", $response->output());
@@ -337,10 +324,10 @@ class ForumTest extends TestCase
     {
         $this->contents->method("findComment")->willReturn($this->comment());
         $this->contents->expects($this->once())->method('deleteComment')->willReturn(false);
-        $this->authorizer->method("mayModify")->willReturn(true);
         $request = new FakeRequest([
             "query" => "Forum&forum_topic=0123456789abc&forum_comment=3456789abcdef&forum_action=delete",
             "post" => ["forum_do" => ""],
+            "session" => ["username" => "cmb"]
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">The changes could not be stored!</p>\n", $response->output());

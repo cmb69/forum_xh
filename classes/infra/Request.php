@@ -40,6 +40,24 @@ class Request
         return Url::from(CMSIMPLE_URL . $rest);
     }
 
+    /** @codeCoverageIgnore */
+    public function admin(): bool
+    {
+        return defined('XH_ADM') && XH_ADM;
+    }
+
+    public function user(): string
+    {
+        $session = $this->session();
+        if (isset($session["username"]) && is_string($session["username"])) {
+            return $session["username"];
+        }
+        if (isset($session["Name"]) && is_string($session["Name"])) {
+            return $session["Name"];
+        }
+        return "";
+    }
+
     public function action(): string
     {
         $action = $this->url()->param("forum_action");
@@ -111,5 +129,14 @@ class Request
     protected function post()
     {
         return $_POST;
+    }
+
+    /**
+     * @return array<string,mixed>
+     * @codeCoverageIgnore
+     */
+    protected function session(): array
+    {
+        return $_SESSION;
     }
 }

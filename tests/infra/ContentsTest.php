@@ -62,9 +62,7 @@ class ContentsTest extends TestCase
         $actual = $this->getComment($this->forum, $tid, $cid);
         $this->assertEquals($comment, $actual);
 
-        $authorizer = $this->createStub(Authorizer::class);
-        $authorizer->method('mayModify')->willReturn(true);
-        $this->contents->deleteComment($this->forum, $tid, $cid, $authorizer);
+        $this->contents->deleteComment($this->forum, $tid, $cid);
 
         $actual = $this->getComment($this->forum, $tid, $cid);
         $this->assertEmpty($actual);
@@ -85,9 +83,7 @@ class ContentsTest extends TestCase
         $comment2 = new Comment($cid2, $user2, 2, 'bar');
         $this->contents->createComment($this->forum, $tid, $title, $cid2, $comment2);
 
-        $authorizer = $this->createStub(Authorizer::class);
-        $authorizer->method('mayModify')->willReturn(true);
-        $this->contents->deleteComment($this->forum, $tid, $cid1, $authorizer);
+        $this->contents->deleteComment($this->forum, $tid, $cid1);
 
         $expected = new Topic($tid, $title, 1, $user2, 2);
         $this->assertEquals($expected, $this->contents->getSortedTopics($this->forum)[$tid]);
