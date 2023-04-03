@@ -12,9 +12,8 @@ keine zusätzlichen Eingaben wie Benutzername, E-Mail-Adresse usw.
 
 Forum\_XH bietet einen Editor, der einfache
 [BBCode](https://de.wikipedia.org/wiki/BBCode) Auszeichnungen versteht.
-Die Daten werden in Flat-Files gespeichert, die durch pessimistisches
-Sperren des gesamten Forums vor gleichzeitigem Zugriff geschützt sind,
-so dass Forum\_XH nicht für stark frequentierte Foren geeignet ist.
+Die Daten werden in Flat-Files gespeichert,
+so dass Forum\_XH nicht große Datenmengen geeignet ist.
 Weiterhin fehlen typische fortgeschrittene Features wie
 Benutzersignaturen, PN, das Abonnieren von Themen usw.
 

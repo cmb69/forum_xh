@@ -24,6 +24,7 @@ $plugin_tx['forum']['error_unauthorized']="Sie sind nicht befugt diese Aktion au
 $plugin_tx['forum']['error_title']="Ungültiger Titel!";
 $plugin_tx['forum']['error_message']="Ungültiger Kommentar!";
 $plugin_tx['forum']['error_store']="Die Änderungen konnten nicht abgespeichert werden!";
+$plugin_tx['forum']['error_migration']="Migration fehlgeschlagen!";
 
 $plugin_tx['forum']['lbl_submit']="Sichern";
 $plugin_tx['forum']['lbl_edit']="Eintrag bearbeiten";

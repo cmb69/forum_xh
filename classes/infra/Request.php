@@ -74,13 +74,23 @@ class Request
         return $action;
     }
 
+    public function forum(): ?string
+    {
+        $forum = $this->url()->param("forum_forum");
+        if (!is_string($forum)) {
+            return null;
+        }
+        return preg_match('/^[a-z0-9\-]+$/u', $forum) ? $forum : null;
+    }
+
+
     public function topic(): ?string
     {
         $topic = $this->url()->param("forum_topic");
         if (!is_string($topic)) {
             return null;
         }
-        return preg_match('/^[a-f0-9]{13}+$/u', $topic) ? $topic : null;
+        return preg_match('/^[A-Za-z0-9]+$/u', $topic) ? $topic : null;
     }
 
     public function comment(): ?string
@@ -89,7 +99,7 @@ class Request
         if (!is_string($comment)) {
             return null;
         }
-        return preg_match('/^[a-f0-9]{13}+$/u', $comment) ? $comment : null;
+        return preg_match('/^[A-Za-z0-9]+$/u', $comment) ? $comment : null;
     }
 
     public function bbCode(): string
@@ -114,6 +124,12 @@ class Request
     {
         $post = $this->post();
         return isset($post[$name]) && is_string($post[$name]) ? $post[$name] : "";
+    }
+
+    /** @codeCoverageIgnore */
+    public function time(): int
+    {
+        return (int) $_SERVER["REQUEST_TIME"];
     }
 
     /** @codeCoverageIgnore */

@@ -21,47 +21,80 @@
 
 namespace Forum;
 
+use Forum\Infra\Repository;
+use Forum\Infra\Request;
 use Forum\Infra\SystemChecker;
 use Forum\Infra\View;
 use Forum\Value\Response;
+use Forum\Value\Url;
 
 class ShowInfo
 {
     /** @var string */
     private $pluginFolder;
 
-    /** @var string */
-    private $contentFolder;
-
     /** @var SystemChecker */
     private $systemChecker;
+
+    /** @var Repository */
+    private $repository;
 
     /** @var View */
     private $view;
 
     public function __construct(
         string $pluginFolder,
-        string $contentFolder,
         SystemChecker $systemChecker,
+        Repository $repository,
         View $view
     ) {
         $this->pluginFolder = $pluginFolder;
-        $this->contentFolder = $contentFolder;
         $this->systemChecker = $systemChecker;
+        $this->repository = $repository;
         $this->view = $view;
     }
 
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
-        $output = $this->view->render("info", [
+        switch ($request->action()) {
+            default:
+                return $this->info($request);
+            case "do_migrate":
+                return $this->migrate($request);
+        }
+    }
+
+    private function info(Request $request): Response
+    {
+        return Response::create($this->renderInfo($request->url()));
+    }
+
+    private function migrate(Request $request): Response
+    {
+        $forum = $request->forum();
+        if ($forum === null) {
+            return Response::create($this->renderInfo($request->url(), [["error_id_missing"]]));
+        }
+        $result = $this->repository->migrate($forum);
+        if (!$result) {
+            return Response::create($this->renderInfo($request->url(), [["error_migration"]]));
+        }
+        return Response::redirect($request->url()->without("forum_action")->without("forum_forum")->absolute());
+    }
+
+    /** @param list<array{string}> $errors */
+    private function renderInfo(Url $url, array $errors = []): string
+    {
+        return $this->view->render("info", [
             "version" => FORUM_VERSION,
             "checks" => $this->getChecks(),
+            "forums" => $this->forumRecords($url->with("forum_action", "migrate")),
+            "errors" => $errors,
         ]);
-        return Response::create($output);
     }
 
     /** @return list<array{class:string,key:string,arg:string,statekey:string}> */
-    public function getChecks(): array
+    private function getChecks(): array
     {
         return array(
             $this->checkPhpVersion("7.1.0"),
@@ -72,7 +105,7 @@ class ShowInfo
             $this->checkWritability($this->pluginFolder . "css/"),
             $this->checkWritability($this->pluginFolder . "config"),
             $this->checkWritability($this->pluginFolder . "languages/"),
-            $this->checkWritability($this->contentFolder)
+            $this->checkWritability($this->repository->folder())
         );
     }
 
@@ -135,5 +168,16 @@ class ShowInfo
             "arg" => $folder,
             "statekey" => "syscheck_$state",
         ];
+    }
+
+    /** @return list<array{name:string,url:string}> */
+    private function forumRecords(Url $url): array
+    {
+        return array_map(function (string $forum) use ($url) {
+            return [
+                "name" => $forum,
+                "url" => $url->with("forum_forum", $forum)->relative(),
+            ];
+        }, $this->repository->findForumsToMigrate());
     }
 }

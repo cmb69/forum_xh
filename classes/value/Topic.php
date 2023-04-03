@@ -23,7 +23,7 @@ namespace Forum\Value;
 
 class Topic
 {
-    /** @var string|null */
+    /** @var string */
     private $id;
 
     /** @var string */
@@ -38,7 +38,7 @@ class Topic
     /** @var int */
     private $time;
 
-    public function __construct(?string $id, string $title, int $comments, string $user, int $time)
+    public function __construct(string $id, string $title, int $comments, string $user, int $time)
     {
         $this->id = $id;
         $this->title = $title;
@@ -47,7 +47,7 @@ class Topic
         $this->time = $time;
     }
 
-    public function id(): ?string
+    public function id(): string
     {
         return $this->id;
     }
@@ -77,16 +77,5 @@ class Topic
         $that = clone $this;
         $that->title = $title;
         return $that;
-    }
-
-    /** @return array{title:string,comments:int,user:string,time:int} */
-    public function toArray(): array
-    {
-        return [
-            "title" => $this->title,
-            "comments" => $this->comments,
-            "user" => $this->user,
-            "time" => $this->time,
-        ];
     }
 }

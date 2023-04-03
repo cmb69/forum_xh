@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2012-2023 Christoph M. Becker
+ * Copyright 2022-2023 Christoph M. Becker
  *
  * This file is part of Forum_XH.
  *
@@ -19,24 +19,16 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Forum\Dic;
-use Forum\Infra\Request;
-use Forum\Infra\Responder;
+namespace Forum\Infra;
 
-/**
- * @var string $admin
- * @var string $o
- */
-
-XH_registerStandardPluginMenuItems(false);
-
-if (XH_wantsPluginAdministration('forum')) {
-    $o .= print_plugin_admin('off');
-    switch ($admin) {
-        case '':
-            $o .= Responder::respond(Dic::makeShowInfo()(Request::current()));
-            break;
-        default:
-            $o .= plugin_admin_common();
+class Random
+{
+    /**
+     * @param int<1,max> $length
+     * @codeCoverageIgnore
+     */
+    public function bytes(int $length): string
+    {
+        return random_bytes($length);
     }
 }

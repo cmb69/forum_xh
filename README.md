@@ -12,9 +12,8 @@ name, email address etc.
 
 Forum\_XH features a markup editor allowing basic
 [BBCode](https://en.wikipedia.org/wiki/BBCode) markup. All data are
-stored in flat files which are protected from concurrent access by
-pessimistic locking of the whole forum, so Forum\_XH is not suitable for
-heavily frequented forums. Furthermore common advanced forum features
+stored in flat files, so Forum\_XH is not suitable for
+large amounts of data. Furthermore common advanced forum features
 such as user signatures, PMs, subscribing to topics etc. are not
 available.
 

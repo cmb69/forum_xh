@@ -23,22 +23,65 @@ namespace Forum;
 
 use PHPUnit\Framework\TestCase;
 use ApprovalTests\Approvals;
+use Forum\Infra\FakeRepository;
+use Forum\Infra\FakeRequest;
 use Forum\Infra\View;
 use Forum\Infra\SystemChecker;
 
 class ShowInfoTest extends TestCase
 {
-    public function testRendersPluginInfo(): void
+    private $sut;
+    private $repository;
+
+    public function setUp(): void
     {
         $systemChecker = $this->createStub(SystemChecker::class);
+        $this->repository = new FakeRepository("./content/forum/");
+        $this->repository->options(["findForumsToMigrate" => ["old-forum"]]);
         $lang = XH_includeVar("./languages/en.php", 'plugin_tx')['forum'];
-        $sut = new ShowInfo(
+        $this->sut = new ShowInfo(
             "./plugins/forum/",
-            "irrelevant_content_folder",
             $systemChecker,
+            $this->repository,
             new View("./views/", $lang)
         );
-        $response = $sut();
+    }
+
+    public function testRendersPluginInfo(): void
+    {
+        $response = ($this->sut)(new FakeRequest());
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testMigratesForum(): void
+    {
+        $request = new FakeRequest([
+            "query" => "forum&forum_action=migrate&forum_forum=old-forum",
+            "post" => ["forum_do" => ""],
+        ]);
+        $response = ($this->sut)($request);
+        $this->assertEquals(["old-forum"], $this->repository->lastMigration());
+        $this->assertEquals("http://example.com/?forum", $response->location());
+    }
+
+    public function testReportsMissingForum(): void
+    {
+        $request = new FakeRequest([
+            "query" => "forum&forum_action=migrate",
+            "post" => ["forum_do" => ""],
+        ]);
+        $response = ($this->sut)($request);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsMigrationFailure(): void
+    {
+        $this->repository->options(["migrate" => false]);
+        $request = new FakeRequest([
+            "query" => "forum&forum_action=migrate&forum_forum=old-forum",
+            "post" => ["forum_do" => ""],
+        ]);
+        $response = ($this->sut)($request);
         Approvals::verifyHtml($response->output());
     }
 }

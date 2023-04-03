@@ -22,10 +22,11 @@
 namespace Forum;
 
 use Fa\RequireCommand as FaRequireCommand;
-use Forum\Infra\Contents;
 use Forum\Infra\CsrfProtector;
 use Forum\Infra\DateFormatter;
 use Forum\Infra\Mailer;
+use Forum\Infra\Random;
+use Forum\Infra\Repository;
 use Forum\Infra\SystemChecker;
 use Forum\Infra\View;
 use Forum\Logic\BbCode;
@@ -38,13 +39,14 @@ class Dic
         return new Forum(
             $plugin_cf["forum"],
             $pth["folder"]["plugins"] . "forum/",
-            new Contents(self::contentFolder()),
             self::makeBbCode(),
             new CsrfProtector,
             self::makeView(),
             new FaRequireCommand(),
             new Mailer($plugin_cf["forum"], new DateFormatter, self::makeView()),
-            new DateFormatter()
+            new DateFormatter(),
+            new Repository(self::contentFolder()),
+            new Random
         );
     }
 
@@ -53,8 +55,8 @@ class Dic
         global $pth;
         return new ShowInfo(
             $pth["folder"]["plugins"] . "forum/",
-            self::contentFolder(),
             new SystemChecker(),
+            new Repository(self::contentFolder()),
             self::makeView()
         );
     }

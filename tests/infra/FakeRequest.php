@@ -35,6 +35,11 @@ class FakeRequest extends Request
         return $this->options["admin"] ?? false;
     }
 
+    public function time(): int
+    {
+        return $this->options["time"] ?? 0;
+    }
+
     protected function query(): string
     {
         return $this->options["query"] ?? "";

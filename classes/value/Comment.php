@@ -23,8 +23,11 @@ namespace Forum\Value;
 
 class Comment
 {
-    /** @var string|null */
+    /** @var string */
     private $id;
+
+    /** @var string|null */
+    private $title;
 
     /** @var string */
     private $user;
@@ -35,17 +38,23 @@ class Comment
     /** @var string */
     private $message;
 
-    public function __construct(?string $id, string $user, int $time, string $message)
+    public function __construct(string $id, ?string $title, string $user, int $time, string $message)
     {
         $this->id = $id;
+        $this->title = $title;
         $this->user = $user;
         $this->time = $time;
         $this->message = $message;
     }
 
-    public function id(): ?string
+    public function id(): string
     {
         return $this->id;
+    }
+
+    public function title(): ?string
+    {
+        return $this->title;
     }
 
     public function user(): string
@@ -63,20 +72,11 @@ class Comment
         return $this->message;
     }
 
-    public function withMessage(string $message): self
+    public function with(string $title, string $message): self
     {
         $that = clone $this;
+        $that->title = $title;
         $that->message = $message;
         return $that;
-    }
-
-    /** @return array{user:string,time:int,comment:string} */
-    public function toArray(): array
-    {
-        return [
-            "user" => $this->user,
-            "time" => $this->time,
-            "comment" => $this->message,
-        ];
     }
 }

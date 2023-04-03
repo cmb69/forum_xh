@@ -24,6 +24,7 @@ $plugin_tx['forum']['error_unauthorized']="You are not authorized for this actio
 $plugin_tx['forum']['error_title']="Invalid title!";
 $plugin_tx['forum']['error_message']="Invalid comment!";
 $plugin_tx['forum']['error_store']="The changes could not be stored!";
+$plugin_tx['forum']['error_migration']="Migration failed!";
 
 $plugin_tx['forum']['lbl_submit']="Submit";
 $plugin_tx['forum']['lbl_edit']="Edit Comment";
