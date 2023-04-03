@@ -25,39 +25,32 @@ use function XH_hsc;
 
 class BbCode
 {
-    /** @var array<string,string> */
-    private $lang;
+    private const PATTERN = '/\[(i|b|u|s|url|img|iframe|size|list|quote|code)(=.*?)?](.*?)\[\/\1]/su';
 
-    /** @var string */
-    private $pattern;
+    /** @var array<string,string> */
+    private $text;
 
     /** @var list<string> */
     private $context;
 
     /** @var string */
-    private $emoticonDir;
+    private $emoticonFolder;
 
-    /** @var string */
-    private $iframeTitle;
-
-    /** @param array<string,string> $lang */
-    public function __construct(array $lang, string $emoticonDir, string $iframeTitle)
+    /** @param array<string,string> $text */
+    public function __construct(array $text, string $emoticonFolder)
     {
-        $this->pattern = '/\[(i|b|u|s|url|img|iframe|size|list|quote|code)(=.*?)?]'
-            . '(.*?)\[\/\1]/su';
-        $this->context = array();
-        $this->lang = $lang;
-        $this->emoticonDir = rtrim($emoticonDir, '/') . '/';
-        $this->iframeTitle = $iframeTitle;
+        $this->context = [];
+        $this->text = $text;
+        $this->emoticonFolder = $emoticonFolder;
     }
 
     public function convert(string $text): string
     {
         $text = XH_hsc($text);
-        $this->context = array();
-        $text = $this->doConvert(array($text, '', '', $text));
+        $this->context = [];
+        $text = $this->doConvert([$text, "", "", $text]);
         $text = $this->convertEmoticons($text);
-        $text = (string) preg_replace('/\r\n|\r|\n/', '<br>', $text);
+        $text = (string) preg_replace('/\R/', "<br>", $text);
         $text = str_replace("\x0B", "\n", $text);
         return $text;
     }
@@ -65,44 +58,39 @@ class BbCode
     /** @param array<int,string> $matches */
     private function doConvert(array $matches): string
     {
-        $inlines = array('i', 'b', 'u', 's', 'url', 'img', 'iframe', 'size');
-        array_push(
-            $this->context,
-            in_array($matches[1], $inlines) ? 'inline' : $matches[1]
-        );
+        $inlines = ["i", "b", "u", "s", "url", "img", "iframe", "size"];
+        array_push($this->context, in_array($matches[1], $inlines, true) ? "inline" : $matches[1]);
         $matches[3] = trim($matches[3]);
-        switch ($matches[1]) {
-            case '':
-                $result = (string) preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
-                break;
-            case 'url':
-                $result = $this->convertUrl($matches);
-                break;
-            case 'img':
-                $result = $this->convertImg($matches);
-                break;
-            case 'iframe':
-                $result = $this->convertIframe($matches);
-                break;
-            case 'size':
-                $result = $this->convertSize($matches);
-                break;
-            case 'list':
-                $result = $this->convertList($matches);
-                break;
-            case 'quote':
-                $result = $this->convertQuote($matches);
-                break;
-            case 'code':
-                $result = $this->convertCode($matches);
-                break;
-            default:
-                $result = $this->convertOther($matches);
-        }
+        $result = $this->convertElement($matches);
         array_pop($this->context);
         return $result;
     }
-    
+
+    /** @param array<int,string> $matches */
+    private function convertElement(array $matches): string
+    {
+        switch ($matches[1]) {
+            case "":
+                return (string) preg_replace_callback(self::PATTERN, [$this, "doConvert"], $matches[3]);
+            case "url":
+                return $this->convertUrl($matches);
+            case "img":
+                return $this->convertImg($matches);
+            case "iframe":
+                return $this->convertIframe($matches);
+            case "size":
+                return $this->convertSize($matches);
+            case "list":
+                return $this->convertList($matches);
+            case "quote":
+                return $this->convertQuote($matches);
+            case "code":
+                return $this->convertCode($matches);
+            default:
+                return $this->convertOther($matches);
+        }
+    }
+
     /** @param array<int,string> $matches */
     private function convertUrl(array $matches): string
     {
@@ -111,14 +99,12 @@ class BbCode
             $inner = $matches[3];
         } else {
             $url = substr($matches[2], 1);
-            $inner = preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
+            $inner = preg_replace_callback(self::PATTERN, [$this, "doConvert"], $matches[3]);
         }
         if (!preg_match('/^http(s)?:/', $url)) {
             return $matches[0];
         }
-        $start = '<a class="forum_link" href="' . $url . '" rel="nofollow">';
-        $end = '</a>';
-        return $start . $inner . $end;
+        return "<a class=\"forum_link\" href=\"$url\" rel=\"nofollow\">" . $inner . "</a>";
     }
 
     /** @param array<int,string> $matches */
@@ -128,7 +114,7 @@ class BbCode
         if (!preg_match('/^http(s)?:/', $url)) {
             return $matches[0];
         }
-        return '<img src="' . $url . '" alt="' . pathinfo($url, PATHINFO_FILENAME) . '">';
+        return "<img src=\"$url\" alt=\"" . pathinfo($url, PATHINFO_FILENAME) . "\">";
     }
 
     /** @param array<int,string> $matches */
@@ -138,97 +124,74 @@ class BbCode
         if (!preg_match('/^http(s)?:/', $url)) {
             return $matches[0];
         }
-        return sprintf(
-            '<div class="iframe_container"><iframe src="%s" title="%s"></iframe></div>',
-            $url,
-            XH_hsc($this->iframeTitle)
-        );
+        $title = XH_hsc($this->text["title_iframe"]);
+        return "<div class=\"iframe_container\"><iframe src=\"$url\" title=\"$title\"></iframe></div>";
     }
 
     /** @param array<int,string> $matches */
     private function convertSize(array $matches): string
     {
         $size = substr($matches[2], 1);
-        $inner = preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
-        $start = '<span style="font-size: ' . $size . '%; line-height: '
-            . $size . '%">';
-        $end = '</span>';
-        return $start . $inner . $end;
+        return "<span style=\"font-size: $size%; line-height: $size%\">"
+            . preg_replace_callback(self::PATTERN, [$this, "doConvert"], $matches[3]) . "</span>";
     }
     
     /** @param array<int,string> $matches */
     private function convertList(array $matches): string
     {
-        if (in_array('inline', $this->context)) {
+        if (in_array("inline", $this->context, true)) {
             return $matches[0];
         }
         if (empty($matches[2])) {
-            $start = '<ul>';
-            $end = '</ul>';
+            $start = "<ul>";
+            $end = "</ul>";
         } else {
-            $start = '<ol start="' . substr($matches[2], 1) . '">';
-            $end = '</ol>';
+            $start = "<ol start=\"" . substr($matches[2], 1) . "\">";
+            $end = "</ol>";
         }
-        $items = array_map('trim', explode('[*]', $matches[3]));
-        if (array_shift($items) != '') {
+        $items = array_map("trim", explode("[*]", $matches[3]));
+        if (array_shift($items) !== "") {
             return $matches[0];
         }
-        $inner = implode('', array_map(
-            function ($item) {
-                return '<li>'
-                    . preg_replace_callback($this->pattern, array($this, 'doConvert'), $item)
-                    . '</li>';
-            },
-            $items
-        ));
+        $inner = implode("", array_map(function ($item) {
+            return "<li>" . preg_replace_callback(self::PATTERN, [$this, "doConvert"], $item) . "</li>";
+        }, $items));
         return $start . $inner . $end;
     }
 
     /** @param array<int,string> $matches */
     private function convertQuote(array $matches): string
     {
-        if (in_array('inline', $this->context)) {
+        if (in_array("inline", $this->context, true)) {
             return $matches[0];
         }
-        $start = '<blockquote class="forum_quote">';
-        $end = '</blockquote>';
-        $inner = preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
-        return $start . $inner . $end;
+        return "<blockquote class=\"forum_quote\">"
+            . preg_replace_callback(self::PATTERN, [$this, "doConvert"], $matches[3]) . "</blockquote>";
     }
     
     /** @param array<int,string> $matches */
     private function convertCode(array $matches): string
     {
-        if (in_array('inline', $this->context)) {
+        if (in_array("inline", $this->context, true)) {
             return $matches[0];
         }
-        $start = '<pre class="forum_code">';
-        $end = '</pre>';
-        $inner = preg_replace('/\r\n|\r|\n/', "\x0B", $matches[3]);
-        return $start . $inner . $end;
+        return "<pre class=\"forum_code\">" . preg_replace('/\R/', "\x0B", $matches[3]) . "</pre>";
     }
     
     /** @param array<int,string> $matches */
     private function convertOther(array $matches): string
     {
-        $start = '<' . $matches[1] . '>';
-        $inner = preg_replace_callback($this->pattern, array($this, 'doConvert'), $matches[3]);
-        $end = '</' . $matches[1] . '>';
-        return $start . $inner . $end;
+        return "<$matches[1]>" . preg_replace_callback(self::PATTERN, [$this, "doConvert"], $matches[3])
+            . "</$matches[1]>";
     }
 
     private function convertEmoticons(string $text): string
     {
-        $emotions = array(
-            'happy', 'smile', 'wink', 'grin', 'tongue', 'surprised', 'unhappy'
-        );
-        $emoticons = array(':))', ':)', ';)', ':D', ':P', ':o', ':(');
-        $images = array();
-        foreach ($emotions as $emotion) {
-            $src = $this->emoticonDir . 'emoticon_' . $emotion . '.png';
-            $alt = $this->lang['lbl_' . $emotion];
-            $images[] = '<img src="' . $src . '" alt="' . $alt . '">';
-        }
-        return str_replace($emoticons, $images, $text);
+        $images = array_map(function (string $emotion) {
+            $src = $this->emoticonFolder . "emoticon_$emotion.png";
+            $alt = $this->text["lbl_$emotion"];
+            return "<img src=\"$src\" alt=\"$alt\">";
+        }, ["happy", "smile", "wink", "grin", "tongue", "surprised", "unhappy"]);
+        return str_replace([":))", ":)", ";)", ":D", ":P", ":o", ":("], $images, $text);
     }
 }

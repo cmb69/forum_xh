@@ -64,8 +64,7 @@ class Dic
         global $pth, $plugin_tx;
         return new BbCode(
             $plugin_tx["forum"],
-            $pth["folder"]["plugins"] . "forum/images/",
-            $plugin_tx["forum"]["title_iframe"]
+            $pth["folder"]["plugins"] . "forum/images/"
         );
     }
 
