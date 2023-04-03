@@ -23,7 +23,6 @@ namespace Forum;
 
 use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\CsrfProtector;
-use Forum\Infra\DateFormatter;
 use Forum\Infra\Mailer;
 use Forum\Infra\Random;
 use Forum\Infra\Repository;
@@ -61,9 +60,6 @@ class Forum
     /** @var Mailer */
     private $mailer;
 
-    /** @var DateFormatter */
-    private $dateFormatter;
-
     /** @var Repository */
     private $repository;
 
@@ -79,7 +75,6 @@ class Forum
         View $view,
         FaRequireCommand $faRequireCommand,
         Mailer $mailer,
-        DateFormatter $dateFormatter,
         Repository $repository,
         Random $random
     ) {
@@ -90,7 +85,6 @@ class Forum
         $this->view = $view;
         $this->faRequireCommand = $faRequireCommand;
         $this->mailer = $mailer;
-        $this->dateFormatter = $dateFormatter;
         $this->repository = $repository;
         $this->random = $random;
     }
@@ -153,7 +147,7 @@ class Forum
                 "title" => $topic->title(),
                 "user" => $topic->user(),
                 "comments" => $topic->comments(),
-                "date" => $this->dateFormatter->format($topic->time()),
+                "date" => $this->view->date($topic->time()),
                 "url" => $url->with("forum_topic", $topic->id())->relative(),
             ];
         }, array_values($topics));
@@ -195,7 +189,7 @@ class Forum
                 "cid" => $comment->id(),
                 "user" => $comment->user(),
                 "mayDeleteComment" => $this->mayModify($request, $comment),
-                "commentDate" => $this->dateFormatter->format($comment->time()),
+                "commentDate" => $this->view->date($comment->time()),
                 "html" => Html::of($this->bbcode->convert($comment->message())),
                 "commentEditUrl" => $url->with("forum_action", "edit")->relative(),
                 "deleteUrl" => $url->with("forum_action", "delete")->relative(),

@@ -23,7 +23,6 @@ namespace Forum;
 
 use ApprovalTests\Approvals;
 use Fa\RequireCommand;
-use Forum\Infra\DateFormatter;
 use Forum\Infra\FakeCsrfProtector;
 use Forum\Infra\FakeMailer;
 use Forum\Infra\FakeRepository;
@@ -57,8 +56,7 @@ class ForumTest extends TestCase
         $csrfProtector = new FakeCsrfProtector;
         $view = new View("./views/", XH_includeVar("./languages/en.php", 'plugin_tx')['forum']);
         $faRequireCommand = $this->createStub(RequireCommand::class);
-        $dateFormatter = $this->createStub(DateFormatter::class);
-        $this->mailer = new FakeMailer($this->conf, $dateFormatter, $view);
+        $this->mailer = new FakeMailer($this->conf, $view);
         return new Forum(
             $this->conf,
             "./plugins/forum/",
@@ -67,7 +65,6 @@ class ForumTest extends TestCase
             $view,
             $faRequireCommand,
             $this->mailer,
-            $dateFormatter,
             $this->repository,
             $this->random
         );

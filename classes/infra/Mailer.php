@@ -28,17 +28,13 @@ class Mailer
     /** @var array<string,string> */
     private $config;
 
-    /** @var DateFormatter */
-    private $dateFormatter;
-
     /** @var View */
     private $view;
 
     /** @param array<string,string> $config */
-    public function __construct(array $config, DateFormatter $dateFormatter, View $view)
+    public function __construct(array $config, View $view)
     {
         $this->config = $config;
-        $this->dateFormatter = $dateFormatter;
         $this->view = $view;
     }
 
@@ -62,7 +58,7 @@ class Mailer
 
     private function renderMessage(Comment $comment, string $url): string
     {
-        $date = $this->dateFormatter->format($comment->time());
+        $date = $this->view->date($comment->time());
         $attribution = $this->view->plain("mail_attribution", $comment->user(), $date);
         $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment->message());
         assert(is_string($content));

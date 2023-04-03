@@ -1,5 +1,7 @@
 <?php
 
+$plugin_tx['forum']['format_date']="F d, Y, H:i";
+
 $plugin_tx['forum']['msg_start_topic']="Start a new topic";
 $plugin_tx['forum']['msg_reply']="Reply";
 $plugin_tx['forum']['msg_back']="Back to overview";

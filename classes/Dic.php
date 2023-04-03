@@ -23,7 +23,6 @@ namespace Forum;
 
 use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\CsrfProtector;
-use Forum\Infra\DateFormatter;
 use Forum\Infra\Mailer;
 use Forum\Infra\Random;
 use Forum\Infra\Repository;
@@ -43,8 +42,7 @@ class Dic
             new CsrfProtector,
             self::makeView(),
             new FaRequireCommand(),
-            new Mailer($plugin_cf["forum"], new DateFormatter, self::makeView()),
-            new DateFormatter(),
+            new Mailer($plugin_cf["forum"], self::makeView()),
             new Repository(self::contentFolder()),
             new Random
         );

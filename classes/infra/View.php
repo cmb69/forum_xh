@@ -57,6 +57,11 @@ final class View
         return sprintf($this->text[$key], ...$args);
     }
 
+    public function date(int $timestamp): string
+    {
+        return date($this->text["format_date"], $timestamp);
+    }
+
     /** @param scalar $args */
     public function error(string $key, ...$args): string
     {
