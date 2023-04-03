@@ -76,6 +76,5 @@ $plugin_tx['forum']['syscheck_writable']="'%s' is writable: ";
 $plugin_tx['forum']['syscheck_xhversion']="CMSimple_XH version ≥ %s: ";
 
 $plugin_tx['forum']['cf_mail_address']="The address of the receiver of notification mails. If blank, no notification mails will be sent.";
-$plugin_tx['forum']['cf_mail_fix_headers']="Whether to fix problems with some buggy mail transfer agents. Enable it, if you don't receive the emails or if some header information (e.g. \"MIME-Version: 1.0\") is visible in the body of the mail.";
 
 ?>

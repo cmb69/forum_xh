@@ -46,13 +46,11 @@ class Mailer
             'Content-Transfer-Encoding: 8bit',
             "From: {$this->config['mail_address']}"
         );
-        $headers[] = "Content-Base: $baseUrl";
-        $sep = $this->config['mail_fix_headers'] ? "\n" : "\r\n";
         return $this->mail(
             $this->config['mail_address'],
             '=?UTF-8?B?' . base64_encode($subject) . '?=',
-            (string) preg_replace('/\r\n|\n|\r/', $sep, $this->renderMessage($comment, $baseUrl)),
-            implode($sep, $headers)
+            (string) $this->renderMessage($comment, $baseUrl),
+            implode("\r\n", $headers)
         );
     }
 
@@ -60,9 +58,9 @@ class Mailer
     {
         $date = $this->view->date($comment->time());
         $attribution = $this->view->plain("mail_attribution", $comment->user(), $date);
-        $content = preg_replace('/\r\n|\r|\n/', "\n> ", $comment->message());
+        $content = preg_replace('/\R/', "\r\n> ", $comment->message());
         assert(is_string($content));
-        return "$attribution\n\n> $content\n\n<$url>";
+        return "$attribution\r\n\r\n> $content\r\n\r\n<$url>";
     }
 
     /** @codeCoverageIgnore */

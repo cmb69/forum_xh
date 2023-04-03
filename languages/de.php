@@ -76,6 +76,5 @@ $plugin_tx['forum']['syscheck_writable']="'%s' ist schreibbar: ";
 $plugin_tx['forum']['syscheck_xhversion']="CMSimple_XH-Version ≥ %s: ";
 
 $plugin_tx['forum']['cf_mail_address']="Die Adresse des Empfängers von Benachrichtigungsmails. Falls leer, werden keine Benachrichtigungsmails versandt.";
-$plugin_tx['forum']['cf_mail_fix_headers']="Ob Probleme mit einigen fehlerhaften Mail Transfer Agents behoben werden sollen. Aktivieren Sie diese Option, wenn Sie die E-Mails nicht empfangen oder wenn ein Teil der Header-Informationen (z.B. \"MIME-Version: 1.0\") im Rumpf der E-Mail erscheint.";
 
 ?>

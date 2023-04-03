@@ -9,4 +9,3 @@
 Content-type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 From: webmaster@example.com
-Content-Base: http://example.com/?Forum&forum_action=create&forum_topic=6CT3ADHQ70WP2RK3CHJPC
