@@ -50,7 +50,7 @@ class BbCode
         $this->context = [];
         $text = $this->doConvert([$text, "", "", $text]);
         $text = $this->convertEmoticons($text);
-        $text = (string) preg_replace('/\R/', "<br>", $text);
+        $text = (string) preg_replace('/\r\n|\r|\n/', "<br>", $text);
         $text = str_replace("\x0B", "\n", $text);
         return $text;
     }
@@ -175,7 +175,7 @@ class BbCode
         if (in_array("inline", $this->context, true)) {
             return $matches[0];
         }
-        return "<pre class=\"forum_code\">" . preg_replace('/\R/', "\x0B", $matches[3]) . "</pre>";
+        return "<pre class=\"forum_code\">" . preg_replace('/\r\n|\r|\n/', "\x0B", $matches[3]) . "</pre>";
     }
     
     /** @param array<int,string> $matches */
