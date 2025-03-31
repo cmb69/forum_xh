@@ -15,8 +15,8 @@ jobs:
           tools: composer,phive
       - name: Install CMSimple_XH
         run: |
-          curl -fsSL -o CMSimple_XH-1.7.5.zip https://github.com/cmsimple-xh/cmsimple-xh/releases/download/1.7.5/CMSimple_XH-1.7.5.zip
-          unzip -q CMSimple_XH-1.7.5.zip
+          curl -fsSL -o CMSimple_XH-1.8.zip https://github.com/cmsimple-xh/cmsimple-xh/releases/download/1.8.0/CMSimple_XH-1.8.zip
+          unzip -q CMSimple_XH-1.8.zip
       - name: Checkout Forum_XH
         uses: actions/checkout@4
         with:
