@@ -34,7 +34,7 @@ class Repository
         $this->folder = $folder;
     }
 
-    public function folder(string $forum = null): string
+    public function folder(?string $forum = null): string
     {
         $filename = $this->folder;
         if ($forum !== null) {
