@@ -32,9 +32,8 @@ Benutzersignaturen, PN, das Abonnieren von Themen usw.
 ## Voraussetzungen
 
 Forum_XH ist ein Plugin für [CMSimple_XH](https://www.cmsimple-xh.org/de/).
-Es benötigt CMSimple_XH ≥ 1.7.0
-mit dem [Fa\_XH Plugin](https://github.com/cmb69/fa_xh).
-Es benötigt PHP ≥ 7.1.0 mit den JSON und Session Extensions.
+Es benötigt CMSimple_XH ≥ 1.7.0,
+und PHP ≥ 7.1.0 mit den JSON und Session Extensions.
 Forum_XH benötigt weiterhin [Plib_XH](https://github.com/cmb69/plib_xh) ≥ 1.6;
 ist dieses noch nicht installiert (siehe `Einstellungen` → `Info`),
 laden Sie das [aktuelle Release](https://github.com/cmb69/plib_xh/releases/latest)

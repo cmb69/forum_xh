@@ -116,7 +116,6 @@ class ShowInfo
             $this->checkExtension("json"),
             $this->checkExtension("session"),
             $this->checkXhVersion("1.7.0"),
-            $this->checkPlugin("fa"),
             $this->checkWritability($this->pluginFolder . "css/"),
             $this->checkWritability($this->pluginFolder . "config"),
             $this->checkWritability($this->pluginFolder . "languages/"),
@@ -160,18 +159,18 @@ class ShowInfo
         ];
     }
 
-    /** @return array{class:string,key:string,arg:string,statekey:string} */
-    private function checkPlugin(string $plugin): array
-    {
-        $folder = dirname($this->pluginFolder) . "/$plugin";
-        $state = $this->systemChecker->checkPlugin($folder) ? "success" : "fail";
-        return [
-            "class" => "xh_$state",
-            "key" => "syscheck_plugin",
-            "arg" => $plugin,
-            "statekey" => "syscheck_$state",
-        ];
-    }
+    // /** @return array{class:string,key:string,arg:string,statekey:string} */
+    // private function checkPlugin(string $plugin): array
+    // {
+    //     $folder = dirname($this->pluginFolder) . "/$plugin";
+    //     $state = $this->systemChecker->checkPlugin($folder) ? "success" : "fail";
+    //     return [
+    //         "class" => "xh_$state",
+    //         "key" => "syscheck_plugin",
+    //         "arg" => $plugin,
+    //         "statekey" => "syscheck_$state",
+    //     ];
+    // }
 
     /** @return array{class:string,key:string,arg:string,statekey:string} */
     private function checkWritability(string $folder): array

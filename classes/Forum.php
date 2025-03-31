@@ -21,7 +21,6 @@
 
 namespace Forum;
 
-use Fa\RequireCommand as FaRequireCommand;
 use Forum\Model\BbCode;
 use Forum\Model\Comment;
 use Forum\Model\Repository;
@@ -52,9 +51,6 @@ class Forum
     /** @var View */
     private $view;
 
-    /** @var FaRequireCommand */
-    private $faRequireCommand;
-
     /** @var Mail */
     private $mail;
 
@@ -71,7 +67,6 @@ class Forum
         BbCode $bbcode,
         CsrfProtector $csrfProtector,
         View $view,
-        FaRequireCommand $faRequireCommand,
         Mail $mail,
         Repository $repository,
         Random $random
@@ -81,7 +76,6 @@ class Forum
         $this->bbcode = $bbcode;
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
-        $this->faRequireCommand = $faRequireCommand;
         $this->mail = $mail;
         $this->repository = $repository;
         $this->random = $random;
@@ -168,7 +162,6 @@ class Forum
 
     private function renderTopicView(Request $request, string $forum, string $tid): string
     {
-        $this->faRequireCommand->execute();
         [$topic, $comments] = $this->repository->findTopic($forum, $tid);
         if ($topic === null) {
             return $this->view->message("fail", "error_no_topic");
@@ -253,8 +246,6 @@ class Forum
     /** @param list<array{string}> $errors */
     private function renderCommentForm(Request $request, Topic $topic, Comment $comment, array $errors = []): string
     {
-        $this->faRequireCommand->execute();
-
         $emotions = ['smile', 'wink', 'happy', 'grin', 'tongue', 'surprised', 'unhappy'];
         $emoticons = [];
         foreach ($emotions as $emotion) {

@@ -21,7 +21,6 @@
 
 namespace Forum;
 
-use Fa\RequireCommand as FaRequireCommand;
 use Forum\Model\BbCode;
 use Forum\Model\Repository;
 use Plib\CsrfProtector;
@@ -41,7 +40,6 @@ class Dic
             self::makeBbCode(),
             new CsrfProtector(),
             self::makeView(),
-            new FaRequireCommand(),
             new Mail(),
             new Repository(self::contentFolder()),
             new Random()

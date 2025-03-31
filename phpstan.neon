@@ -11,6 +11,5 @@ parameters:
     - ../../cmsimple/classes/Mail.php
     - ../../cmsimple/adminfuncs.php
     - ../../cmsimple/functions.php
-    - ../fa/classes/RequireCommand.php
   scanDirectories:
     - ../plib/classes

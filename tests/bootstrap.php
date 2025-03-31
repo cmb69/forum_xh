@@ -10,8 +10,6 @@ require_once './vendor/autoload.php';
 require_once "../../cmsimple/classes/Mail.php";
 require_once '../../cmsimple/functions.php';
 
-require_once "../fa/classes/RequireCommand.php";
-
 require_once "../plib/classes/Codec.php";
 require_once "../plib/classes/CsrfProtector.php";
 require_once "../plib/classes/Random.php";

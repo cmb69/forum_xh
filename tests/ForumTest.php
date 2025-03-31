@@ -3,7 +3,6 @@
 namespace Forum;
 
 use ApprovalTests\Approvals;
-use Fa\RequireCommand;
 use Forum\Model\BbCode;
 use Forum\Model\Comment;
 use Forum\Model\FakeRepository;
@@ -38,14 +37,12 @@ class ForumTest extends TestCase
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
         $view = new View("./views/", XH_includeVar("./languages/en.php", 'plugin_tx')['forum']);
-        $faRequireCommand = $this->createStub(RequireCommand::class);
         return new Forum(
             $this->conf,
             "./plugins/forum/",
             $this->bbcode,
             $csrfProtector,
             $view,
-            $faRequireCommand,
             $this->mail,
             $this->repository,
             $this->random
