@@ -1,6 +1,6 @@
 <?php
 
-namespace Forum\Logic;
+namespace Forum\Model;
 
 use PHPUnit\Framework\TestCase;
 

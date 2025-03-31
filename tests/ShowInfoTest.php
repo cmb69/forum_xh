@@ -4,7 +4,7 @@ namespace Forum;
 
 use PHPUnit\Framework\TestCase;
 use ApprovalTests\Approvals;
-use Forum\Infra\FakeRepository;
+use Forum\Model\FakeRepository;
 use Plib\FakeRequest;
 use Plib\FakeSystemChecker;
 use Plib\View;

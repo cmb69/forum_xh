@@ -21,7 +21,7 @@
 
 namespace Forum;
 
-use Forum\Infra\Repository;
+use Forum\Model\Repository;
 use Plib\Request;
 use Plib\Response;
 use Plib\SystemChecker;

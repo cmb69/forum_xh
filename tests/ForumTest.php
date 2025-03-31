@@ -4,9 +4,9 @@ namespace Forum;
 
 use ApprovalTests\Approvals;
 use Fa\RequireCommand;
-use Forum\Infra\FakeRepository;
-use Forum\Logic\BbCode;
-use Forum\Value\Comment;
+use Forum\Model\BbCode;
+use Forum\Model\Comment;
+use Forum\Model\FakeRepository;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Plib\CsrfProtector;

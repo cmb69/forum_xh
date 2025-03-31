@@ -22,8 +22,8 @@
 namespace Forum;
 
 use Fa\RequireCommand as FaRequireCommand;
-use Forum\Infra\Repository;
-use Forum\Logic\BbCode;
+use Forum\Model\BbCode;
+use Forum\Model\Repository;
 use Plib\CsrfProtector;
 use Plib\Random;
 use Plib\SystemChecker;

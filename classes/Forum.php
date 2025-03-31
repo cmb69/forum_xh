@@ -22,10 +22,10 @@
 namespace Forum;
 
 use Fa\RequireCommand as FaRequireCommand;
-use Forum\Infra\Repository;
-use Forum\Logic\BbCode;
-use Forum\Value\Comment;
-use Forum\Value\Topic;
+use Forum\Model\BbCode;
+use Forum\Model\Comment;
+use Forum\Model\Repository;
+use Forum\Model\Topic;
 use Plib\Codec;
 use Plib\CsrfProtector;
 use Plib\Random;

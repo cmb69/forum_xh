@@ -19,7 +19,7 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Forum\Logic;
+namespace Forum\Model;
 
 use function XH_hsc;
 

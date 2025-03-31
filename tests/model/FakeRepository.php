@@ -1,8 +1,6 @@
 <?php
 
-namespace Forum\Infra;
-
-use Forum\Value\Comment;
+namespace Forum\Model;
 
 class FakeRepository extends Repository
 {

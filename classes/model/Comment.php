@@ -19,7 +19,7 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Forum\Value;
+namespace Forum\Model;
 
 class Comment
 {

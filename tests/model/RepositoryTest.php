@@ -1,9 +1,7 @@
 <?php
 
-namespace Forum\Infra;
+namespace Forum\Model;
 
-use Forum\Value\Comment;
-use Forum\Value\Topic;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 

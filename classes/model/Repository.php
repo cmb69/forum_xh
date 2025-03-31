@@ -19,10 +19,7 @@
  * along with Forum_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Forum\Infra;
-
-use Forum\Value\Comment;
-use Forum\Value\Topic;
+namespace Forum\Model;
 
 class Repository
 {
