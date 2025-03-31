@@ -66,7 +66,7 @@
       </fileset>
       <filterchain>
         <replaceregexp>
-          <regexp pattern="&lt;\?(?!=)" replace="&lt;?php "/>
+          <regexp pattern="&lt;\?(?!=|php)" replace="&lt;?php "/>
         </replaceregexp>
       </filterchain>
     </move>
