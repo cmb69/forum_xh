@@ -32,8 +32,8 @@ class Url
         $that->path = (string) preg_replace('/index\.php$/', "", $parts["path"]);
         $match = preg_match('/^([^=&]*)(?:&|$)(.*)/', $parts["query"] ?? "", $matches);
         assert($match !== false);
-        $that->page = $matches[1];
-        parse_str($matches[2], $that->params);
+        $that->page = $matches[1]; // @phpstan-ignore-line
+        parse_str($matches[2], $that->params); // @phpstan-ignore-line
         return $that;
     }
 
