@@ -2,6 +2,8 @@
 
 <project name="Forum" default="help">
 
+  <property name="dir" value="${project.basedir}"/>
+
   <target name="help" description="lists available targets">
     <exec executable="phing" outputProperty="help">
       <arg value="-l"/>
@@ -51,15 +53,21 @@
     </exec>
   </target>
 
+  <target name="minify" description="minifies JS">
+    <exec executable="uglifyjs" checkreturn="true" dir="${dir}">
+      <arg line="forum.js --module --compress --mangle --output forum.min.js"/>
+    </exec>
+  </target>
+
   <target name="build" description="builds a distributable ZIP archive">
     <exec executable="git" passthru="true" checkreturn="true">
       <arg line="archive -o export.zip HEAD"/>
     </exec>
     <unzip file="export.zip" todir="export"/>
     <delete file="export.zip"/>
-    <exec executable="uglifyjs" passthru="true" checkreturn="true">
-      <arg line="export/forum.min.js --compress --mangle --output export/forum.min.js"/>
-    </exec>
+    <phingcall target="minify">
+      <property name="dir" value="export/"/>
+    </phingcall>
     <move todir="dist">
       <fileset dir="export">
         <include name="views/*.php"/>

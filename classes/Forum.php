@@ -133,12 +133,16 @@ class Forum
 
     private function renderTopicsView(Request $request, string $forum): string
     {
+        $js = $this->pluginFolder . "forum.min.js";
+        if (!is_file($js)) {
+            $this->pluginFolder . "forum.js";
+        }
         $topics = $this->repository->findTopics($forum);
         return $this->view->render('topics', [
             'isUser' => $request->username(),
             'href' => $request->url()->with("forum_action", "create")->relative(),
             'topics' => $this->topicRecords($request->url()->without("forum_ajax"), $topics),
-            "script" => $this->pluginFolder . "forum.min.js",
+            "script" => $js,
         ]);
     }
 
