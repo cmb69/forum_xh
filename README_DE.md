@@ -170,10 +170,10 @@ Sie sollten ein Exemplar der GNU General Public License zusammen mit
 Forum\_XH erhalten haben. Falls nicht, siehe
 <https://www.gnu.org/licenses/>.
 
-© 2012-2023 Christoph M. Becker
+Copyright © Christoph M. Becker
 
-Dänische Übersetzung © 2012 Jens Maegard  
-Russische Übersetzung © 2012 Lybomyr Kydray
+Dänische Übersetzung © Jens Maegard<br>
+Russische Übersetzung © Lybomyr Kydray
 
 ## Danksagung
 
