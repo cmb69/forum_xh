@@ -29,7 +29,7 @@ jobs:
           key: tools-${{matrix.version}}-${{hashFiles('cmsimplexh/plugins/forum/.phive')}}
       - if: ${{steps.cache-tools.outputs.cache-hit != 'true'}}
         name: phive install
-        run: cd cmsimplexh/plugins/forum && phive --no-progress install --copy --trust-gpg-keys 0x31C7E470E2138192,0x4AA394086372C20A,0xA4E55EA12C7C085C,0xCF1A108D0E7AE720,0xD5F0CB76E2DD74F8
+        run: cd cmsimplexh/plugins/forum && phive --no-progress install --copy --trust-gpg-keys 31C7E470E2138192,4AA394086372C20A,A4E55EA12C7C085C,A978220305CD5C32,CF1A108D0E7AE720,D5F0CB76E2DD74F8
       - name: composer install
         run: cd cmsimplexh/plugins/forum && composer install
       - name: phing sniff
