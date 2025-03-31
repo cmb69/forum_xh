@@ -32,8 +32,7 @@ available.
 ## Requirements
 
 Forum_XH is a plugin for [CMSimple_XH](https://www.cmsimple-xh.org/).
-It requires CMSimple_XH ≥ 1.7.0,
-and PHP ≥ 7.1.0 with the JSON and Session extensions.
+It requires CMSimple_XH ≥ 1.7.0, and PHP ≥ 7.1.0.
 Forum_XH also requires [Plib_XH](https://github.com/cmb69/plib_xh) ≥ 1.6;
 if that is not already installed (see `Settings` → `Info`),
 get the [lastest release](https://github.com/cmb69/plib_xh/releases/latest),

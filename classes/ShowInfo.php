@@ -113,8 +113,6 @@ class ShowInfo
     {
         return array(
             $this->checkPhpVersion("7.1.0"),
-            $this->checkExtension("json"),
-            $this->checkExtension("session"),
             $this->checkXhVersion("1.7.0"),
             $this->checkPlib("1.6"),
             $this->checkWritability($this->pluginFolder . "css/"),
@@ -132,18 +130,6 @@ class ShowInfo
             "class" => "xh_$state",
             "key" => "syscheck_phpversion",
             "arg" => $version,
-            "statekey" => "syscheck_$state",
-        ];
-    }
-
-    /** @return array{class:string,key:string,arg:string,statekey:string} */
-    private function checkExtension(string $extension): array
-    {
-        $state = $this->systemChecker->checkExtension($extension) ? "success" : "fail";
-        return [
-            "class" => "xh_$state",
-            "key" => "syscheck_extension",
-            "arg" => $extension,
             "statekey" => "syscheck_$state",
         ];
     }

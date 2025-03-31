@@ -65,7 +65,6 @@ $plugin_tx['forum']['mail_subject_new']="Ein neuer Kommentar wurde gepostet";
 $plugin_tx['forum']['mail_subject_edit']="Ein Kommentar wurde bearbeitet";
 $plugin_tx['forum']['mail_attribution']="Am %2\$s schrieb %1\$s:";
 
-$plugin_tx['forum']['syscheck_extension']="PHP-Erweiterung '%s' ist geladen: ";
 $plugin_tx['forum']['syscheck_fail']="Fehler";
 $plugin_tx['forum']['syscheck_phpversion']="PHP-Version ≥ %s: ";
 $plugin_tx['forum']['syscheck_plibversion']="Plib_XH-Version ≥ %s: ";

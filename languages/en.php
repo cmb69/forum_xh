@@ -65,7 +65,6 @@ $plugin_tx['forum']['mail_subject_new']="A new comment has been posted";
 $plugin_tx['forum']['mail_subject_edit']="A comment has been edited";
 $plugin_tx['forum']['mail_attribution']="On %2\$s, %1\$s wrote:";
 
-$plugin_tx['forum']['syscheck_extension']="PHP extension '%s' is loaded: ";
 $plugin_tx['forum']['syscheck_fail']="failure";
 $plugin_tx['forum']['syscheck_phpversion']="PHP version ≥ %s: ";
 $plugin_tx['forum']['syscheck_plibversion']="Plib_XH version ≥ %s: ";
