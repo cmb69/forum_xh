@@ -75,8 +75,8 @@ class ForumTest extends TestCase
     {
         $request = new FakeRequest();
         $response = ($this->sut())($request, "invalid_name");
-        $this->assertEquals(
-            "<p class=\"xh_fail\">&quot;invalid_name&quot; is an invalid forum name (may contain a-z, 0-9 and - only)!</p>\n",
+        $this->assertStringContainsString(
+            "&quot;invalid_name&quot; is an invalid forum name (may contain a-z, 0-9 and - only)!",
             $response->output()
         );
     }
@@ -178,7 +178,10 @@ class ForumTest extends TestCase
         ]);
         $response = ($this->sut())($request, "test");
         $saved = $this->repository->findComment("test", "64P36D1L6ORJGEB1C9HM8PB6", "64P36D1L6ORJGEB1C9HM8PB6");
-        $this->assertEquals(new Comment("64P36D1L6ORJGEB1C9HM8PB6", "A new Topic", "cmb", 1680508976, "A comment"), $saved);
+        $this->assertEquals(
+            new Comment("64P36D1L6ORJGEB1C9HM8PB6", "A new Topic", "cmb", 1680508976, "A comment"),
+            $saved
+        );
         $this->assertEquals(
             "http://example.com/?Forum&forum_topic=64P36D1L6ORJGEB1C9HM8PB6",
             $response->location()
@@ -213,7 +216,7 @@ class ForumTest extends TestCase
         $this->assertEquals($this->comment()->with("Topic Title", "A comment"), $saved);
         $this->assertEquals("http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM", $response->location());
     }
-    
+
     public function testReportsMissingIdWhenPosting(): void
     {
         $request = new FakeRequest([

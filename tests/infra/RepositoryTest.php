@@ -271,9 +271,8 @@ class RepositoryTest extends TestCase
     public function testFindsForumsToMigrate(): void
     {
         mkdir("vfs://root/forum/test", 0777, true);
-        file_put_contents("vfs://root/forum/test/topics.dat", <<<'EOT'
-        a:1:{s:13:"6425e91f94c00";a:4:{s:5:"title";s:11:"a new topic";s:8:"comments";i:1;s:4:"user";s:3:"cmb";s:4:"time";i:1680206111;}}
-        EOT);
+        file_put_contents("vfs://root/forum/test/topics.dat", 'a:1:{s:13:"6425e91f94c00";a:4:{s:5:"title"'
+            . ';s:11:"a new topic";s:8:"comments";i:1;s:4:"user";s:3:"cmb";s:4:"time";i:1680206111;}}');
         $sut = new Repository("vfs://root/forum/");
         $result = $sut->findForumsToMigrate();
         $this->assertEquals(["test"], $result);
@@ -282,12 +281,11 @@ class RepositoryTest extends TestCase
     public function testMigratesFromOldFormat(): void
     {
         mkdir("vfs://root/forum/test", 0777, true);
-        file_put_contents("vfs://root/forum/test/topics.dat", <<<'EOT'
-        a:1:{s:13:"6425e91f94c00";a:4:{s:5:"title";s:11:"a new topic";s:8:"comments";i:1;s:4:"user";s:3:"cmb";s:4:"time";i:1680206111;}}
-        EOT);
-        file_put_contents("vfs://root/forum/test/6425e91f94c00.dat", <<<'EOT'
-        a:2:{s:13:"63e90fce8abc4";a:3:{s:4:"user";s:3:"cmb";s:4:"time";i:1676218318;s:7:"comment";s:3:"neu";}s:13:"63e90fd3ac50d";a:3:{s:4:"user";s:3:"cmb";s:4:"time";i:1676218323;s:7:"comment";s:9:"antwort!e";}}
-        EOT);
+        file_put_contents("vfs://root/forum/test/topics.dat", 'a:1:{s:13:"6425e91f94c00";a:4:{s:5:"title"'
+            . ';s:11:"a new topic";s:8:"comments";i:1;s:4:"user";s:3:"cmb";s:4:"time";i:1680206111;}}');
+        file_put_contents("vfs://root/forum/test/6425e91f94c00.dat", 'a:2:{s:13:"63e90fce8abc4";a:3:{s:4:"user"'
+            . ';s:3:"cmb";s:4:"time";i:1676218318;s:7:"comment";s:3:"neu";}s:13:"63e90fd3ac50d";a:3:{s:4:"user"'
+            . ';s:3:"cmb";s:4:"time";i:1676218323;s:7:"comment";s:9:"antwort!e";}}');
         $sut = new Repository("vfs://root/forum/");
         $result = $sut->migrate("test");
         $this->assertTrue($result);
