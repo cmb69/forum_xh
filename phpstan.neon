@@ -8,7 +8,7 @@ parameters:
   bootstrapFiles:
     - phpstan.bootstrap.php
   scanFiles:
-    - ../../cmsimple/classes/CSRFProtection.php
+    - ../../cmsimple/classes/Mail.php
     - ../../cmsimple/adminfuncs.php
     - ../../cmsimple/functions.php
     - ../fa/classes/RequireCommand.php

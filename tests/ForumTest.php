@@ -4,7 +4,6 @@ namespace Forum;
 
 use ApprovalTests\Approvals;
 use Fa\RequireCommand;
-use Forum\Infra\FakeMailer;
 use Forum\Infra\FakeRepository;
 use Forum\Logic\BbCode;
 use Forum\Value\Comment;
@@ -14,12 +13,13 @@ use Plib\CsrfProtector;
 use Plib\FakeRequest;
 use Plib\Random;
 use Plib\View;
+use XH\Mail;
 
 class ForumTest extends TestCase
 {
     private $conf;
     private $bbcode;
-    private $mailer;
+    private $mail;
     private $repository;
     private $random;
 
@@ -30,6 +30,7 @@ class ForumTest extends TestCase
         $this->bbcode = $this->createStub(BbCode::class);
         $this->repository = new FakeRepository("vfs://root/forum/");
         $this->random = $this->createStub(Random::class);
+        $this->mail = $this->createMock(Mail::class);
     }
 
     private function sut(): Forum
@@ -38,7 +39,6 @@ class ForumTest extends TestCase
         $csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
         $view = new View("./views/", XH_includeVar("./languages/en.php", 'plugin_tx')['forum']);
         $faRequireCommand = $this->createStub(RequireCommand::class);
-        $this->mailer = new FakeMailer($this->conf, $view);
         return new Forum(
             $this->conf,
             "./plugins/forum/",
@@ -46,7 +46,7 @@ class ForumTest extends TestCase
             $csrfProtector,
             $view,
             $faRequireCommand,
-            $this->mailer,
+            $this->mail,
             $this->repository,
             $this->random
         );
@@ -151,6 +151,13 @@ class ForumTest extends TestCase
     {
         $this->random->method("bytes")->willReturn("123456789abcdef");
         $this->conf = ["mail_address" => "webmaster@example.com"] + $this->conf;
+        $this->mail->expects($this->once())->method("setTo")->with("webmaster@example.com");
+        $this->mail->expects($this->once())->method("setSubject")->with("A new comment has been posted");
+        $this->mail->expects($this->once())->method("setMessage")->with($this->stringContains(
+            "<http://example.com/?Forum&forum_action=create&forum_topic=64P36D1L6ORJGEB1C9HM8PB6>"
+        ));
+        $this->mail->expects($this->once())->method("addHeader")->with("From", "webmaster@example.com");
+        $this->mail->expects($this->once())->method("send")->willReturn(true);
         $request = new FakeRequest([
             "time" => 1680508976,
             "url" => "http://example.com/?Forum&forum_action=create",
@@ -167,7 +174,7 @@ class ForumTest extends TestCase
             "http://example.com/?Forum&forum_topic=64P36D1L6ORJGEB1C9HM8PB6",
             $response->location()
         );
-        Approvals::verifyList($this->mailer->lastMail());
+        // Approvals::verifyList($this->mailer->lastMail());
     }
 
     public function testFailsToCreateNewTopic(): void

@@ -22,13 +22,13 @@
 namespace Forum;
 
 use Fa\RequireCommand as FaRequireCommand;
-use Forum\Infra\Mailer;
 use Forum\Infra\Repository;
 use Forum\Logic\BbCode;
 use Plib\CsrfProtector;
 use Plib\Random;
 use Plib\SystemChecker;
 use Plib\View;
+use XH\Mail;
 
 class Dic
 {
@@ -42,7 +42,7 @@ class Dic
             new CsrfProtector(),
             self::makeView(),
             new FaRequireCommand(),
-            new Mailer($plugin_cf["forum"]),
+            new Mail(),
             new Repository(self::contentFolder()),
             new Random()
         );

@@ -22,10 +22,8 @@
 namespace Forum;
 
 use Fa\RequireCommand as FaRequireCommand;
-use Forum\Infra\Mailer;
 use Forum\Infra\Repository;
 use Forum\Logic\BbCode;
-use Forum\Logic\Util;
 use Forum\Value\Comment;
 use Forum\Value\Topic;
 use Plib\Codec;
@@ -35,6 +33,7 @@ use Plib\Request;
 use Plib\Response;
 use Plib\Url;
 use Plib\View;
+use XH\Mail;
 
 class Forum
 {
@@ -56,8 +55,8 @@ class Forum
     /** @var FaRequireCommand */
     private $faRequireCommand;
 
-    /** @var Mailer */
-    private $mailer;
+    /** @var Mail */
+    private $mail;
 
     /** @var Repository */
     private $repository;
@@ -73,7 +72,7 @@ class Forum
         CsrfProtector $csrfProtector,
         View $view,
         FaRequireCommand $faRequireCommand,
-        Mailer $mailer,
+        Mail $mail,
         Repository $repository,
         Random $random
     ) {
@@ -83,7 +82,7 @@ class Forum
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
         $this->faRequireCommand = $faRequireCommand;
-        $this->mailer = $mailer;
+        $this->mail = $mail;
         $this->repository = $repository;
         $this->random = $random;
     }
@@ -333,7 +332,7 @@ class Forum
         }
         if (!$request->admin() && $this->config['mail_address']) {
             $url = $request->url()->with("forum_topic", $topic->id())->absolute();
-            $this->mailer->sendMail($this->view->plain("mail_subject_new"), $this->composeMailMessage($comment, $url));
+            $this->mail($this->view->plain("mail_subject_new"), $comment, $url);
         }
         $url = $request->url()->without("forum_comment")->with("forum_topic", $topic->id());
         $url = $url->without("forum_action");
@@ -371,7 +370,7 @@ class Forum
         }
         if (!$request->admin() && $this->config['mail_address']) {
             $url = $request->url()->with("forum_topic", $tid)->absolute();
-            $this->mailer->sendMail($this->view->plain("mail_subject_edit"), $this->composeMailMessage($comment, $url));
+            $this->mail($this->view->plain("mail_subject_edit"), $comment, $url);
         }
         $url = $request->url()->without("forum_comment")->with("forum_topic", $tid);
         $url = $url->without("forum_action");
@@ -416,13 +415,17 @@ class Forum
         return Response::create($output)->withContentType("text/html");
     }
 
-    private function composeMailMessage(Comment $comment, string $url): string
+    private function mail(string $subject, Comment $comment, string $url): bool
     {
         $date = date($this->view->plain("format_date"), $comment->time());
         $attribution = $this->view->plain("mail_attribution", $comment->user(), $date);
         $content = preg_replace('/\R/', "\r\n> ", $comment->message());
         assert(is_string($content));
-        return "$attribution\r\n\r\n> $content\r\n\r\n<$url>";
+        $this->mail->setTo($this->config["mail_address"]);
+        $this->mail->setSubject($subject);
+        $this->mail->setMessage("$attribution\r\n\r\n> $content\r\n\r\n<$url>");
+        $this->mail->addHeader("From", $this->config["mail_address"]);
+        return $this->mail->send();
     }
 
     private function id(?string $id): ?string

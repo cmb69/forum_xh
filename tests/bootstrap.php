@@ -7,7 +7,7 @@ const FORUM_VERSION = "1.0beta5";
 
 require_once './vendor/autoload.php';
 
-require_once "../../cmsimple/classes/CSRFProtection.php";
+require_once "../../cmsimple/classes/Mail.php";
 require_once '../../cmsimple/functions.php';
 
 require_once "../fa/classes/RequireCommand.php";
