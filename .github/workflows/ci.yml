@@ -18,12 +18,12 @@ jobs:
           curl -fsSL -o CMSimple_XH-1.7.5.zip https://github.com/cmsimple-xh/cmsimple-xh/releases/download/1.7.5/CMSimple_XH-1.7.5.zip
           unzip -q CMSimple_XH-1.7.5.zip
       - name: Checkout Forum_XH
-        uses: actions/checkout@v3
+        uses: actions/checkout@4
         with:
-          path: 'cmsimplexh/plugins/forum'
+          path: cmsimplexh/plugins/forum
       - name: Cache tools
         id: cache-tools
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: cmsimplexh/plugins/forum/tools
           key: tools-${{matrix.version}}-${{hashFiles('cmsimplexh/plugins/forum/.phive')}}
