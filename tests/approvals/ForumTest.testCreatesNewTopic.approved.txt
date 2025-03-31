@@ -4,7 +4,7 @@
 
 > A comment
 
-<http://example.com/?Forum&forum_action=create&forum_topic=6CT3ADHQ70WP2RK3CHJPC>
+<http://example.com/?Forum&forum_action=create&forum_topic=64P36D1L6ORJGEB1C9HM8PB6>
 [3] -> MIME-Version: 1.0
 Content-type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit

@@ -167,7 +167,7 @@ class ForumTest extends TestCase
 
     public function testCreatesNewTopic(): void
     {
-        $this->random->method("bytes")->willReturn("3456789abcdef");
+        $this->random->method("bytes")->willReturn("123456789abcdef");
         $this->conf = ["mail_address" => "webmaster@example.com"] + $this->conf;
         $request = new FakeRequest([
             "time" => 1680508976,
@@ -176,9 +176,12 @@ class ForumTest extends TestCase
             "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
-        $saved = $this->repository->findComment("test", "6CT3ADHQ70WP2RK3CHJPC", "6CT3ADHQ70WP2RK3CHJPC");
-        $this->assertEquals(new Comment("6CT3ADHQ70WP2RK3CHJPC", "A new Topic", "cmb", 1680508976, "A comment"), $saved);
-        $this->assertEquals("http://example.com/?Forum&forum_topic=6CT3ADHQ70WP2RK3CHJPC", $response->location());
+        $saved = $this->repository->findComment("test", "64P36D1L6ORJGEB1C9HM8PB6", "64P36D1L6ORJGEB1C9HM8PB6");
+        $this->assertEquals(new Comment("64P36D1L6ORJGEB1C9HM8PB6", "A new Topic", "cmb", 1680508976, "A comment"), $saved);
+        $this->assertEquals(
+            "http://example.com/?Forum&forum_topic=64P36D1L6ORJGEB1C9HM8PB6",
+            $response->location()
+        );
         Approvals::verifyList($this->mailer->lastMail());
     }
 

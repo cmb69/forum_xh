@@ -25,11 +25,11 @@ use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\CsrfProtector;
 use Forum\Infra\Mailer;
 use Forum\Infra\Repository;
-use Forum\Logic\Base32;
 use Forum\Logic\BbCode;
 use Forum\Logic\Util;
 use Forum\Value\Comment;
 use Forum\Value\Topic;
+use Plib\Codec;
 use Plib\Random;
 use Plib\Request;
 use Plib\Response;
@@ -298,7 +298,7 @@ class Forum
     {
         $tid = $this->id($request->get("forum_topic"));
         if ($tid === null) {
-            $topic = new Topic(Base32::encode($this->random->bytes(15)), "", 0, "", 0);
+            $topic = new Topic(Codec::encodeBase32hex($this->random->bytes(15)), "", 0, "", 0);
         } else {
             [$topic, ] = $this->repository->findTopic($forum, $tid);
             if ($topic === null) {
@@ -306,7 +306,7 @@ class Forum
             }
         }
         $comment = new Comment(
-            Base32::encode($this->random->bytes(15)),
+            Codec::encodeBase32hex($this->random->bytes(15)),
             null,
             $request->username() ?? "",
             $request->time(),
