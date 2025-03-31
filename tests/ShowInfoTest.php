@@ -25,7 +25,7 @@ use PHPUnit\Framework\TestCase;
 use ApprovalTests\Approvals;
 use Forum\Infra\FakeRepository;
 use Forum\Infra\FakeRequest;
-use Forum\Infra\SystemChecker;
+use Plib\FakeSystemChecker;
 use Plib\View;
 
 class ShowInfoTest extends TestCase
@@ -35,13 +35,12 @@ class ShowInfoTest extends TestCase
 
     public function setUp(): void
     {
-        $systemChecker = $this->createStub(SystemChecker::class);
         $this->repository = new FakeRepository("./content/forum/");
         $this->repository->options(["findForumsToMigrate" => ["old-forum"]]);
         $lang = XH_includeVar("./languages/en.php", 'plugin_tx')['forum'];
         $this->sut = new ShowInfo(
             "./plugins/forum/",
-            $systemChecker,
+            new FakeSystemChecker(),
             $this->repository,
             new View("./views/", $lang)
         );

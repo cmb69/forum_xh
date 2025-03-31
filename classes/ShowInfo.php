@@ -23,9 +23,9 @@ namespace Forum;
 
 use Forum\Infra\Repository;
 use Forum\Infra\Request;
-use Forum\Infra\SystemChecker;
 use Forum\Value\Url;
 use Plib\Response;
+use Plib\SystemChecker;
 use Plib\View;
 
 class ShowInfo
@@ -112,7 +112,7 @@ class ShowInfo
     /** @return array{class:string,key:string,arg:string,statekey:string} */
     private function checkPhpVersion(string $version): array
     {
-        $state = $this->systemChecker->checkPhpVersion($version) ? "success" : "fail";
+        $state = $this->systemChecker->checkVersion(PHP_VERSION, $version) ? "success" : "fail";
         return [
             "class" => "xh_$state",
             "key" => "syscheck_phpversion",
@@ -136,7 +136,7 @@ class ShowInfo
     /** @return array{class:string,key:string,arg:string,statekey:string} */
     private function checkXhVersion(string $version): array
     {
-        $state = $this->systemChecker->checkXhVersion($version) ? "success" : "fail";
+        $state = $this->systemChecker->checkVersion(CMSIMPLE_XH_VERSION, "CMSimple_XH $version") ? "success" : "fail";
         return [
             "class" => "xh_$state",
             "key" => "syscheck_xhversion",
