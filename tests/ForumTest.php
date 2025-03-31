@@ -154,7 +154,7 @@ class ForumTest extends TestCase
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("else", $response->output());
-        $this->assertTrue($response->exit());
+        $this->assertSame("text/html", $response->contentType());
     }
 
     public function testReportsMissingAuthorizationForPreview(): void

@@ -21,12 +21,11 @@
 
 use Forum\Dic;
 use Forum\Infra\Request;
-use Forum\Infra\Responder;
 
 const FORUM_VERSION = "1.0beta5";
 
 /** @return string|never */
 function forum(string $forum)
 {
-    return Responder::respond(Dic::makeForum()(Request::current(), $forum));
+    return Dic::makeForum()(Request::current(), $forum)();
 }

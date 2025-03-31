@@ -31,10 +31,9 @@ use Forum\Logic\Base32;
 use Forum\Logic\BbCode;
 use Forum\Logic\Util;
 use Forum\Value\Comment;
-use Forum\Value\Html;
-use Forum\Value\Response;
 use Forum\Value\Topic;
 use Forum\Value\Url;
+use Plib\Response;
 use Plib\View;
 
 class Forum
@@ -276,7 +275,7 @@ class Forum
         if (!$request->user() && !$request->admin()) {
             return $this->respondWith($request->url(), $this->view->message("fail", "error_unauthorized"));
         }
-        return Response::create($this->bbcode->convert($request->bbCode()))->withExit();
+        return Response::create($this->bbcode->convert($request->bbCode()))->withContentType("text/html");
     }
 
     private function doCreateComment(Request $request, string $forum): Response
@@ -386,6 +385,6 @@ class Forum
         if ($url->param("forum_ajax") === null) {
             return Response::create($output);
         }
-        return Response::create($output)->withExit();
+        return Response::create($output)->withContentType("text/html");
     }
 }

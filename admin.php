@@ -21,7 +21,11 @@
 
 use Forum\Dic;
 use Forum\Infra\Request;
-use Forum\Infra\Responder;
+
+if (!defined("CMSIMPLE_XH_VERSION")) {
+    http_response_code(403);
+    exit;
+}
 
 /**
  * @var string $admin
@@ -34,7 +38,7 @@ if (XH_wantsPluginAdministration('forum')) {
     $o .= print_plugin_admin('off');
     switch ($admin) {
         case '':
-            $o .= Responder::respond(Dic::makeShowInfo()(Request::current()));
+            $o .= Dic::makeShowInfo()(Request::current())();
             break;
         default:
             $o .= plugin_admin_common();

@@ -24,8 +24,8 @@ namespace Forum;
 use Forum\Infra\Repository;
 use Forum\Infra\Request;
 use Forum\Infra\SystemChecker;
-use Forum\Value\Response;
 use Forum\Value\Url;
+use Plib\Response;
 use Plib\View;
 
 class ShowInfo
