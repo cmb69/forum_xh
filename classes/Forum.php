@@ -318,7 +318,13 @@ class Forum
         $text = $request->post("forum_text") ?? "";
         $topic = $topic->withTitle($title);
         $comment = $comment->with($title, $text);
-        $errors = array_merge(Util::validateTopic($topic), Util::validateComment($comment));
+        $errors = [];
+        if ($topic->title() === "") {
+            $errors[] = ["error_title"];
+        }
+        if ($comment->message() === "") {
+            $errors[] = ["error_message"];
+        }
         if ($errors) {
             return $this->respondWith($request, $this->renderCommentForm($request, $topic, $comment, $errors));
         }
