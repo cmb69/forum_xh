@@ -141,7 +141,7 @@ class Forum
         return $this->view->render('topics', [
             'isUser' => $request->username(),
             'href' => $request->url()->with("forum_action", "create")->relative(),
-            'topics' => $this->topicRecords($request->url()->without("forum_ajax"), $topics),
+            'topics' => $this->topicRecords($request->url(), $topics),
             "script" => $request->url()->path($js)->with("v", FORUM_VERSION)->relative(),
         ]);
     }
@@ -170,7 +170,7 @@ class Forum
         if ($topic === null) {
             return $this->view->message("fail", "error_no_topic");
         }
-        $url = $request->url()->without("forum_ajax");
+        $url = $request->url();
         $token = $this->csrfProtector->token();
         return $this->view->render('topic', [
             'title' => $topic->title(),
@@ -190,7 +190,7 @@ class Forum
      */
     private function commentRecords(Request $request, array $comments): array
     {
-        $url = $request->url()->without("forum_ajax");
+        $url = $request->url();
         return array_map(function (Comment $comment) use ($request, $url) {
             assert($comment->id() !== null);
             $url = $url->with("forum_comment", $comment->id());
@@ -255,7 +255,7 @@ class Forum
         foreach ($emotions as $emotion) {
             $emoticons[$emotion] = "{$this->pluginFolder}images/emoticon_$emotion.png";
         }
-        $url = $request->url()->without("forum_ajax");
+        $url = $request->url();
         $output = $this->view->render('form', [
             "errors" => $errors,
             'title_attribute' => $topic->id() === "" ? "required" : "disabled",
@@ -404,7 +404,7 @@ class Forum
 
     private function respondWith(Request $request, string $output): Response
     {
-        if ($request->get("forum_ajax") === null) {
+        if ($request->header("X-CMSimple-XH-Request") !== "forum") {
             return Response::create($output);
         }
         return Response::create($output)->withContentType("text/html");

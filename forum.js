@@ -30,7 +30,8 @@ window.addEventListener("popstate", function (event) {
 
 function retrieveWidget(container, url, isPop) {
     var request = new XMLHttpRequest;
-    request.open("GET", url + "&forum_ajax", true);
+    request.open("GET", url);
+    request.setRequestHeader("X-CMSimple-XH-Request", "forum");
     request.onload = function() {
         if (this.status >= 200 && this.status < 300) {
             replaceWidget(container, this, isPop);
@@ -138,6 +139,7 @@ function initEditor() {
     function preview() {
         var request = new XMLHttpRequest;
         request.open("GET", this.getAttribute("data-url") + "&forum_bbcode=" + encodeURIComponent(textarea.value), true);
+        request.setRequestHeader("X-CMSimple-XH-Request", "forum");
         request.onload = (function () {
             if (this.status >= 200 && this.status < 300) {
                 form.getElementsByClassName("forum_preview_container")[0].innerHTML = this.response;
@@ -254,7 +256,8 @@ function serialize(form) {
 
 function submitForm(form, container) {
     var request = new XMLHttpRequest;
-    request.open("POST", form.action + "&forum_ajax", true);
+    request.open("POST", form.action);
+    request.setRequestHeader("X-CMSimple-XH-Request", "forum");
     request.onload = function () {
         if (this.status >= 200 && this.status < 300) {
             replaceWidget(container, this);
