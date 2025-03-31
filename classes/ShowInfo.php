@@ -22,10 +22,10 @@
 namespace Forum;
 
 use Forum\Infra\Repository;
-use Forum\Infra\Request;
-use Forum\Value\Url;
+use Plib\Request;
 use Plib\Response;
 use Plib\SystemChecker;
+use Plib\Url;
 use Plib\View;
 
 class ShowInfo
@@ -56,12 +56,27 @@ class ShowInfo
 
     public function __invoke(Request $request): Response
     {
-        switch ($request->action()) {
+        switch ($this->action($request)) {
             default:
                 return $this->info($request);
             case "do_migrate":
                 return $this->migrate($request);
         }
+    }
+
+    private function action(Request $request): string
+    {
+        $action = $request->get("forum_action");
+        if (!is_string($action)) {
+            return "";
+        }
+        if (!strncmp($action, "do_", strlen("do_"))) {
+            return "";
+        }
+        if ($request->post("forum_do") !== null) {
+            return "do_$action";
+        }
+        return $action;
     }
 
     private function info(Request $request): Response
@@ -71,7 +86,7 @@ class ShowInfo
 
     private function migrate(Request $request): Response
     {
-        $forum = $request->forum();
+        $forum = $this->id($request->get("forum_forum"));
         if ($forum === null) {
             return Response::create($this->renderInfo($request->url(), [["error_id_missing"]]));
         }
@@ -179,5 +194,13 @@ class ShowInfo
                 "url" => $url->with("forum_forum", $forum)->relative(),
             ];
         }, $this->repository->findForumsToMigrate());
+    }
+
+    private function id(?string $id): ?string
+    {
+        if ($id === null) {
+            return null;
+        }
+        return preg_match('/^[a-z0-9\-]+$/u', $id) ? $id : null;
     }
 }

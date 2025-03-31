@@ -20,7 +20,7 @@
  */
 
 use Forum\Dic;
-use Forum\Infra\Request;
+use Plib\Request;
 
 if (!defined("CMSIMPLE_XH_VERSION")) {
     http_response_code(403);

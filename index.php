@@ -20,7 +20,7 @@
  */
 
 use Forum\Dic;
-use Forum\Infra\Request;
+use Plib\Request;
 
 const FORUM_VERSION = "1.0beta5";
 

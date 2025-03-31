@@ -24,7 +24,7 @@ namespace Forum;
 use PHPUnit\Framework\TestCase;
 use ApprovalTests\Approvals;
 use Forum\Infra\FakeRepository;
-use Forum\Infra\FakeRequest;
+use Plib\FakeRequest;
 use Plib\FakeSystemChecker;
 use Plib\View;
 
@@ -55,7 +55,7 @@ class ShowInfoTest extends TestCase
     public function testMigratesForum(): void
     {
         $request = new FakeRequest([
-            "query" => "forum&forum_action=migrate&forum_forum=old-forum",
+            "url" => "http://example.com/?forum&forum_action=migrate&forum_forum=old-forum",
             "post" => ["forum_do" => ""],
         ]);
         $response = ($this->sut)($request);
@@ -66,7 +66,7 @@ class ShowInfoTest extends TestCase
     public function testReportsMissingForum(): void
     {
         $request = new FakeRequest([
-            "query" => "forum&forum_action=migrate",
+            "url" => "http://example.com/?forum&forum_action=migrate",
             "post" => ["forum_do" => ""],
         ]);
         $response = ($this->sut)($request);
@@ -77,7 +77,7 @@ class ShowInfoTest extends TestCase
     {
         $this->repository->options(["migrate" => false]);
         $request = new FakeRequest([
-            "query" => "forum&forum_action=migrate&forum_forum=old-forum",
+            "url" => "http://example.com/?forum&forum_action=migrate&forum_forum=old-forum",
             "post" => ["forum_do" => ""],
         ]);
         $response = ($this->sut)($request);

@@ -26,11 +26,11 @@ use Fa\RequireCommand;
 use Forum\Infra\FakeCsrfProtector;
 use Forum\Infra\FakeMailer;
 use Forum\Infra\FakeRepository;
-use Forum\Infra\FakeRequest;
 use Forum\Logic\BbCode;
 use Forum\Value\Comment;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeRequest;
 use Plib\Random;
 use Plib\View;
 
@@ -72,7 +72,7 @@ class ForumTest extends TestCase
 
     public function testReportsInvalidTopicName(): void
     {
-        $request = new FakeRequest;
+        $request = new FakeRequest();
         $response = ($this->sut())($request, "invalid_name");
         $this->assertEquals(
             "<p class=\"xh_fail\">&quot;invalid_name&quot; is an invalid forum name (may contain a-z, 0-9 and - only)!</p>\n",
@@ -83,7 +83,7 @@ class ForumTest extends TestCase
     public function testRendersForumOverview(): void
     {
         $this->repository->save("test", "0123456789abc", $this->comment());
-        $request = new FakeRequest(["query" => "Forum"]);
+        $request = new FakeRequest(["url" => "http://example.com/?Forum"]);
         $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
     }
@@ -92,8 +92,8 @@ class ForumTest extends TestCase
     {
         $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
         $request = new FakeRequest([
-            "query" => "Forum&forum_topic=AHQQ0TB341A6JX3CCM",
-            "session" => ["username" => "cmb"],
+            "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM",
+            "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
@@ -101,7 +101,7 @@ class ForumTest extends TestCase
 
     public function testReportsNonExistentTopic(): void
     {
-        $request = new FakeRequest(["query" => "Forum&forum_topic=AHQQ0TB341A6JX3CCM"]);
+        $request = new FakeRequest(["url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM"]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">There is no such topic!</p>\n", $response->output());
     }
@@ -109,8 +109,8 @@ class ForumTest extends TestCase
     public function testRendersCommentFormForNewPost(): void
     {
         $request = new FakeRequest([
-            "query" => "Forum&forum_action=create",
-            "session" => ["username" => "cmb"],
+            "url" => "http://example.com/?Forum&forum_action=create",
+            "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
@@ -120,8 +120,9 @@ class ForumTest extends TestCase
     {
         $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
         $request = new FakeRequest([
-            "query" => "Forum&forum_action=edit&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef",
-            "session" => ["username" => "cmb"],
+            "url" => "http://example.com/?Forum&forum_action=edit&forum_topic=AHQQ0TB341A6JX3CCM"
+                . "&forum_comment=3456789abcdef",
+            "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
@@ -131,8 +132,8 @@ class ForumTest extends TestCase
     {
         $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
         $request = new FakeRequest([
-            "query" => "Forum&forum_action=create&forum_topic=AHQQ0TB341A6JX3CCM",
-            "session" => ["username" => "cmb"],
+            "url" => "http://example.com/?Forum&forum_action=create&forum_topic=AHQQ0TB341A6JX3CCM",
+            "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
@@ -140,7 +141,7 @@ class ForumTest extends TestCase
 
     public function testReportsMissingIdForEditing(): void
     {
-        $request = new FakeRequest(["query" => "Forum&forum_action=edit&forum_topic=0123456789abc"]);
+        $request = new FakeRequest(["url" => "http://example.com/?Forum&forum_action=edit&forum_topic=0123456789abc"]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">ID is missing!</p>\n", $response->output());
     }
@@ -149,8 +150,8 @@ class ForumTest extends TestCase
     {
         $this->bbcode->method('convert')->willReturn("else");
         $request = new FakeRequest([
-            "query" => "&forum_action=preview&forum_bbcode=something",
-            "session" => ["username" => "cmb"],
+            "url" => "http://example.com/?&forum_action=preview&forum_bbcode=something",
+            "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("else", $response->output());
@@ -159,7 +160,7 @@ class ForumTest extends TestCase
 
     public function testReportsMissingAuthorizationForPreview(): void
     {
-        $request = new FakeRequest(["query" => "&forum_action=preview&forum_bbcode=something"]);
+        $request = new FakeRequest(["url" => "http://example.com/?&forum_action=preview&forum_bbcode=something"]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">You are not authorized for this action!</p>\n", $response->output());
     }
@@ -170,9 +171,9 @@ class ForumTest extends TestCase
         $this->conf = ["mail_address" => "webmaster@example.com"] + $this->conf;
         $request = new FakeRequest([
             "time" => 1680508976,
-            "query" => "Forum&forum_action=create",
+            "url" => "http://example.com/?Forum&forum_action=create",
             "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment", "forum_do" => ""],
-            "session" => ["username" => "cmb"],
+            "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
         $saved = $this->repository->findComment("test", "6CT3ADHQ70WP2RK3CHJPC", "6CT3ADHQ70WP2RK3CHJPC");
@@ -186,9 +187,9 @@ class ForumTest extends TestCase
         $this->random->method("bytes")->willReturn("3456789abcdef");
         $this->repository->options(["save" => false]);
         $request = new FakeRequest([
-            "query" => "Forum&forum_action=create",
+            "url" => "http://example.com/?Forum&forum_action=create",
             "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment", "forum_do" => ""],
-            "session" => ["username" => "cmb"],
+            "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">The changes could not be stored!</p>\n", $response->output());
@@ -198,9 +199,10 @@ class ForumTest extends TestCase
     {
         $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
         $request = new FakeRequest([
-            "query" => "Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef&forum_action=edit",
+            "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
+                . "&forum_action=edit",
             "post" => ["forum_title" => "Topic Title", "forum_text" => "A comment", "forum_do" => ""],
-            "session" => ["username" => "cmb"],
+            "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
         $saved = $this->repository->findComment("test", "AHQQ0TB341A6JX3CCM", "3456789abcdef");
@@ -211,7 +213,7 @@ class ForumTest extends TestCase
     public function testReportsMissingIdWhenPosting(): void
     {
         $request = new FakeRequest([
-            "query" => "Forum&forum_topic=0123456789abc&forum_action=edit",
+            "url" => "http://example.com/?Forum&forum_topic=0123456789abc&forum_action=edit",
             "post" => [
                 "forum_text" => "A comment",
                 "forum_do" => "",
@@ -225,9 +227,10 @@ class ForumTest extends TestCase
     {
         $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
         $request = new FakeRequest([
-            "query" => "Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=012345678&forum_action=edit",
+            "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=012345678"
+                . "&forum_action=edit",
             "post" => ["forum_text" => "A comment", "forum_do" => ""],
-            "session" => ["username" => "cmb"],
+            "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">There is no such comment!</p>\n", $response->output());
@@ -237,9 +240,10 @@ class ForumTest extends TestCase
     {
         $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
         $request = new FakeRequest([
-            "query" => "Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef&forum_action=edit",
+            "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
+                . "&forum_action=edit",
             "post" => ["forum_text" => "A comment", "forum_do" => ""],
-            "session" => ["username" => "somebody"],
+            "username" => "somebody",
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">You are not authorized for this action!</p>\n", $response->output());
@@ -250,9 +254,10 @@ class ForumTest extends TestCase
         $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
         $this->repository->options(["save" => false]);
         $request = new FakeRequest([
-            "query" => "Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef&forum_action=edit",
+            "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
+                . "&forum_action=edit",
             "post" => ["forum_text" => "A comment", "forum_do" => ""],
-            "session" => ["username" => "cmb"],
+            "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">The changes could not be stored!</p>\n", $response->output());
@@ -262,9 +267,10 @@ class ForumTest extends TestCase
     {
         $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
         $request = new FakeRequest([
-            "query" => "Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef&forum_action=delete",
+            "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
+                . "&forum_action=delete",
             "post" => ["forum_do" => ""],
-            "session" => ["username" => "cmb"],
+            "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertNull($this->repository->findComment("test", "AHQQ0TB341A6JX3CCM", "3456789abcdef"));
@@ -274,7 +280,7 @@ class ForumTest extends TestCase
     public function testReportsMissingIdWhenDeleting(): void
     {
         $request = new FakeRequest([
-            "query" => "Forum&forum_topic=0123456789abc&forum_action=delete",
+            "url" => "http://example.com/?Forum&forum_topic=0123456789abc&forum_action=delete",
             "post" => ["forum_do" => ""],
         ]);
         $response = ($this->sut())($request, "test");
@@ -284,7 +290,8 @@ class ForumTest extends TestCase
     public function testReportsNonExistentCommentWhenDeleting(): void
     {
         $request = new FakeRequest([
-            "query" => "Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef&forum_action=delete",
+            "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
+                . "&forum_action=delete",
             "post" => ["forum_do" => ""],
         ]);
         $response = ($this->sut())($request, "test");
@@ -295,9 +302,10 @@ class ForumTest extends TestCase
     {
         $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
         $request = new FakeRequest([
-            "query" => "Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef&forum_action=delete",
+            "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
+                . "&forum_action=delete",
             "post" => ["forum_do" => ""],
-            "session" => ["username" => "somebody"],
+            "username" => "somebody",
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">You are not authorized for this action!</p>\n", $response->output());
@@ -308,9 +316,10 @@ class ForumTest extends TestCase
         $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
         $this->repository->options(["delete" => false]);
         $request = new FakeRequest([
-            "query" => "Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef&forum_action=delete",
+            "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
+                . "&forum_action=delete",
             "post" => ["forum_do" => ""],
-            "session" => ["username" => "cmb"]
+            "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">The changes could not be stored!</p>\n", $response->output());
