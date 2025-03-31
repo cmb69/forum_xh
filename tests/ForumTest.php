@@ -174,7 +174,6 @@ class ForumTest extends TestCase
             "http://example.com/?Forum&forum_topic=64P36D1L6ORJGEB1C9HM8PB6",
             $response->location()
         );
-        // Approvals::verifyList($this->mailer->lastMail());
     }
 
     public function testFailsToCreateNewTopic(): void
