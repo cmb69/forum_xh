@@ -333,7 +333,7 @@ class Forum
         }
         if (!$request->admin() && $this->config['mail_address']) {
             $url = $request->url()->with("forum_topic", $topic->id())->absolute();
-            $this->mailer->sendMail($this->view->plain("mail_subject_new"), $comment, $url);
+            $this->mailer->sendMail($this->view->plain("mail_subject_new"), $this->composeMailMessage($comment, $url));
         }
         $url = $request->url()->without("forum_comment")->with("forum_topic", $topic->id());
         $url = $url->without("forum_action");
@@ -362,7 +362,7 @@ class Forum
         $title = $request->post("forum_title") ?? "";
         $text = $request->post("forum_text") ?? "";
         $comment = $comment->with($title, $text);
-        $errors = Util::validateComment($comment);
+        $errors = $comment->message() === "" ? [["error_message"]] : [];
         if ($errors) {
             return $this->respondWith($request, $this->renderCommentForm($request, $topic, $comment, $errors));
         }
@@ -371,7 +371,7 @@ class Forum
         }
         if (!$request->admin() && $this->config['mail_address']) {
             $url = $request->url()->with("forum_topic", $tid)->absolute();
-            $this->mailer->sendMail($this->view->plain("mail_subject_edit"), $comment, $url);
+            $this->mailer->sendMail($this->view->plain("mail_subject_edit"), $this->composeMailMessage($comment, $url));
         }
         $url = $request->url()->without("forum_comment")->with("forum_topic", $tid);
         $url = $url->without("forum_action");
@@ -414,6 +414,15 @@ class Forum
             return Response::create($output);
         }
         return Response::create($output)->withContentType("text/html");
+    }
+
+    private function composeMailMessage(Comment $comment, string $url): string
+    {
+        $date = date($this->view->plain("format_date"), $comment->time());
+        $attribution = $this->view->plain("mail_attribution", $comment->user(), $date);
+        $content = preg_replace('/\R/', "\r\n> ", $comment->message());
+        assert(is_string($content));
+        return "$attribution\r\n\r\n> $content\r\n\r\n<$url>";
     }
 
     private function id(?string $id): ?string

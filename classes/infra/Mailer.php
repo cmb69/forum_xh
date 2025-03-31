@@ -21,25 +21,18 @@
 
 namespace Forum\Infra;
 
-use Forum\Value\Comment;
-use Plib\View;
-
 class Mailer
 {
     /** @var array<string,string> */
     private $config;
 
-    /** @var View */
-    private $view;
-
     /** @param array<string,string> $config */
-    public function __construct(array $config, View $view)
+    public function __construct(array $config)
     {
         $this->config = $config;
-        $this->view = $view;
     }
 
-    public function sendMail(string $subject, Comment $comment, string $baseUrl): bool
+    public function sendMail(string $subject, string $message): bool
     {
         $headers = array(
             'MIME-Version: 1.0',
@@ -50,18 +43,9 @@ class Mailer
         return $this->mail(
             $this->config['mail_address'],
             '=?UTF-8?B?' . base64_encode($subject) . '?=',
-            (string) $this->renderMessage($comment, $baseUrl),
+            $message,
             implode("\r\n", $headers)
         );
-    }
-
-    private function renderMessage(Comment $comment, string $url): string
-    {
-        $date = date($this->view->plain("format_date"), $comment->time());
-        $attribution = $this->view->plain("mail_attribution", $comment->user(), $date);
-        $content = preg_replace('/\R/', "\r\n> ", $comment->message());
-        assert(is_string($content));
-        return "$attribution\r\n\r\n> $content\r\n\r\n<$url>";
     }
 
     /** @codeCoverageIgnore */

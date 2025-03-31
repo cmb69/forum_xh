@@ -42,7 +42,7 @@ class Dic
             new CsrfProtector(),
             self::makeView(),
             new FaRequireCommand(),
-            new Mailer($plugin_cf["forum"], self::makeView()),
+            new Mailer($plugin_cf["forum"]),
             new Repository(self::contentFolder()),
             new Random()
         );
