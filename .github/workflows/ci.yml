@@ -18,7 +18,7 @@ jobs:
           curl -fsSL -o CMSimple_XH-1.8.zip https://github.com/cmsimple-xh/cmsimple-xh/releases/download/1.8.0/CMSimple_XH-1.8.zip
           unzip -q CMSimple_XH-1.8.zip
       - name: Checkout Forum_XH
-        uses: actions/checkout@4
+        uses: actions/checkout@v4
         with:
           path: cmsimplexh/plugins/forum
       - name: Cache tools
