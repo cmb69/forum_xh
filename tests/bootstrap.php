@@ -1,5 +1,6 @@
 <?php
 
+const CMSIMPLE_XH_VERSION = "CMSimple_XH 1.8";
 const CMSIMPLE_URL = "http://example.com/index.php";
 const CMSIMPLE_ROOT = "/";
 const FORUM_VERSION = "1.0beta5";
