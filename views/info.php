@@ -1,6 +1,6 @@
 <?php
 
-use Forum\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -10,11 +10,11 @@ use Forum\Infra\View;
  * @var list<array{string}> $errors
  */
 ?>
-<h1>Forum <?=$version?></h1>
+<h1>Forum <?=$this->esc($version)?></h1>
 <div class="forum_syscheck">
   <h2><?=$this->text('syscheck_title')?></h2>
 <?foreach ($checks as $check):?>
-  <p class="<?=$check['class']?>"><?=$this->text($check['key'], $check['arg'])?><?=$this->text($check['statekey'])?></p>
+  <p class="<?=$this->esc($check['class'])?>"><?=$this->text($check['key'], $check['arg'])?><?=$this->text($check['statekey'])?></p>
 <?endforeach?>
 <?if ($forums):?>
   <h2>Migration</h2>
@@ -22,8 +22,8 @@ use Forum\Infra\View;
   <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?  endforeach?>
 <?  foreach ($forums as $forum):?>
-  <form method="post" action="<?=$forum['url']?>">
-    <span><?=$forum['name']?></span>
+  <form method="post" action="<?=$this->esc($forum['url'])?>">
+    <span><?=$this->esc($forum['name'])?></span>
     <button name="forum_do">Migrate</button>
   </form>
 <?  endforeach?>

@@ -25,8 +25,8 @@ use PHPUnit\Framework\TestCase;
 use ApprovalTests\Approvals;
 use Forum\Infra\FakeRepository;
 use Forum\Infra\FakeRequest;
-use Forum\Infra\View;
 use Forum\Infra\SystemChecker;
+use Plib\View;
 
 class ShowInfoTest extends TestCase
 {

@@ -28,11 +28,11 @@ use Forum\Infra\FakeMailer;
 use Forum\Infra\FakeRepository;
 use Forum\Infra\FakeRequest;
 use Forum\Infra\Random;
-use Forum\Infra\View;
 use Forum\Logic\BbCode;
 use Forum\Value\Comment;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\View;
 
 class ForumTest extends TestCase
 {

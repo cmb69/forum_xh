@@ -11,6 +11,8 @@ require_once '../../cmsimple/functions.php';
 
 require_once "../fa/classes/RequireCommand.php";
 
+require_once "../plib/classes/View.php";
+
 spl_autoload_register(function (string $className) {
     $parts = explode("\\", $className);
     if ($parts[0] !== "Forum") {

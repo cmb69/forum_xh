@@ -22,6 +22,7 @@
 namespace Forum\Infra;
 
 use Forum\Value\Comment;
+use Plib\View;
 
 class Mailer
 {
@@ -56,7 +57,7 @@ class Mailer
 
     private function renderMessage(Comment $comment, string $url): string
     {
-        $date = $this->view->date($comment->time());
+        $date = date($this->view->plain("format_date"), $comment->time());
         $attribution = $this->view->plain("mail_attribution", $comment->user(), $date);
         $content = preg_replace('/\R/', "\r\n> ", $comment->message());
         assert(is_string($content));

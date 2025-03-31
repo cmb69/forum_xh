@@ -27,8 +27,8 @@ use Forum\Infra\Mailer;
 use Forum\Infra\Random;
 use Forum\Infra\Repository;
 use Forum\Infra\SystemChecker;
-use Forum\Infra\View;
 use Forum\Logic\BbCode;
+use Plib\View;
 
 class Dic
 {

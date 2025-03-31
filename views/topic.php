@@ -1,6 +1,6 @@
 <?php
 
-use Forum\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -14,34 +14,34 @@ use Forum\Infra\View;
  * @var string $script
  */
 ?>
-<script type="module" src="<?=$script?>"></script>
+<script type="module" src="<?=$this->esc($script)?>"></script>
 <div class="forum_container">
-  <h6 class="forum_heading"><?=$title?></h6>
+  <h6 class="forum_heading"><?=$this->esc($title)?></h6>
   <div class="forum_topic">
 <?foreach ($topic as $comment):?>
     <div>
 <?  if ($comment['mayDeleteComment']):?>
-      <form class="forum_delete" action="<?=$comment['deleteUrl']?>" method="POST" data-message="<?=$this->text('msg_confirm_delete')?>">
-        <input type="hidden" name="<?=$token['name']?>" value="<?=$token['value']?>">
+      <form class="forum_delete" action="<?=$this->esc($comment['deleteUrl'])?>" method="POST" data-message="<?=$this->text('msg_confirm_delete')?>">
+        <input type="hidden" name="<?=$this->esc($token['name'])?>" value="<?=$this->esc($token['value'])?>">
         <button name="forum_do" title="<?=$this->text('lbl_delete')?>"><i class="fa fa-trash"></i></button>
       </form>
-      <a class="forum_edit" href="<?=$comment['commentEditUrl']?>">
+      <a class="forum_edit" href="<?=$this->esc($comment['commentEditUrl'])?>">
         <button title="<?=$this->text('lbl_edit')?>"><i class="fa fa-pencil"></i></button>
       </a>
 <?  endif?>
       <div class="forum_details">
-        <span class="forum_user"><?=$comment['user']?></span>
+        <span class="forum_user"><?=$this->esc($comment['user'])?></span>
         <span class="forum_separator"><?=$this->text('lbl_separator')?></span>
-        <span class="forum_date"><?=$comment['commentDate']?></span>
+        <span class="forum_date"><?=$this->esc($comment['commentDate'])?></span>
       </div>
-      <div class="forum_comment"><?=$comment['html']?></div>
+      <div class="forum_comment"><?=$this->raw($comment['html'])?></div>
     </div>
 <?endforeach?>
   </div>
   <div class="forum_navlink">
 <?if ($isUser):?>
-    <a href="<?=$replyUrl?>"><?=$this->text('msg_reply')?></a>
+    <a href="<?=$this->esc($replyUrl)?>"><?=$this->text('msg_reply')?></a>
 <?endif?>
-    <a href="<?=$href?>"><?=$this->text('msg_back')?></a>
+    <a href="<?=$this->esc($href)?>"><?=$this->text('msg_back')?></a>
   </div>
 </div>
