@@ -24,7 +24,6 @@ namespace Forum;
 use Fa\RequireCommand as FaRequireCommand;
 use Forum\Infra\CsrfProtector;
 use Forum\Infra\Mailer;
-use Forum\Infra\Random;
 use Forum\Infra\Repository;
 use Forum\Infra\Request;
 use Forum\Logic\Base32;
@@ -33,6 +32,7 @@ use Forum\Logic\Util;
 use Forum\Value\Comment;
 use Forum\Value\Topic;
 use Forum\Value\Url;
+use Plib\Random;
 use Plib\Response;
 use Plib\View;
 
