@@ -23,13 +23,13 @@ namespace Forum;
 
 use ApprovalTests\Approvals;
 use Fa\RequireCommand;
-use Forum\Infra\FakeCsrfProtector;
 use Forum\Infra\FakeMailer;
 use Forum\Infra\FakeRepository;
 use Forum\Logic\BbCode;
 use Forum\Value\Comment;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\CsrfProtector;
 use Plib\FakeRequest;
 use Plib\Random;
 use Plib\View;
@@ -53,7 +53,8 @@ class ForumTest extends TestCase
 
     private function sut(): Forum
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
         $view = new View("./views/", XH_includeVar("./languages/en.php", 'plugin_tx')['forum']);
         $faRequireCommand = $this->createStub(RequireCommand::class);
         $this->mailer = new FakeMailer($this->conf, $view);

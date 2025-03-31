@@ -22,10 +22,10 @@
 namespace Forum;
 
 use Fa\RequireCommand as FaRequireCommand;
-use Forum\Infra\CsrfProtector;
 use Forum\Infra\Mailer;
 use Forum\Infra\Repository;
 use Forum\Logic\BbCode;
+use Plib\CsrfProtector;
 use Plib\Random;
 use Plib\SystemChecker;
 use Plib\View;

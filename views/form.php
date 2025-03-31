@@ -14,7 +14,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
  * @var string $backUrl
  * @var string $headingKey
  * @var string $comment
- * @var array{name:string,value:string} $token
+ * @var string $token
  * @var array<string,string> $i18n
  * @var array<string,string> $emoticons
  * @var string $script
@@ -24,7 +24,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
 <div class="forum_container">
   <form class="forum_comment" action="<?=$this->esc($action)?>" method="post" accept-charset="UTF-8" data-i18n='<?=$this->json($i18n)?>'>
     <div class="forum_preview_container"></div>
-    <input type="hidden" name="<?=$this->esc($token['name'])?>" value="<?=$this->esc($token['value'])?>">
+    <input type="hidden" name="forum_token" value="<?=$this->esc($token)?>">
     <h6 class="forum_heading"><?=$this->text($headingKey)?></h6>
 <?foreach ($errors as $error):?>
       <p class="xh_fail"><?=$this->text(...$error)?></p>

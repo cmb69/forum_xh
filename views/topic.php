@@ -9,7 +9,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
  * @var string $title
  * @var list<array{cid:string,user:string,mayDeleteComment:bool,commentDate:string,html:string,commentEditUrl:string,deleteUrl:string}> $topic
  * @var string $tid
- * @var array{name:string,value:string} $token
+ * @var string $token
  * @var bool $isUser
  * @var string $replyUrl
  * @var string $href
@@ -24,7 +24,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
     <div>
 <?  if ($comment['mayDeleteComment']):?>
       <form class="forum_delete" action="<?=$this->esc($comment['deleteUrl'])?>" method="POST" data-message="<?=$this->text('msg_confirm_delete')?>">
-        <input type="hidden" name="<?=$this->esc($token['name'])?>" value="<?=$this->esc($token['value'])?>">
+        <input type="hidden" name="forum_token" value="<?=$this->esc($token)?>">
         <button name="forum_do" title="<?=$this->text('lbl_delete')?>"><i class="fa fa-trash"></i></button>
       </form>
       <a class="forum_edit" href="<?=$this->esc($comment['commentEditUrl'])?>">

@@ -22,7 +22,6 @@
 namespace Forum;
 
 use Fa\RequireCommand as FaRequireCommand;
-use Forum\Infra\CsrfProtector;
 use Forum\Infra\Mailer;
 use Forum\Infra\Repository;
 use Forum\Logic\BbCode;
@@ -30,6 +29,7 @@ use Forum\Logic\Util;
 use Forum\Value\Comment;
 use Forum\Value\Topic;
 use Plib\Codec;
+use Plib\CsrfProtector;
 use Plib\Random;
 use Plib\Request;
 use Plib\Response;
@@ -176,7 +176,6 @@ class Forum
         }
         $url = $request->url()->without("forum_ajax");
         $token = $this->csrfProtector->token();
-        $this->csrfProtector->store();
         return $this->view->render('topic', [
             'title' => $topic->title(),
             'topic' => $this->commentRecords($request, $comments),
@@ -281,7 +280,6 @@ class Forum
             'emoticons' => $emoticons,
             "script" => $this->pluginFolder . "forum.min.js",
         ]);
-        $this->csrfProtector->store();
         return $output;
     }
 
@@ -315,7 +313,7 @@ class Forum
         if (!$request->username()) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $this->csrfProtector->check();
+        $this->csrfProtector->check($request->post("forum_token"));
         $title = $request->post("forum_title") ?? "";
         $text = $request->post("forum_text") ?? "";
         $topic = $topic->withTitle($title);
@@ -354,7 +352,7 @@ class Forum
         if (!$this->mayModify($request, $comment)) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $this->csrfProtector->check();
+        $this->csrfProtector->check($request->post("forum_token"));
         $title = $request->post("forum_title") ?? "";
         $text = $request->post("forum_text") ?? "";
         $comment = $comment->with($title, $text);
@@ -388,7 +386,7 @@ class Forum
         if (!$this->mayModify($request, $comment)) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $this->csrfProtector->check();
+        $this->csrfProtector->check($request->post("forum_token"));
         if (!$this->repository->delete($forum, $tid, $cid)) {
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
