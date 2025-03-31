@@ -39,12 +39,12 @@ class Dic
             $plugin_cf["forum"],
             $pth["folder"]["plugins"] . "forum/",
             self::makeBbCode(),
-            new CsrfProtector,
+            new CsrfProtector(),
             self::makeView(),
             new FaRequireCommand(),
             new Mailer($plugin_cf["forum"], self::makeView()),
             new Repository(self::contentFolder()),
-            new Random
+            new Random()
         );
     }
 

@@ -135,7 +135,7 @@ class BbCode
         return "<span style=\"font-size: $size%; line-height: $size%\">"
             . preg_replace_callback(self::PATTERN, [$this, "doConvert"], $matches[3]) . "</span>";
     }
-    
+
     /** @param array<int,string> $matches */
     private function convertList(array $matches): string
     {
@@ -168,7 +168,7 @@ class BbCode
         return "<blockquote class=\"forum_quote\">"
             . preg_replace_callback(self::PATTERN, [$this, "doConvert"], $matches[3]) . "</blockquote>";
     }
-    
+
     /** @param array<int,string> $matches */
     private function convertCode(array $matches): string
     {
@@ -177,7 +177,7 @@ class BbCode
         }
         return "<pre class=\"forum_code\">" . preg_replace('/\r\n|\r|\n/', "\x0B", $matches[3]) . "</pre>";
     }
-    
+
     /** @param array<int,string> $matches */
     private function convertOther(array $matches): string
     {

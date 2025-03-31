@@ -11,7 +11,7 @@
 
   <target name="sniff" description="checks adherence to the coding standards">
     <exec executable="phpcs" passthru="true" checkreturn="true">
-      <arg line="--standard=PSR2 --runtime-set ignore_warnings_on_exit true classes admin.php index.php"/>
+      <arg line="--standard=PSR12 --runtime-set ignore_warnings_on_exit true classes admin.php index.php"/>
     </exec>
   </target>
 
