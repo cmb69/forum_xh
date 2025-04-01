@@ -64,10 +64,10 @@ class RepositoryTest extends TestCase
             The fox was here!
             EOT
         );
-        $contents = serialize([
+        $contents = serialize(new Forum([
             new Topic("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
             new Topic("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
-        ]);
+        ]));
         file_put_contents("vfs://root/forum/test/topics.dat", $contents);
         $sut = new Repository("vfs://root/forum/");
         $result = $sut->findForum("test");

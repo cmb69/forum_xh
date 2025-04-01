@@ -68,8 +68,9 @@ class Repository
             }
             $topics[] = $topic;
         }
-        file_put_contents($this->cacheFile($forumname, "topics"), serialize($topics));
-        return new Forum($topics);
+        $forum = new Forum($topics);
+        file_put_contents($this->cacheFile($forumname, "forum"), serialize($forum));
+        return $forum;
     }
 
     /** @return array<string,int> */
@@ -90,7 +91,7 @@ class Repository
 
     private function findForumFromCache(string $forumname): ?Forum
     {
-        $cacheFile = $this->cacheFile($forumname, "topics");
+        $cacheFile = $this->cacheFile($forumname, "forum");
         if (!is_readable($cacheFile)) {
             return null;
         }
@@ -104,11 +105,11 @@ class Repository
         if (($contents = file_get_contents($cacheFile)) === false) {
             return null;
         }
-        if (($topics = unserialize($contents, ["allowed_classes" => [Topic::class]])) === false) {
+        if (($forum = unserialize($contents, ["allowed_classes" => [Forum::class, Topic::class]])) === false) {
             return null;
         }
-        /** @var list<Topic> $topics */
-        return new Forum($topics);
+        assert($forum instanceof Forum);
+        return $forum;
     }
 
     public function hasTopic(string $forumname, string $tid): bool
