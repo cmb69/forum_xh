@@ -25,7 +25,7 @@ use Plib\Request;
 const FORUM_VERSION = "1.0beta5";
 
 /** @return string|never */
-function forum(string $forum)
+function forum(string $forumname)
 {
-    return Dic::makeForum()(Request::current(), $forum)();
+    return Dic::makeForum()(Request::current(), $forumname)();
 }

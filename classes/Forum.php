@@ -81,24 +81,24 @@ class Forum
         $this->random = $random;
     }
 
-    public function __invoke(Request $request, string $forum): Response
+    public function __invoke(Request $request, string $forumname): Response
     {
-        if (!preg_match('/^[a-z0-9\-]+$/u', $forum)) {
-            return Response::create($this->view->message("fail", "msg_invalid_name", $forum));
+        if (!preg_match('/^[a-z0-9\-]+$/u', $forumname)) {
+            return Response::create($this->view->message("fail", "msg_invalid_name", $forumname));
         }
         switch ($this->action($request)) {
             default:
-                return $this->show($request, $forum);
+                return $this->show($request, $forumname);
             case "create":
-                return $this->createComment($request, $forum);
+                return $this->createComment($request, $forumname);
             case "do_delete":
-                return $this->deleteComment($request, $forum);
+                return $this->deleteComment($request, $forumname);
             case "edit":
-                return $this->showEditor($request, $forum);
+                return $this->showEditor($request, $forumname);
             case "do_create":
-                return $this->doCreateComment($request, $forum);
+                return $this->doCreateComment($request, $forumname);
             case "do_edit":
-                return $this->postComment($request, $forum);
+                return $this->postComment($request, $forumname);
             case "preview":
                 return $this->preview($request);
         }
@@ -119,25 +119,25 @@ class Forum
         return $action;
     }
 
-    private function show(Request $request, string $forum): Response
+    private function show(Request $request, string $forumname): Response
     {
         $tid = $this->id($request->get("forum_topic"));
         if ($tid === null) {
-            return $this->respondWith($request, $this->renderTopicsView($request, $forum));
+            return $this->respondWith($request, $this->renderTopicsView($request, $forumname));
         }
-        if ($this->repository->hasTopic($forum, $tid)) {
-            return $this->respondWith($request, $this->renderTopicView($request, $forum, $tid));
+        if ($this->repository->hasTopic($forumname, $tid)) {
+            return $this->respondWith($request, $this->renderTopicView($request, $forumname, $tid));
         }
         return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
     }
 
-    private function renderTopicsView(Request $request, string $forum): string
+    private function renderTopicsView(Request $request, string $forumname): string
     {
         $js = $this->pluginFolder . "forum.min.js";
         if (!is_file($js)) {
             $js = $this->pluginFolder . "forum.js";
         }
-        $topics = $this->repository->findTopics($forum);
+        $topics = $this->repository->findTopics($forumname);
         return $this->view->render('topics', [
             'isUser' => $request->username(),
             'href' => $request->url()->with("forum_action", "create")->relative(),
@@ -164,9 +164,9 @@ class Forum
         }, array_values($topics));
     }
 
-    private function renderTopicView(Request $request, string $forum, string $tid): string
+    private function renderTopicView(Request $request, string $forumname, string $tid): string
     {
-        [$topic, $comments] = $this->repository->findTopic($forum, $tid);
+        [$topic, $comments] = $this->repository->findTopic($forumname, $tid);
         if ($topic === null) {
             return $this->view->message("fail", "error_no_topic");
         }
@@ -206,13 +206,13 @@ class Forum
         }, array_values($comments));
     }
 
-    private function createComment(Request $request, string $forum): Response
+    private function createComment(Request $request, string $forumname): Response
     {
         $tid = $this->id($request->get("forum_topic"));
         if ($tid === null) {
             $topic = new Topic("", "", 0, "", 0);
         } else {
-            [$topic, ] = $this->repository->findTopic($forum, $tid);
+            [$topic, ] = $this->repository->findTopic($forumname, $tid);
             if ($topic === null) {
                 return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
             }
@@ -225,18 +225,18 @@ class Forum
         return $this->respondWith($request, $output);
     }
 
-    private function showEditor(Request $request, string $forum): Response
+    private function showEditor(Request $request, string $forumname): Response
     {
         $tid = $this->id($request->get("forum_topic"));
         $cid = $this->id($request->get("forum_comment"));
         if ($tid === null || $cid === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_id_missing"));
         }
-        [$topic, ] = $this->repository->findTopic($forum, $tid);
+        [$topic, ] = $this->repository->findTopic($forumname, $tid);
         if ($topic === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
         }
-        $comment = $this->repository->findComment($forum, $tid, $cid);
+        $comment = $this->repository->findComment($forumname, $tid, $cid);
         if ($comment === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
@@ -286,13 +286,13 @@ class Forum
             ->withContentType("text/html");
     }
 
-    private function doCreateComment(Request $request, string $forum): Response
+    private function doCreateComment(Request $request, string $forumname): Response
     {
         $tid = $this->id($request->get("forum_topic"));
         if ($tid === null) {
             $topic = new Topic(Codec::encodeBase32hex($this->random->bytes(15)), "", 0, "", 0);
         } else {
-            [$topic, ] = $this->repository->findTopic($forum, $tid);
+            [$topic, ] = $this->repository->findTopic($forumname, $tid);
             if ($topic === null) {
                 return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
             }
@@ -322,7 +322,7 @@ class Forum
         if ($errors) {
             return $this->respondWith($request, $this->renderCommentForm($request, $topic, $comment, $errors));
         }
-        if (!$this->repository->save($forum, $topic->id(), $comment)) {
+        if (!$this->repository->save($forumname, $topic->id(), $comment)) {
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
         if (!$request->admin() && $this->config['mail_address']) {
@@ -334,18 +334,18 @@ class Forum
         return Response::redirect($url->absolute());
     }
 
-    private function postComment(Request $request, string $forum): Response
+    private function postComment(Request $request, string $forumname): Response
     {
         $tid = $this->id($request->get("forum_topic"));
         $cid = $this->id($request->get("forum_comment"));
         if ($tid === null || $cid === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_id_missing"));
         }
-        [$topic, ] = $this->repository->findTopic($forum, $tid);
+        [$topic, ] = $this->repository->findTopic($forumname, $tid);
         if ($topic === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
         }
-        $comment = $this->repository->findComment($forum, $tid, $cid);
+        $comment = $this->repository->findComment($forumname, $tid, $cid);
         if ($comment === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
@@ -360,7 +360,7 @@ class Forum
         if ($errors) {
             return $this->respondWith($request, $this->renderCommentForm($request, $topic, $comment, $errors));
         }
-        if (!$this->repository->save($forum, $tid, $comment)) {
+        if (!$this->repository->save($forumname, $tid, $comment)) {
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
         if (!$request->admin() && $this->config['mail_address']) {
@@ -372,14 +372,14 @@ class Forum
         return Response::redirect($url->absolute());
     }
 
-    private function deleteComment(Request $request, string $forum): Response
+    private function deleteComment(Request $request, string $forumname): Response
     {
         $tid = $this->id($request->get("forum_topic"));
         $cid = $this->id($request->get("forum_comment"));
         if ($tid === null || $cid === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_id_missing"));
         }
-        $comment = $this->repository->findComment($forum, $tid, $cid);
+        $comment = $this->repository->findComment($forumname, $tid, $cid);
         if ($comment === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
@@ -387,11 +387,11 @@ class Forum
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
         $this->csrfProtector->check($request->post("forum_token"));
-        if (!$this->repository->delete($forum, $tid, $cid)) {
+        if (!$this->repository->delete($forumname, $tid, $cid)) {
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
         $url = $request->url()->without("forum_action")->without("forum_comment");
-        if (!$this->repository->hasTopic($forum, $tid)) {
+        if (!$this->repository->hasTopic($forumname, $tid)) {
             $url = $url->without("forum_topic");
         }
         return Response::redirect($url->absolute());

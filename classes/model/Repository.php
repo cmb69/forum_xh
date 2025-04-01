@@ -31,11 +31,11 @@ class Repository
         $this->folder = $folder;
     }
 
-    public function folder(?string $forum = null): string
+    public function folder(?string $forumname = null): string
     {
         $filename = $this->folder;
-        if ($forum !== null) {
-            $filename .= "$forum/";
+        if ($forumname !== null) {
+            $filename .= "$forumname/";
         }
         if (!file_exists($filename)) {
             if (mkdir($filename, 0777, true)) {
@@ -45,44 +45,44 @@ class Repository
         return $filename;
     }
 
-    private function file(string $forum, string $tid): string
+    private function file(string $forumname, string $tid): string
     {
-        return $this->folder($forum) . "$tid.txt";
+        return $this->folder($forumname) . "$tid.txt";
     }
 
-    private function cacheFile(string $forum, string $tid): string
+    private function cacheFile(string $forumname, string $tid): string
     {
-        return $this->folder($forum) . "$tid.dat";
+        return $this->folder($forumname) . "$tid.dat";
     }
 
     /** @return list<Topic> */
-    public function findTopics(string $forum): array
+    public function findTopics(string $forumname): array
     {
-        if (($topics = $this->findTopicsFromCache($forum)) !== null) {
+        if (($topics = $this->findTopicsFromCache($forumname)) !== null) {
             return $topics;
         }
         $topics = [];
-        foreach (array_keys($this->findTopicNames($forum)) as $name) {
-            [$topic, ] = $this->findTopic($forum, $name);
+        foreach (array_keys($this->findTopicNames($forumname)) as $name) {
+            [$topic, ] = $this->findTopic($forumname, $name);
             if ($topic === null) {
                 continue;
             }
             $topics[] = $topic;
         }
-        file_put_contents($this->cacheFile($forum, "topics"), serialize($topics));
+        file_put_contents($this->cacheFile($forumname, "topics"), serialize($topics));
         return $topics;
     }
 
     /** @return array<string,int> */
-    private function findTopicNames(string $forum): array
+    private function findTopicNames(string $forumname): array
     {
         $names = [];
-        if (($dir = opendir($this->folder($forum)))) {
+        if (($dir = opendir($this->folder($forumname)))) {
             while (($entry = readdir($dir)) !== false) {
                 if (!preg_match('/^([0-9A-Za-z]+)\.txt$/', $entry, $matches)) {
                     continue;
                 }
-                $names[$matches[1]] = (int) filemtime($this->file($forum, $matches[1]));
+                $names[$matches[1]] = (int) filemtime($this->file($forumname, $matches[1]));
             }
             closedir($dir);
         }
@@ -90,14 +90,14 @@ class Repository
     }
 
     /** @return list<Topic>|null */
-    private function findTopicsFromCache(string $forum): ?array
+    private function findTopicsFromCache(string $forumname): ?array
     {
-        $cacheFile = $this->cacheFile($forum, "topics");
+        $cacheFile = $this->cacheFile($forumname, "topics");
         if (!is_readable($cacheFile)) {
             return null;
         }
         $cacheMtime = filemtime($cacheFile);
-        $stale = array_reduce($this->findTopicNames($forum), function (bool $carry, int $mtime) use ($cacheMtime) {
+        $stale = array_reduce($this->findTopicNames($forumname), function (bool $carry, int $mtime) use ($cacheMtime) {
             return $cacheMtime < $mtime ? true : $carry;
         }, false);
         if ($stale) {
@@ -113,18 +113,18 @@ class Repository
         return $topics;
     }
 
-    public function hasTopic(string $forum, string $tid): bool
+    public function hasTopic(string $forumname, string $tid): bool
     {
-        return file_exists($this->file($forum, $tid));
+        return file_exists($this->file($forumname, $tid));
     }
 
     /** @return array{Topic|null,list<Comment>} */
-    public function findTopic(string $forum, string $tid): array
+    public function findTopic(string $forumname, string $tid): array
     {
-        if (($result = $this->findTopicFromCache($forum, $tid)) !== null) {
+        if (($result = $this->findTopicFromCache($forumname, $tid)) !== null) {
             return $result;
         }
-        if (($stream = @fopen($this->file($forum, $tid), "r")) === false) {
+        if (($stream = @fopen($this->file($forumname, $tid), "r")) === false) {
             return [null, []];
         }
         $comments = $this->readComments($stream);
@@ -138,15 +138,15 @@ class Repository
         $first = reset($comments);
         $last = end($comments);
         $result = [new Topic($tid, $first->title() ?? "", count($comments), $last->user(), $last->time()), $comments];
-        file_put_contents($this->cacheFile($forum, $tid), serialize($result));
+        file_put_contents($this->cacheFile($forumname, $tid), serialize($result));
         return $result;
     }
 
     /** @return array{Topic|null,list<Comment>}|null */
-    private function findTopicFromCache(string $forum, string $tid): ?array
+    private function findTopicFromCache(string $forumname, string $tid): ?array
     {
-        $cacheFile = $this->cacheFile($forum, $tid);
-        if (!is_readable($cacheFile) || filemtime($cacheFile) < filemtime($this->file($forum, $tid))) {
+        $cacheFile = $this->cacheFile($forumname, $tid);
+        if (!is_readable($cacheFile) || filemtime($cacheFile) < filemtime($this->file($forumname, $tid))) {
             return null;
         }
         if (($contents = file_get_contents($cacheFile)) === false) {
@@ -159,9 +159,9 @@ class Repository
         return $result;
     }
 
-    public function findComment(string $forum, string $tid, string $cid): ?Comment
+    public function findComment(string $forumname, string $tid, string $cid): ?Comment
     {
-        $stream = @fopen($this->file($forum, $tid), "r");
+        $stream = @fopen($this->file($forumname, $tid), "r");
         if ($stream === false) {
             return null;
         }
@@ -172,9 +172,9 @@ class Repository
         });
     }
 
-    public function save(string $forum, string $tid, Comment $comment): bool
+    public function save(string $forumname, string $tid, Comment $comment): bool
     {
-        $stream = @fopen($this->file($forum, $tid), "c+");
+        $stream = @fopen($this->file($forumname, $tid), "c+");
         if ($stream === false) {
             return false;
         }
@@ -199,9 +199,9 @@ class Repository
         return $result !== false;
     }
 
-    public function delete(string $forum, string $tid, string $cid): bool
+    public function delete(string $forumname, string $tid, string $cid): bool
     {
-        $stream = @fopen($this->file($forum, $tid), "c+");
+        $stream = @fopen($this->file($forumname, $tid), "c+");
         if ($stream === false) {
             return false;
         }
@@ -241,9 +241,9 @@ class Repository
         return $forums;
     }
 
-    public function migrate(string $forum): bool
+    public function migrate(string $forumname): bool
     {
-        $contents = file_get_contents($this->folder($forum) . "topics.dat");
+        $contents = file_get_contents($this->folder($forumname) . "topics.dat");
         if ($contents === false) {
             return false;
         }
@@ -252,20 +252,20 @@ class Repository
             return false;
         }
         foreach ($data as $tid => $record) {
-            if (!$this->migrateTopic($forum, $tid, $record["title"])) {
+            if (!$this->migrateTopic($forumname, $tid, $record["title"])) {
                 return false;
             }
         }
-        $result = unlink($this->folder($forum) . "topics.dat");
+        $result = unlink($this->folder($forumname) . "topics.dat");
         foreach (array_keys($data) as $tid) {
-            unlink($this->folder($forum) . "$tid.dat");
+            unlink($this->folder($forumname) . "$tid.dat");
         }
         return $result;
     }
 
-    private function migrateTopic(string $forum, string $tid, string $title): bool
+    private function migrateTopic(string $forumname, string $tid, string $title): bool
     {
-        $contents = file_get_contents($this->folder($forum) . "$tid.dat");
+        $contents = file_get_contents($this->folder($forumname) . "$tid.dat");
         if ($contents === false) {
             return false;
         }
@@ -276,7 +276,7 @@ class Repository
         $comments = array_map(function ($id, $record) use ($title) {
             return new Comment($id, $title, $record["user"], $record["time"], $record["comment"]);
         }, array_keys($data), array_values($data));
-        $stream = @fopen($this->file($forum, $tid), "c+");
+        $stream = @fopen($this->file($forumname, $tid), "c+");
         if ($stream === false) {
             return false;
         }

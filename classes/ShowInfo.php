@@ -173,10 +173,10 @@ class ShowInfo
     /** @return list<array{name:string,url:string}> */
     private function forumRecords(Url $url): array
     {
-        return array_map(function (string $forum) use ($url) {
+        return array_map(function (string $forumname) use ($url) {
             return [
-                "name" => $forum,
-                "url" => $url->with("forum_forum", $forum)->relative(),
+                "name" => $forumname,
+                "url" => $url->with("forum_forum", $forumname)->relative(),
             ];
         }, $this->repository->findForumsToMigrate());
     }
