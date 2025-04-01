@@ -14,7 +14,7 @@ use Plib\Random;
 use Plib\View;
 use XH\Mail;
 
-class ForumTest extends TestCase
+class ForumControllerTest extends TestCase
 {
     private $conf;
     private $bbcode;
@@ -32,12 +32,12 @@ class ForumTest extends TestCase
         $this->mail = $this->createMock(Mail::class);
     }
 
-    private function sut(): Forum
+    private function sut(): ForumController
     {
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
         $view = new View("./views/", XH_includeVar("./languages/en.php", 'plugin_tx')['forum']);
-        return new Forum(
+        return new ForumController(
             $this->conf,
             "./plugins/forum/",
             $this->bbcode,

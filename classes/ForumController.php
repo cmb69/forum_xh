@@ -34,7 +34,7 @@ use Plib\Url;
 use Plib\View;
 use XH\Mail;
 
-class Forum
+class ForumController
 {
     /** @var array<string,string> */
     private $config;

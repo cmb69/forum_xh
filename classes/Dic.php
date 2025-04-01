@@ -31,10 +31,10 @@ use XH\Mail;
 
 class Dic
 {
-    public static function makeForum(): Forum
+    public static function makeForum(): ForumController
     {
         global $pth, $plugin_cf;
-        return new Forum(
+        return new ForumController(
             $plugin_cf["forum"],
             $pth["folder"]["plugins"] . "forum/",
             self::makeBbCode(),
