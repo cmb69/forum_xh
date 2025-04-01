@@ -137,11 +137,11 @@ class Forum
         if (!is_file($js)) {
             $js = $this->pluginFolder . "forum.js";
         }
-        $topics = $this->repository->findTopics($forumname);
+        $forum = $this->repository->findForum($forumname);
         return $this->view->render('topics', [
             'isUser' => $request->username(),
             'href' => $request->url()->with("forum_action", "create")->relative(),
-            'topics' => $this->topicRecords($request->url(), $topics),
+            'topics' => $this->topicRecords($request->url(), $forum->topics()),
             "script" => $request->url()->path($js)->with("v", FORUM_VERSION)->relative(),
         ]);
     }

@@ -43,11 +43,11 @@ class RepositoryTest extends TestCase
             EOT
         );
         $sut = new Repository("vfs://root/forum/");
-        $result = $sut->findTopics("test");
-        $this->assertEquals([
+        $result = $sut->findForum("test");
+        $this->assertEquals(new Forum([
             new Topic("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
             new Topic("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
-        ], $result);
+        ]), $result);
     }
 
     public function testFindsTopicsFromCache(): void
@@ -70,11 +70,11 @@ class RepositoryTest extends TestCase
         ]);
         file_put_contents("vfs://root/forum/test/topics.dat", $contents);
         $sut = new Repository("vfs://root/forum/");
-        $result = $sut->findTopics("test");
-        $this->assertEquals([
+        $result = $sut->findForum("test");
+        $this->assertEquals(new Forum([
             new Topic("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
             new Topic("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
-        ], $result);
+        ]), $result);
     }
 
     public function testDoesNotFindTopicsFromCacheIfOneFileIsStale(): void
@@ -101,11 +101,11 @@ class RepositoryTest extends TestCase
             filemtime("vfs://root/forum/test/topics.dat") + 2
         );
         $sut = new Repository("vfs://root/forum/");
-        $result = $sut->findTopics("test");
-        $this->assertEquals([
+        $result = $sut->findForum("test");
+        $this->assertEquals(new Forum([
             new Topic("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
             new Topic("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
-        ], $result);
+        ]), $result);
     }
 
     public function testReportsIfTopicDoesNotExist(): void

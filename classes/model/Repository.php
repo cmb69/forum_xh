@@ -55,11 +55,10 @@ class Repository
         return $this->folder($forumname) . "$tid.dat";
     }
 
-    /** @return list<Topic> */
-    public function findTopics(string $forumname): array
+    public function findForum(string $forumname): Forum
     {
-        if (($topics = $this->findTopicsFromCache($forumname)) !== null) {
-            return $topics;
+        if (($forum = $this->findForumFromCache($forumname)) !== null) {
+            return $forum;
         }
         $topics = [];
         foreach (array_keys($this->findTopicNames($forumname)) as $name) {
@@ -70,7 +69,7 @@ class Repository
             $topics[] = $topic;
         }
         file_put_contents($this->cacheFile($forumname, "topics"), serialize($topics));
-        return $topics;
+        return new Forum($topics);
     }
 
     /** @return array<string,int> */
@@ -89,8 +88,7 @@ class Repository
         return $names;
     }
 
-    /** @return list<Topic>|null */
-    private function findTopicsFromCache(string $forumname): ?array
+    private function findForumFromCache(string $forumname): ?Forum
     {
         $cacheFile = $this->cacheFile($forumname, "topics");
         if (!is_readable($cacheFile)) {
@@ -110,7 +108,7 @@ class Repository
             return null;
         }
         /** @var list<Topic> $topics */
-        return $topics;
+        return new Forum($topics);
     }
 
     public function hasTopic(string $forumname, string $tid): bool
