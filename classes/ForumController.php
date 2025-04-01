@@ -23,6 +23,7 @@ namespace Forum;
 
 use Forum\Model\BbCode;
 use Forum\Model\Comment;
+use Forum\Model\Forum;
 use Forum\Model\Repository;
 use Forum\Model\Topic;
 use Plib\Codec;
@@ -141,16 +142,13 @@ class ForumController
         return $this->view->render('topics', [
             'isUser' => $request->username(),
             'href' => $request->url()->with("forum_action", "create")->relative(),
-            'topics' => $this->topicRecords($request->url(), $forum->topics()),
+            'topics' => $this->topicRecords($request->url(), $forum),
             "script" => $request->url()->path($js)->with("v", FORUM_VERSION)->relative(),
         ]);
     }
 
-    /**
-     * @param list<Topic> $topics
-     * @return list<array{tid:string,title:string,user:string,comments:int,date:string,url:string}>
-     */
-    private function topicRecords(Url $url, array $topics): array
+    /** @return list<array{tid:string,title:string,user:string,comments:int,date:string,url:string}> */
+    private function topicRecords(Url $url, Forum $forum): array
     {
         return array_map(function (Topic $topic) use ($url) {
             return [
@@ -161,7 +159,7 @@ class ForumController
                 "date" => date($this->view->plain("format_date"), $topic->time()),
                 "url" => $url->with("forum_topic", $topic->id())->relative(),
             ];
-        }, array_values($topics));
+        }, array_values($forum->topics()));
     }
 
     private function renderTopicView(Request $request, string $forumname, string $tid): string
