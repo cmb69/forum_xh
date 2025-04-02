@@ -1,10 +1,10 @@
 <?php
 
-use Forum\Infra\Repository;
-use Forum\Value\Comment;
+use Forum\Model\Repository;
+use Forum\Model\Comment;
 
-require_once "./classes/Infra/Repository.php";
-require_once "./classes/Value/Comment.php";
+require_once "./classes/model/Repository.php";
+require_once "./classes/model/Comment.php";
 
 if ($argc !== 4) {
     echo "usage: php $argv[0] <forum> <topic_count> <comment_count>\n";
@@ -26,6 +26,7 @@ consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
 sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
 no sea takimata sanctus est Lorem ipsum dolor sit amet.
 EOS;
+$message = str_replace("\n", " ", $message);
 
 for ($i = 0; $i < $topicCount; $i++) {
     $tid = uniqid();
