@@ -60,15 +60,9 @@ class Repository
         if (($stream = @fopen($this->file($forumname, $tid), "r")) === false) {
             return null;
         }
-        $comments = $this->readComments($stream);
+        $contents = stream_get_contents($stream);
         fclose($stream);
-        if ($comments === []) {
-            return null;
-        }
-        usort($comments, function (Comment $a, Comment $b) {
-            return $a->time() <=> $b->time();
-        });
-        return new Topic($comments);
+        return Topic::fromString((string) $contents);
     }
 
     public function findComment(string $forumname, string $tid, string $cid): ?Comment

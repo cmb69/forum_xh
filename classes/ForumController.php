@@ -175,6 +175,7 @@ class ForumController
         if ($topic === null) {
             return $this->view->message("fail", "error_no_topic");
         }
+        $topic->sortComments();
         $url = $request->url();
         $token = $this->csrfProtector->token();
         return $this->view->render('topic', [

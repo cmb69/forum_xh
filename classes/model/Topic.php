@@ -21,15 +21,79 @@
 
 namespace Forum\Model;
 
-final class Topic
+use Plib\Document;
+
+final class Topic implements Document
 {
     /** @var list<Comment> */
     private $comments;
+
+    /** @return static */
+    public static function fromString(string $contents)
+    {
+        $that = new static([]);
+        $lines = explode("\n", $contents);
+        $record = [];
+        $headers = true;
+        $body = null;
+        foreach ($lines as $line) {
+            $line = rtrim($line);
+            if (!strncmp($line, "%%", strlen("%%"))) {
+                if ($record) {
+                    $that->comments[] = self::makeComment($record, $body);
+                }
+                $record = [];
+                $headers = true;
+                $body = null;
+                continue;
+            }
+            if ($line === "") {
+                $headers = false;
+                continue;
+            }
+            if ($headers) {
+                $parts = explode(":", $line, 2);
+                $record[strtolower(trim($parts[0]))] = trim($parts[1]);
+            } else {
+                $body = $body === null ? $line : "$body\n$line";
+            }
+        }
+        if ($record) {
+            $that->comments[] = self::makeComment($record, $body);
+        }
+        return $that;
+    }
+
+    /** @param array<string,string> $record */
+    private static function makeComment(array $record, ?string $body): Comment
+    {
+        return new Comment(
+            $record["id"] ?? "",
+            $record["title"] ?? null,
+            $record["user"] ?? "",
+            isset($record["date"]) ? (int) strtotime($record["date"]) : 0,
+            $body ?? ""
+        );
+    }
 
     /** @param list<Comment> $comments */
     public function __construct(array $comments)
     {
         $this->comments = $comments;
+    }
+
+    public function toString(): string
+    {
+        $records = [];
+        foreach ($this->comments as $comment) {
+            $records[] = "Id: " . $comment->id() . "\n"
+                . ($comment->title() !== null ? "Title: " . $comment->title() . "\n" : "")
+                . "User: " . $comment->user() . "\n"
+                . "Date: " . date("r", $comment->time()) . "\n"
+                . "\n"
+                . $comment->message();
+        }
+        return implode("\n%%\n", $records);
     }
 
     public function title(): string
@@ -68,5 +132,12 @@ final class Topic
         }
         $last = end($this->comments);
         return $last->time();
+    }
+
+    public function sortComments(): void
+    {
+        usort($this->comments, function (Comment $a, Comment $b) {
+            return $a->time() <=> $b->time();
+        });
     }
 }
