@@ -30,7 +30,7 @@ class TopicSummary
     private $title;
 
     /** @var int */
-    private $comments;
+    private $commentCount;
 
     /** @var string */
     private $user;
@@ -38,11 +38,11 @@ class TopicSummary
     /** @var int */
     private $time;
 
-    public function __construct(string $id, string $title, int $comments, string $user, int $time)
+    public function __construct(string $id, string $title, int $commentCount, string $user, int $time)
     {
         $this->id = $id;
         $this->title = $title;
-        $this->comments = $comments;
+        $this->commentCount = $commentCount;
         $this->user = $user;
         $this->time = $time;
     }
@@ -57,9 +57,9 @@ class TopicSummary
         return $this->title;
     }
 
-    public function comments(): int
+    public function commentCount(): int
     {
-        return $this->comments;
+        return $this->commentCount;
     }
 
     public function user(): string

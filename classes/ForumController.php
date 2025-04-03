@@ -155,7 +155,7 @@ class ForumController
                 "tid" => $topic->id(),
                 "title" => $topic->title(),
                 "user" => $topic->user(),
-                "comments" => $topic->comments(),
+                "comments" => $topic->commentCount(),
                 "date" => date($this->view->plain("format_date"), $topic->time()),
                 "url" => $url->with("forum_topic", $topic->id())->relative(),
             ];
