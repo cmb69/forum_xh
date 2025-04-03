@@ -21,10 +21,44 @@
 
 namespace Forum\Model;
 
-class Forum
+use JsonSerializable;
+
+final class Forum implements JsonSerializable
 {
     /** @var list<TopicSummary> */
     private $topicSummaries;
+
+    /** @return ?static */
+    public static function fromString(string $contents)
+    {
+        $json = json_decode($contents, true);
+        if (!is_array($json)) {
+            return null;
+        }
+        $that = new static([]);
+        foreach ($json as $record) {
+            $topicSummary = new TopicSummary(
+                $record["id"],
+                $record["title"],
+                $record["commentCount"],
+                $record["user"],
+                $record["time"],
+            );
+            $that->topicSummaries[] = $topicSummary;
+        }
+        return $that;
+    }
+
+    public function toString(): string
+    {
+        return (string) json_encode($this, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
+
+    /** @return list<TopicSummary> */
+    public function jsonSerialize(): array
+    {
+        return $this->topicSummaries;
+    }
 
     /** @param list<TopicSummary> $topicSummaries */
     public function __construct(array $topicSummaries)

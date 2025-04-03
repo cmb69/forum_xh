@@ -52,7 +52,7 @@ class Repository
 
     private function cacheFile(string $forumname, string $tid): string
     {
-        return $this->folder($forumname) . "$tid.dat";
+        return $this->folder($forumname) . "$tid.json";
     }
 
     public function findForum(string $forumname): Forum
@@ -69,7 +69,7 @@ class Repository
             $topics[] = $topicSummary;
         }
         $forum = new Forum($topics);
-        file_put_contents($this->cacheFile($forumname, "forum"), serialize($forum));
+        file_put_contents($this->cacheFile($forumname, "index"), $forum->toString());
         return $forum;
     }
 
@@ -91,7 +91,7 @@ class Repository
 
     private function findForumFromCache(string $forumname): ?Forum
     {
-        $cacheFile = $this->cacheFile($forumname, "forum");
+        $cacheFile = $this->cacheFile($forumname, "index");
         if (!is_readable($cacheFile)) {
             return null;
         }
@@ -105,10 +105,7 @@ class Repository
         if (($contents = file_get_contents($cacheFile)) === false) {
             return null;
         }
-        if (($forum = unserialize($contents, ["allowed_classes" => [Forum::class, TopicSummary::class]])) === false) {
-            return null;
-        }
-        assert($forum instanceof Forum);
+        $forum = Forum::fromString($contents);
         return $forum;
     }
 

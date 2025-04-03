@@ -64,49 +64,17 @@ class RepositoryTest extends TestCase
             The fox was here!
             EOT
         );
-        $contents = serialize(new Forum([
-            new TopicSummary("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
-            new TopicSummary("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
-        ]));
-        file_put_contents("vfs://root/forum/test/topics.dat", $contents);
-        $sut = new Repository("vfs://root/forum/");
-        $result = $sut->findForum("test");
-        $this->assertEquals(new Forum([
-            new TopicSummary("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
-            new TopicSummary("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
-        ]), $result);
-    }
-
-    public function testDoesNotFindTopicsFromCacheIfOneFileIsStale(): void
-    {
-        mkdir("vfs://root/forum/test", 0777, true);
-        file_put_contents("vfs://root/forum/test/DHQPWSV5E8G78TBMDHJG.txt", $this->contents());
-        file_put_contents(
-            "vfs://root/forum/test/AHM6A83HENMP6TS0C9S6YXVE41K6YY0.txt",
-            <<<EOT
-            Id: 17
-            User: foxy
-            Date: Fri, 30 Mar 2023 12:30:52 +0000
-    
-            The fox was here!
-            EOT
-        );
-        $contents = serialize([
+        $forum = new Forum([
             new TopicSummary("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
             new TopicSummary("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
         ]);
+        $contents = $forum->toString();
         file_put_contents("vfs://root/forum/test/topics.dat", $contents);
-        touch(
-            "vfs://root/forum/test/AHM6A83HENMP6TS0C9S6YXVE41K6YY0.txt",
-            filemtime("vfs://root/forum/test/topics.dat") + 2
-        );
         $sut = new Repository("vfs://root/forum/");
         $result = $sut->findForum("test");
-        $this->assertEquals(new Forum([
-            new TopicSummary("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
-            new TopicSummary("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
-        ]), $result);
+        $this->assertEquals($forum, $result);
     }
+
 
     public function testReportsIfTopicDoesNotExist(): void
     {

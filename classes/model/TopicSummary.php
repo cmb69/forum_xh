@@ -21,7 +21,9 @@
 
 namespace Forum\Model;
 
-class TopicSummary
+use JsonSerializable;
+
+class TopicSummary implements JsonSerializable
 {
     /** @var string */
     private $id;
@@ -45,6 +47,18 @@ class TopicSummary
         $this->commentCount = $commentCount;
         $this->user = $user;
         $this->time = $time;
+    }
+
+    /** @return array<string,mixed> */
+    public function jsonSerialize(): array
+    {
+        return [
+            "id" => $this->id,
+            "title" => $this->title,
+            "commentCount" => $this->commentCount,
+            "user" => $this->user,
+            "time" => $this->time,
+        ];
     }
 
     public function id(): string
