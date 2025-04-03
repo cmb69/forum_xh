@@ -124,17 +124,6 @@ class RepositoryTest extends TestCase
         $this->assertEquals(new Topic("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252), $topic);
     }
 
-    public function testFindsTopicFromCache(): void
-    {
-        mkdir("vfs://root/forum/test", 0777, true);
-        file_put_contents("vfs://root/forum/test/DHQPWSV5E8G78TBMDHJG.txt", $this->contents());
-        $contents = serialize([new Topic("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252), $this->comments()]);
-        file_put_contents("vfs://root/forum/test/DHQPWSV5E8G78TBMDHJG.dat", $contents);
-        $sut = new Repository("vfs://root/forum/");
-        [$topic, ] = $sut->findTopic("test", "DHQPWSV5E8G78TBMDHJG");
-        $this->assertEquals(new Topic("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252), $topic);
-    }
-
     public function testFindsNullIfTopicDoesNotExist(): void
     {
         $sut = new Repository("vfs://root/forum/");

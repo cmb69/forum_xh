@@ -120,9 +120,6 @@ class Repository
     /** @return array{Topic|null,list<Comment>} */
     public function findTopic(string $forumname, string $tid): array
     {
-        if (($result = $this->findTopicFromCache($forumname, $tid)) !== null) {
-            return $result;
-        }
         if (($stream = @fopen($this->file($forumname, $tid), "r")) === false) {
             return [null, []];
         }
@@ -137,24 +134,6 @@ class Repository
         $first = reset($comments);
         $last = end($comments);
         $result = [new Topic($tid, $first->title() ?? "", count($comments), $last->user(), $last->time()), $comments];
-        file_put_contents($this->cacheFile($forumname, $tid), serialize($result));
-        return $result;
-    }
-
-    /** @return array{Topic|null,list<Comment>}|null */
-    private function findTopicFromCache(string $forumname, string $tid): ?array
-    {
-        $cacheFile = $this->cacheFile($forumname, $tid);
-        if (!is_readable($cacheFile) || filemtime($cacheFile) < filemtime($this->file($forumname, $tid))) {
-            return null;
-        }
-        if (($contents = file_get_contents($cacheFile)) === false) {
-            return null;
-        }
-        if (($result = unserialize($contents, ["allowed_classes" => [Topic::class, Comment::class]])) === false) {
-            return null;
-        }
-        /** @var array{Topic|null,list<Comment>} $result */
         return $result;
     }
 
