@@ -24,17 +24,17 @@ namespace Forum\Model;
 class Forum
 {
     /** @var list<TopicSummary> */
-    private $topics;
+    private $topicSummaries;
 
-    /** @param list<TopicSummary> $topics */
-    public function __construct(array $topics)
+    /** @param list<TopicSummary> $topicSummaries */
+    public function __construct(array $topicSummaries)
     {
-        $this->topics = $topics;
+        $this->topicSummaries = $topicSummaries;
     }
 
     /** @return list<TopicSummary> */
-    public function topics(): array
+    public function topicSummaries(): array
     {
-        return $this->topics;
+        return $this->topicSummaries;
     }
 }

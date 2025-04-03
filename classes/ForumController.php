@@ -159,7 +159,7 @@ class ForumController
                 "date" => date($this->view->plain("format_date"), $topic->time()),
                 "url" => $url->with("forum_topic", $topic->id())->relative(),
             ];
-        }, array_values($forum->topics()));
+        }, array_values($forum->topicSummaries()));
     }
 
     private function renderTopicView(Request $request, string $forumname, string $tid): string
