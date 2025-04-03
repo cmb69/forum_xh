@@ -138,7 +138,7 @@ class ForumController
             $js = $this->pluginFolder . "forum.js";
         }
         $forum = $this->store->retrieve($forumname . "/index.json", Forum::class);
-        assert($forum !== null); // can't happen
+        assert($forum instanceof Forum);
         return $this->view->render('topics', [
             'isUser' => $request->username(),
             'href' => $request->url()->with("forum_action", "create")->relative(),
@@ -223,7 +223,7 @@ class ForumController
         if (!$request->username()) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $output = $this->renderCommentForm($request, $topicSummary, $comment);
+        $output = $this->renderCommentForm($request, $tid ?? "", $topicSummary->title(), $comment);
         return $this->respondWith($request, $output);
     }
 
@@ -234,12 +234,6 @@ class ForumController
         if ($tid === null || $cid === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_id_missing"));
         }
-        $forum = $this->store->retrieve($forumname . "/index.json", Forum::class);
-        assert($forum instanceof Forum);
-        $topicSummary = $forum->topicSummary($tid);
-        if ($topicSummary === null) {
-            return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
-        }
         $topic = $this->store->retrieve($forumname . "/$tid.txt", Topic::class);
         assert($topic instanceof Topic);
         $comment = $topic->comment($cid);
@@ -249,14 +243,15 @@ class ForumController
         if (!$this->mayModify($request, $comment)) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $output = $this->renderCommentForm($request, $topicSummary, $comment);
+        $output = $this->renderCommentForm($request, $tid, $topic->title(), $comment);
         return $this->respondWith($request, $output);
     }
 
     /** @param list<array{string}> $errors */
     private function renderCommentForm(
         Request $request,
-        TopicSummary $topicSummary,
+        string $tid,
+        string $title,
         Comment $comment,
         array $errors = []
     ): string {
@@ -268,14 +263,14 @@ class ForumController
         $url = $request->url();
         $output = $this->view->render('form', [
             "errors" => $errors,
-            'title_attribute' => $topicSummary->id() === "" ? "required" : "disabled",
-            "title" => $topicSummary->title(),
+            'title_attribute' => $tid === "" ? "required" : "disabled",
+            "title" => $title,
             'action' => $url->with("forum_action", $comment->id() !== "" ? "edit" : "create")->relative(),
             'previewUrl' => $url->with("forum_action", "preview")->relative(),
-            'backUrl' => $topicSummary->id() === ""
+            'backUrl' => $tid === ""
                 ? $url->without("forum_action")->relative()
                 : $url->without("forum_action")->without("forum_comment")->relative(),
-            'headingKey' => $topicSummary->id() === ""
+            'headingKey' => $tid === ""
                 ? 'msg_new_topic'
                 : ($comment->id() !== "" ? 'msg_edit_comment' : 'msg_add_comment'),
             'comment' => $comment->message(),
@@ -334,7 +329,10 @@ class ForumController
         }
         if ($errors) {
             $this->store->rollback($forum);
-            return $this->respondWith($request, $this->renderCommentForm($request, $topicSummary, $comment, $errors));
+            return $this->respondWith(
+                $request,
+                $this->renderCommentForm($request, $tid ?? "", $topicSummary->title(), $comment, $errors)
+            );
         }
         $topic = $this->store->update($forumname . "/$tid.txt", Topic::class);
         assert($topic instanceof Topic);
@@ -386,7 +384,10 @@ class ForumController
         $errors = $comment->message() === "" ? [["error_message"]] : [];
         if ($errors) {
             $this->store->rollback($forum);
-            return $this->respondWith($request, $this->renderCommentForm($request, $topicSummary, $comment, $errors));
+            return $this->respondWith(
+                $request,
+                $this->renderCommentForm($request, $tid, $topicSummary->title(), $comment, $errors)
+            );
         }
         $topic->addComment($comment->id(), $comment);
         if (!$this->store->commit($topic)) {

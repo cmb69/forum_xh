@@ -102,10 +102,7 @@ class ForumControllerTest extends TestCase
 
     public function testRendersCommentForm(): void
     {
-        $this->store->method("retrieve")->willReturnOnConsecutiveCalls(
-            $this->forum("AHQQ0TB341A6JX3CCM"),
-            $this->topic()
-        );
+        $this->store->method("retrieve")->willReturn($this->topic());
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_action=edit&forum_topic=AHQQ0TB341A6JX3CCM"
                 . "&forum_comment=3456789abcdef",
