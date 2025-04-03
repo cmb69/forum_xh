@@ -33,17 +33,33 @@ final class Forum implements Document, JsonSerializable
     public static function fromString(string $contents)
     {
         $that = new static([]);
-        $json = json_decode($contents, true);
-        if (is_array($json)) {
-            foreach ($json as $record) {
+        if (strncmp($contents, "a:", 2) === 0) {
+            // old serialization format
+            $data = unserialize($contents);
+            assert(is_array($data));
+            foreach ($data as $tid => $record) {
                 $topicSummary = new TopicSummary(
-                    $record["id"],
+                    $tid,
                     $record["title"],
-                    $record["commentCount"],
+                    $record["comments"],
                     $record["user"],
                     $record["time"],
                 );
-                $that->topicSummaries[$record["id"]] = $topicSummary;
+                $that->topicSummaries[$tid] = $topicSummary;
+            }
+        } else {
+            $json = json_decode($contents, true);
+            if (is_array($json)) {
+                foreach ($json as $record) {
+                    $topicSummary = new TopicSummary(
+                        $record["id"],
+                        $record["title"],
+                        $record["commentCount"],
+                        $record["user"],
+                        $record["time"],
+                    );
+                    $that->topicSummaries[$record["id"]] = $topicSummary;
+                }
             }
         }
         return $that;
@@ -102,5 +118,11 @@ final class Forum implements Document, JsonSerializable
             $comment->user(),
             $comment->time()
         );
+    }
+
+    public function copy(Forum $other): void
+    {
+        assert(empty($this->topicSummaries));
+        $this->topicSummaries = $other->topicSummaries;
     }
 }

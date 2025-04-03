@@ -33,36 +33,45 @@ final class Topic implements Document
     {
         $that = new static([]);
         $that->comments = [];
-        $lines = explode("\n", $contents);
-        $record = [];
-        $headers = true;
-        $body = null;
-        foreach ($lines as $line) {
-            $line = rtrim($line);
-            if (!strncmp($line, "%%", strlen("%%"))) {
-                if ($record) {
-                    $comment = self::makeComment($record, $body);
-                    $that->comments[$comment->id()] = $comment;
+        if (strncmp($contents, "a:", 2) === 0) {
+            // old serialization format
+            $data = unserialize($contents);
+            assert(is_array($data));
+            foreach ($data as $id => $record) {
+                $that->comments[$id] = new Comment($id, null, $record["user"], $record["time"], $record["comment"]);
+            }
+        } else {
+            $lines = explode("\n", $contents);
+            $record = [];
+            $headers = true;
+            $body = null;
+            foreach ($lines as $line) {
+                $line = rtrim($line);
+                if (!strncmp($line, "%%", strlen("%%"))) {
+                    if ($record) {
+                        $comment = self::makeComment($record, $body);
+                        $that->comments[$comment->id()] = $comment;
+                    }
+                    $record = [];
+                    $headers = true;
+                    $body = null;
+                    continue;
                 }
-                $record = [];
-                $headers = true;
-                $body = null;
-                continue;
+                if ($line === "") {
+                    $headers = false;
+                    continue;
+                }
+                if ($headers) {
+                    $parts = explode(":", $line, 2);
+                    $record[strtolower(trim($parts[0]))] = trim($parts[1]);
+                } else {
+                    $body = $body === null ? $line : "$body\n$line";
+                }
             }
-            if ($line === "") {
-                $headers = false;
-                continue;
+            if ($record) {
+                $comment = self::makeComment($record, $body);
+                $that->comments[$comment->id()] = $comment;
             }
-            if ($headers) {
-                $parts = explode(":", $line, 2);
-                $record[strtolower(trim($parts[0]))] = trim($parts[1]);
-            } else {
-                $body = $body === null ? $line : "$body\n$line";
-            }
-        }
-        if ($record) {
-            $comment = self::makeComment($record, $body);
-            $that->comments[$comment->id()] = $comment;
         }
         return $that;
     }
@@ -168,5 +177,11 @@ final class Topic implements Document
     {
         assert(isset($this->comments[$id]));
         unset($this->comments[$id]);
+    }
+
+    public function copy(Topic $other): void
+    {
+        assert(empty($this->comments));
+        $this->comments = $other->comments;
     }
 }

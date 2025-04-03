@@ -22,7 +22,6 @@
 namespace Forum;
 
 use Forum\Model\BbCode;
-use Forum\Model\Repository;
 use Plib\CsrfProtector;
 use Plib\DocumentStore;
 use Plib\Random;
@@ -53,7 +52,7 @@ class Dic
         return new ShowInfo(
             $pth["folder"]["plugins"] . "forum/",
             new SystemChecker(),
-            new Repository(self::contentFolder()),
+            new DocumentStore(self::contentFolder()),
             self::makeView()
         );
     }
