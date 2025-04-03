@@ -312,10 +312,9 @@ class ForumController
         $this->csrfProtector->check($request->post("forum_token"));
         $title = $request->post("forum_title") ?? "";
         $text = $request->post("forum_text") ?? "";
-        $topic = $topic->withTitle($title);
         $comment = $comment->with($title, $text);
         $errors = [];
-        if ($topic->title() === "") {
+        if ($comment->title() === "") {
             $errors[] = ["error_title"];
         }
         if ($comment->message() === "") {

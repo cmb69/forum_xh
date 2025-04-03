@@ -71,11 +71,4 @@ class TopicSummary
     {
         return $this->time;
     }
-
-    public function withTitle(string $title): self
-    {
-        $that = clone $this;
-        $that->title = $title;
-        return $that;
-    }
 }
