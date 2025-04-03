@@ -50,57 +50,6 @@ class Repository
         return $this->folder($forumname) . "$tid.txt";
     }
 
-    private function cacheFile(string $forumname, string $tid): string
-    {
-        return $this->folder($forumname) . "$tid.json";
-    }
-
-    public function findForum(string $forumname): Forum
-    {
-        if (($forum = $this->findForumFromCache($forumname)) !== null) {
-            return $forum;
-        }
-        $topics = [];
-        foreach (array_keys($this->findTopicNames($forumname)) as $name) {
-            $topicSummary = $this->findTopicSummary($forumname, $name);
-            if ($topicSummary === null) {
-                continue;
-            }
-            $topics[] = $topicSummary;
-        }
-        $forum = new Forum($topics);
-        file_put_contents($this->cacheFile($forumname, "index"), $forum->toString());
-        return $forum;
-    }
-
-    /** @return array<string,int> */
-    private function findTopicNames(string $forumname): array
-    {
-        $names = [];
-        if (($dir = opendir($this->folder($forumname)))) {
-            while (($entry = readdir($dir)) !== false) {
-                if (!preg_match('/^([0-9A-Za-z]+)\.txt$/', $entry, $matches)) {
-                    continue;
-                }
-                $names[$matches[1]] = (int) filemtime($this->file($forumname, $matches[1]));
-            }
-            closedir($dir);
-        }
-        return $names;
-    }
-
-    private function findForumFromCache(string $forumname): ?Forum
-    {
-        $cacheFile = $this->cacheFile($forumname, "index");
-        if (!is_readable($cacheFile)) {
-            return null;
-        }
-        if (($contents = file_get_contents($cacheFile)) === false) {
-            return null;
-        }
-        return Forum::fromString($contents);
-    }
-
     public function hasTopic(string $forumname, string $tid): bool
     {
         return file_exists($this->file($forumname, $tid));
@@ -120,15 +69,6 @@ class Repository
             return $a->time() <=> $b->time();
         });
         return new Topic($tid, $comments);
-    }
-
-    private function findTopicSummary(string $forumname, string $tid): ?TopicSummary
-    {
-        $topic = $this->findTopic($forumname, $tid);
-        if ($topic === null) {
-            return null;
-        }
-        return new TopicSummary($tid, $topic->title(), $topic->commentCount(), $topic->user(), $topic->time());
     }
 
     public function findComment(string $forumname, string $tid, string $cid): ?Comment

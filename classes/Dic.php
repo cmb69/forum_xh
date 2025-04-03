@@ -24,6 +24,7 @@ namespace Forum;
 use Forum\Model\BbCode;
 use Forum\Model\Repository;
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\Random;
 use Plib\SystemChecker;
 use Plib\View;
@@ -42,6 +43,7 @@ class Dic
             self::makeView(),
             new Mail(),
             new Repository(self::contentFolder()),
+            new DocumentStore(self::contentFolder()),
             new Random()
         );
     }

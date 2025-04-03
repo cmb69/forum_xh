@@ -29,23 +29,22 @@ final class Forum implements Document, JsonSerializable
     /** @var array<string,TopicSummary> */
     private $topicSummaries;
 
-    /** @return ?static */
+    /** @return static */
     public static function fromString(string $contents)
     {
-        $json = json_decode($contents, true);
-        if (!is_array($json)) {
-            return null;
-        }
         $that = new static([]);
-        foreach ($json as $record) {
-            $topicSummary = new TopicSummary(
-                $record["id"],
-                $record["title"],
-                $record["commentCount"],
-                $record["user"],
-                $record["time"],
-            );
-            $that->topicSummaries[$record["id"]] = $topicSummary;
+        $json = json_decode($contents, true);
+        if (is_array($json)) {
+            foreach ($json as $record) {
+                $topicSummary = new TopicSummary(
+                    $record["id"],
+                    $record["title"],
+                    $record["commentCount"],
+                    $record["user"],
+                    $record["time"],
+                );
+                $that->topicSummaries[$record["id"]] = $topicSummary;
+            }
         }
         return $that;
     }
@@ -79,5 +78,29 @@ final class Forum implements Document, JsonSerializable
     public function topicSummary(string $id): ?TopicSummary
     {
         return $this->topicSummaries[$id] ?? null;
+    }
+
+    public function openTopic(string $id): TopicSummary
+    {
+        assert(!isset($this->topicSummaries[$id]));
+        return $this->topicSummaries[$id] = new TopicSummary(
+            $id,
+            "",
+            0,
+            "",
+            0
+        );
+    }
+
+    public function addComment(string $id, Comment $comment): void
+    {
+        $topicSummary = $this->topicSummaries[$id];
+        $this->topicSummaries[$id] = new TopicSummary(
+            $id,
+            $topicSummary->title(),
+            $topicSummary->commentCount() + 1,
+            $comment->user(),
+            $comment->time()
+        );
     }
 }

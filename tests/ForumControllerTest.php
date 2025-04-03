@@ -6,9 +6,12 @@ use ApprovalTests\Approvals;
 use Forum\Model\BbCode;
 use Forum\Model\Comment;
 use Forum\Model\FakeRepository;
+use Forum\Model\Forum;
+use Forum\Model\TopicSummary;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\FakeRequest;
 use Plib\Random;
 use Plib\View;
@@ -20,6 +23,7 @@ class ForumControllerTest extends TestCase
     private $bbcode;
     private $mail;
     private $repository;
+    private $store;
     private $random;
 
     public function setUp(): void
@@ -28,6 +32,7 @@ class ForumControllerTest extends TestCase
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["forum"];
         $this->bbcode = $this->createStub(BbCode::class);
         $this->repository = new FakeRepository("vfs://root/forum/");
+        $this->store = $this->createStub(DocumentStore::class);
         $this->random = $this->createStub(Random::class);
         $this->mail = $this->createMock(Mail::class);
     }
@@ -45,6 +50,7 @@ class ForumControllerTest extends TestCase
             $view,
             $this->mail,
             $this->repository,
+            $this->store,
             $this->random
         );
     }
@@ -61,7 +67,7 @@ class ForumControllerTest extends TestCase
 
     public function testRendersForumOverview(): void
     {
-        $this->repository->save("test", "0123456789abc", $this->comment());
+        $this->store->method("retrieve")->willReturn($this->forum("0123456789abc"));
         $request = new FakeRequest(["url" => "http://example.com/?Forum"]);
         $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
@@ -87,6 +93,7 @@ class ForumControllerTest extends TestCase
 
     public function testRendersCommentFormForNewPost(): void
     {
+        $this->store->method("retrieve")->willReturn($this->forum("123"));
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_action=create",
             "username" => "cmb",
@@ -98,6 +105,7 @@ class ForumControllerTest extends TestCase
     public function testRendersCommentForm(): void
     {
         $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
+        $this->store->method("retrieve")->willReturn($this->forum("AHQQ0TB341A6JX3CCM"));
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_action=edit&forum_topic=AHQQ0TB341A6JX3CCM"
                 . "&forum_comment=3456789abcdef",
@@ -109,7 +117,7 @@ class ForumControllerTest extends TestCase
 
     public function testRendersCommentFormForReply(): void
     {
-        $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
+        $this->store->method("retrieve")->willReturn($this->forum("AHQQ0TB341A6JX3CCM"));
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_action=create&forum_topic=AHQQ0TB341A6JX3CCM",
             "username" => "cmb",
@@ -146,6 +154,8 @@ class ForumControllerTest extends TestCase
 
     public function testCreatesNewTopic(): void
     {
+        $this->store->method("update")->willReturn($this->forum("123"));
+        $this->store->expects($this->once())->method("commit")->with($this->isInstanceOf(Forum::class));
         $this->random->method("bytes")->willReturn("123456789abcdef");
         $this->conf = ["mail_address" => "webmaster@example.com"] + $this->conf;
         $this->mail->expects($this->once())->method("setTo")->with("webmaster@example.com");
@@ -175,6 +185,8 @@ class ForumControllerTest extends TestCase
 
     public function testFailsToCreateNewTopic(): void
     {
+        $this->store->method("update")->willReturn($this->forum("64P36D1L6ORJGEB1C9HM8PB6"));
+        $this->store->expects($this->never())->method("commit")->with($this->isInstanceOf(Forum::class));
         $this->random->method("bytes")->willReturn("3456789abcdef");
         $this->repository->options(["save" => false]);
         $request = new FakeRequest([
@@ -189,6 +201,9 @@ class ForumControllerTest extends TestCase
     public function testUpdatesComment(): void
     {
         $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
+        $this->store->method("update")->willReturn($this->forum("AHQQ0TB341A6JX3CCM"));
+        $this->store->expects($this->once())->method("commit")->with($this->isInstanceOf(Forum::class))
+            ->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
                 . "&forum_action=edit",
@@ -217,6 +232,7 @@ class ForumControllerTest extends TestCase
     public function testReportsNonExistentCommentWhenUpdating(): void
     {
         $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
+        $this->store->method("update")->willReturn($this->forum("AHQQ0TB341A6JX3CCM"));
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=012345678"
                 . "&forum_action=edit",
@@ -230,6 +246,8 @@ class ForumControllerTest extends TestCase
     public function testReportsMissingAuthorizationForPosting(): void
     {
         $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
+        $this->store->method("update")->willReturn($this->forum("AHQQ0TB341A6JX3CCM"));
+        $this->store->expects($this->never())->method("commit");
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
                 . "&forum_action=edit",
@@ -244,6 +262,8 @@ class ForumControllerTest extends TestCase
     {
         $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
         $this->repository->options(["save" => false]);
+        $this->store->method("update")->willReturn($this->forum("AHQQ0TB341A6JX3CCM"));
+        $this->store->expects($this->never())->method("commit");
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
                 . "&forum_action=edit",
@@ -314,6 +334,11 @@ class ForumControllerTest extends TestCase
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">The changes could not be stored!</p>\n", $response->output());
+    }
+
+    private function forum(string $tid): Forum
+    {
+        return new Forum([new TopicSummary($tid, "Topic Title", 1, "cmb", 1676130605)]);
     }
 
     private function comment(): Comment

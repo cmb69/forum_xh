@@ -28,6 +28,7 @@ use Forum\Model\Repository;
 use Forum\Model\TopicSummary;
 use Plib\Codec;
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\Random;
 use Plib\Request;
 use Plib\Response;
@@ -58,6 +59,9 @@ class ForumController
     /** @var Repository */
     private $repository;
 
+    /** @var DocumentStore */
+    private $store;
+
     /** @var Random */
     private $random;
 
@@ -70,6 +74,7 @@ class ForumController
         View $view,
         Mail $mail,
         Repository $repository,
+        DocumentStore $store,
         Random $random
     ) {
         $this->config = $config;
@@ -79,6 +84,7 @@ class ForumController
         $this->view = $view;
         $this->mail = $mail;
         $this->repository = $repository;
+        $this->store = $store;
         $this->random = $random;
     }
 
@@ -138,7 +144,8 @@ class ForumController
         if (!is_file($js)) {
             $js = $this->pluginFolder . "forum.js";
         }
-        $forum = $this->repository->findForum($forumname);
+        $forum = $this->store->retrieve($forumname . "/index.json", Forum::class);
+        assert($forum !== null); // can't happen
         return $this->view->render('topics', [
             'isUser' => $request->username(),
             'href' => $request->url()->with("forum_action", "create")->relative(),
@@ -207,10 +214,11 @@ class ForumController
     private function createComment(Request $request, string $forumname): Response
     {
         $tid = $this->id($request->get("forum_topic"));
+        $forum = $this->store->retrieve($forumname . "/index.json", Forum::class);
+        assert($forum instanceof Forum);
         if ($tid === null) {
-            $topicSummary = new TopicSummary("", "", 0, "", 0);
+            $topicSummary = $forum->openTopic("");
         } else {
-            $forum = $this->repository->findForum($forumname);
             $topicSummary = $forum->topicSummary($tid);
             if ($topicSummary === null) {
                 return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
@@ -231,7 +239,8 @@ class ForumController
         if ($tid === null || $cid === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_id_missing"));
         }
-        $forum = $this->repository->findForum($forumname);
+        $forum = $this->store->retrieve($forumname . "/index.json", Forum::class);
+        assert($forum instanceof Forum);
         $topicSummary = $forum->topicSummary($tid);
         if ($topicSummary === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
@@ -293,12 +302,14 @@ class ForumController
     private function doCreateComment(Request $request, string $forumname): Response
     {
         $tid = $this->id($request->get("forum_topic"));
+        $forum = $this->store->update($forumname . "/index.json", Forum::class);
+        assert($forum instanceof Forum);
         if ($tid === null) {
-            $topicSummary = new TopicSummary(Codec::encodeBase32hex($this->random->bytes(15)), "", 0, "", 0);
+            $topicSummary = $forum->openTopic(Codec::encodeBase32hex($this->random->bytes(15)));
         } else {
-            $forum = $this->repository->findForum($forumname);
             $topicSummary = $forum->topicSummary($tid);
             if ($topicSummary === null) {
+                $this->store->rollback($forum);
                 return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
             }
         }
@@ -310,6 +321,7 @@ class ForumController
             ""
         );
         if (!$request->username()) {
+            $this->store->rollback($forum);
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
         $this->csrfProtector->check($request->post("forum_token"));
@@ -324,11 +336,15 @@ class ForumController
             $errors[] = ["error_message"];
         }
         if ($errors) {
+            $this->store->rollback($forum);
             return $this->respondWith($request, $this->renderCommentForm($request, $topicSummary, $comment, $errors));
         }
         if (!$this->repository->save($forumname, $topicSummary->id(), $comment)) {
+            $this->store->rollback($forum);
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
+        $forum->addComment($topicSummary->id(), $comment);
+        $this->store->commit($forum);
         if (!$request->admin() && $this->config['mail_address']) {
             $url = $request->url()->with("forum_topic", $topicSummary->id())->absolute();
             $this->mail($this->view->plain("mail_subject_new"), $comment, $url);
@@ -345,16 +361,20 @@ class ForumController
         if ($tid === null || $cid === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_id_missing"));
         }
-        $forum = $this->repository->findForum($forumname);
+        $forum = $this->store->update($forumname . "/index.json", Forum::class);
+        assert($forum instanceof Forum);
         $topicSummary = $forum->topicSummary($tid);
         if ($topicSummary === null) {
+            $this->store->rollback($forum);
             return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
         }
         $comment = $this->repository->findComment($forumname, $tid, $cid);
         if ($comment === null) {
+            $this->store->rollback($forum);
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
         if (!$this->mayModify($request, $comment)) {
+            $this->store->rollback($forum);
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
         $this->csrfProtector->check($request->post("forum_token"));
@@ -363,11 +383,15 @@ class ForumController
         $comment = $comment->with($title, $text);
         $errors = $comment->message() === "" ? [["error_message"]] : [];
         if ($errors) {
+            $this->store->rollback($forum);
             return $this->respondWith($request, $this->renderCommentForm($request, $topicSummary, $comment, $errors));
         }
         if (!$this->repository->save($forumname, $tid, $comment)) {
+            $this->store->rollback($forum);
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
+        $forum->addComment($topicSummary->id(), $comment);
+        $this->store->commit($forum);
         if (!$request->admin() && $this->config['mail_address']) {
             $url = $request->url()->with("forum_topic", $tid)->absolute();
             $this->mail($this->view->plain("mail_subject_edit"), $comment, $url);
