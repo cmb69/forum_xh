@@ -22,8 +22,9 @@
 namespace Forum\Model;
 
 use JsonSerializable;
+use Plib\Document;
 
-final class Forum implements JsonSerializable
+final class Forum implements Document, JsonSerializable
 {
     /** @var list<TopicSummary> */
     private $topicSummaries;
