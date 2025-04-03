@@ -37,4 +37,14 @@ class Forum
     {
         return $this->topicSummaries;
     }
+
+    public function topicSummary(string $id): ?TopicSummary
+    {
+        foreach ($this->topicSummaries as $topicSummary) {
+            if ($topicSummary->id() === $id) {
+                return $topicSummary;
+            }
+        }
+        return null;
+    }
 }

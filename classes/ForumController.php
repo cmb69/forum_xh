@@ -210,7 +210,8 @@ class ForumController
         if ($tid === null) {
             $topicSummary = new TopicSummary("", "", 0, "", 0);
         } else {
-            $topicSummary = $this->repository->findTopicSummary($forumname, $tid);
+            $forum = $this->repository->findForum($forumname);
+            $topicSummary = $forum->topicSummary($tid);
             if ($topicSummary === null) {
                 return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
             }
@@ -230,7 +231,8 @@ class ForumController
         if ($tid === null || $cid === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_id_missing"));
         }
-        $topicSummary = $this->repository->findTopicSummary($forumname, $tid);
+        $forum = $this->repository->findForum($forumname);
+        $topicSummary = $forum->topicSummary($tid);
         if ($topicSummary === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
         }
@@ -294,7 +296,8 @@ class ForumController
         if ($tid === null) {
             $topicSummary = new TopicSummary(Codec::encodeBase32hex($this->random->bytes(15)), "", 0, "", 0);
         } else {
-            $topicSummary = $this->repository->findTopicSummary($forumname, $tid);
+            $forum = $this->repository->findForum($forumname);
+            $topicSummary = $forum->topicSummary($tid);
             if ($topicSummary === null) {
                 return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
             }
@@ -342,7 +345,8 @@ class ForumController
         if ($tid === null || $cid === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_id_missing"));
         }
-        $topicSummary = $this->repository->findTopicSummary($forumname, $tid);
+        $forum = $this->repository->findForum($forumname);
+        $topicSummary = $forum->topicSummary($tid);
         if ($topicSummary === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
         }

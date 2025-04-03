@@ -133,7 +133,7 @@ class Repository
         return new Topic($tid, $comments);
     }
 
-    public function findTopicSummary(string $forumname, string $tid): ?TopicSummary
+    private function findTopicSummary(string $forumname, string $tid): ?TopicSummary
     {
         $topic = $this->findTopic($forumname, $tid);
         if ($topic === null) {
