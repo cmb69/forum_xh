@@ -115,13 +115,13 @@ class RepositoryTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testFindsTopic(): void
+    public function testFindsTopicSummary(): void
     {
         mkdir("vfs://root/forum/test", 0777, true);
         file_put_contents("vfs://root/forum/test/DHQPWSV5E8G78TBMDHJG.txt", $this->contents());
         $sut = new Repository("vfs://root/forum/");
-        [$topic, ] = $sut->findTopic("test", "DHQPWSV5E8G78TBMDHJG");
-        $this->assertEquals(new TopicSummary("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252), $topic);
+        $topicSummary = $sut->findTopicSummary("test", "DHQPWSV5E8G78TBMDHJG");
+        $this->assertEquals(new TopicSummary("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252), $topicSummary);
     }
 
     public function testFindsNullIfTopicDoesNotExist(): void
@@ -131,20 +131,13 @@ class RepositoryTest extends TestCase
         $this->assertNull($topic);
     }
 
-    public function testFindsCommentsOfEmptyTopic(): void
-    {
-        $sut = new Repository("vfs://root/forum/");
-        [, $comments] = $sut->findTopic("test", "DHQPWSV5E8G78TBMDHJG");
-        $this->assertEquals([], $comments);
-    }
-
     public function testFindsCommentsOfNonEmptyTopic(): void
     {
         mkdir("vfs://root/forum/test", 0777, true);
         file_put_contents("vfs://root/forum/test/DHQPWSV5E8G78TBMDHJG.txt", $this->contents());
         $sut = new Repository("vfs://root/forum/");
-        [, $comments] = $sut->findTopic("test", "DHQPWSV5E8G78TBMDHJG");
-        $this->assertEquals($this->comments(), $comments);
+        $topic = $sut->findTopic("test", "DHQPWSV5E8G78TBMDHJG");
+        $this->assertEquals($this->comments(), $topic->comments());
     }
 
     public function testFindsComment(): void

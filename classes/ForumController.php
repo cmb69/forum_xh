@@ -164,7 +164,7 @@ class ForumController
 
     private function renderTopicView(Request $request, string $forumname, string $tid): string
     {
-        [$topic, $comments] = $this->repository->findTopic($forumname, $tid);
+        $topic = $this->repository->findTopic($forumname, $tid);
         if ($topic === null) {
             return $this->view->message("fail", "error_no_topic");
         }
@@ -172,7 +172,7 @@ class ForumController
         $token = $this->csrfProtector->token();
         return $this->view->render('topic', [
             'title' => $topic->title(),
-            'topic' => $this->commentRecords($request, $comments),
+            'topic' => $this->commentRecords($request, $topic->comments()),
             'tid' => $tid,
             'token' => $token,
             'isUser' => $request->username(),
@@ -208,10 +208,10 @@ class ForumController
     {
         $tid = $this->id($request->get("forum_topic"));
         if ($tid === null) {
-            $topic = new TopicSummary("", "", 0, "", 0);
+            $topicSummary = new TopicSummary("", "", 0, "", 0);
         } else {
-            [$topic, ] = $this->repository->findTopic($forumname, $tid);
-            if ($topic === null) {
+            $topicSummary = $this->repository->findTopicSummary($forumname, $tid);
+            if ($topicSummary === null) {
                 return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
             }
         }
@@ -219,7 +219,7 @@ class ForumController
         if (!$request->username()) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $output = $this->renderCommentForm($request, $topic, $comment);
+        $output = $this->renderCommentForm($request, $topicSummary, $comment);
         return $this->respondWith($request, $output);
     }
 
@@ -230,8 +230,8 @@ class ForumController
         if ($tid === null || $cid === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_id_missing"));
         }
-        [$topic, ] = $this->repository->findTopic($forumname, $tid);
-        if ($topic === null) {
+        $topicSummary = $this->repository->findTopicSummary($forumname, $tid);
+        if ($topicSummary === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
         }
         $comment = $this->repository->findComment($forumname, $tid, $cid);
@@ -241,14 +241,14 @@ class ForumController
         if (!$this->mayModify($request, $comment)) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $output = $this->renderCommentForm($request, $topic, $comment);
+        $output = $this->renderCommentForm($request, $topicSummary, $comment);
         return $this->respondWith($request, $output);
     }
 
     /** @param list<array{string}> $errors */
     private function renderCommentForm(
         Request $request,
-        TopicSummary $topic,
+        TopicSummary $topicSummary,
         Comment $comment,
         array $errors = []
     ): string {
@@ -260,14 +260,14 @@ class ForumController
         $url = $request->url();
         $output = $this->view->render('form', [
             "errors" => $errors,
-            'title_attribute' => $topic->id() === "" ? "required" : "disabled",
-            "title" => $topic->title(),
+            'title_attribute' => $topicSummary->id() === "" ? "required" : "disabled",
+            "title" => $topicSummary->title(),
             'action' => $url->with("forum_action", $comment->id() !== "" ? "edit" : "create")->relative(),
             'previewUrl' => $url->with("forum_action", "preview")->relative(),
-            'backUrl' => $topic->id() === ""
+            'backUrl' => $topicSummary->id() === ""
                 ? $url->without("forum_action")->relative()
                 : $url->without("forum_action")->without("forum_comment")->relative(),
-            'headingKey' => $topic->id() === ""
+            'headingKey' => $topicSummary->id() === ""
                 ? 'msg_new_topic'
                 : ($comment->id() !== "" ? 'msg_edit_comment' : 'msg_add_comment'),
             'comment' => $comment->message(),
@@ -292,10 +292,10 @@ class ForumController
     {
         $tid = $this->id($request->get("forum_topic"));
         if ($tid === null) {
-            $topic = new TopicSummary(Codec::encodeBase32hex($this->random->bytes(15)), "", 0, "", 0);
+            $topicSummary = new TopicSummary(Codec::encodeBase32hex($this->random->bytes(15)), "", 0, "", 0);
         } else {
-            [$topic, ] = $this->repository->findTopic($forumname, $tid);
-            if ($topic === null) {
+            $topicSummary = $this->repository->findTopicSummary($forumname, $tid);
+            if ($topicSummary === null) {
                 return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
             }
         }
@@ -321,16 +321,16 @@ class ForumController
             $errors[] = ["error_message"];
         }
         if ($errors) {
-            return $this->respondWith($request, $this->renderCommentForm($request, $topic, $comment, $errors));
+            return $this->respondWith($request, $this->renderCommentForm($request, $topicSummary, $comment, $errors));
         }
-        if (!$this->repository->save($forumname, $topic->id(), $comment)) {
+        if (!$this->repository->save($forumname, $topicSummary->id(), $comment)) {
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
         if (!$request->admin() && $this->config['mail_address']) {
-            $url = $request->url()->with("forum_topic", $topic->id())->absolute();
+            $url = $request->url()->with("forum_topic", $topicSummary->id())->absolute();
             $this->mail($this->view->plain("mail_subject_new"), $comment, $url);
         }
-        $url = $request->url()->without("forum_comment")->with("forum_topic", $topic->id());
+        $url = $request->url()->without("forum_comment")->with("forum_topic", $topicSummary->id());
         $url = $url->without("forum_action");
         return Response::redirect($url->absolute());
     }
@@ -342,8 +342,8 @@ class ForumController
         if ($tid === null || $cid === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_id_missing"));
         }
-        [$topic, ] = $this->repository->findTopic($forumname, $tid);
-        if ($topic === null) {
+        $topicSummary = $this->repository->findTopicSummary($forumname, $tid);
+        if ($topicSummary === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
         }
         $comment = $this->repository->findComment($forumname, $tid, $cid);
@@ -359,7 +359,7 @@ class ForumController
         $comment = $comment->with($title, $text);
         $errors = $comment->message() === "" ? [["error_message"]] : [];
         if ($errors) {
-            return $this->respondWith($request, $this->renderCommentForm($request, $topic, $comment, $errors));
+            return $this->respondWith($request, $this->renderCommentForm($request, $topicSummary, $comment, $errors));
         }
         if (!$this->repository->save($forumname, $tid, $comment)) {
             return $this->respondWith($request, $this->view->message("fail", "error_store"));

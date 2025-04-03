@@ -62,11 +62,11 @@ class Repository
         }
         $topics = [];
         foreach (array_keys($this->findTopicNames($forumname)) as $name) {
-            [$topic, ] = $this->findTopic($forumname, $name);
-            if ($topic === null) {
+            $topicSummary = $this->findTopicSummary($forumname, $name);
+            if ($topicSummary === null) {
                 continue;
             }
-            $topics[] = $topic;
+            $topics[] = $topicSummary;
         }
         $forum = new Forum($topics);
         file_put_contents($this->cacheFile($forumname, "forum"), serialize($forum));
@@ -117,27 +117,29 @@ class Repository
         return file_exists($this->file($forumname, $tid));
     }
 
-    /** @return array{TopicSummary|null,list<Comment>} */
-    public function findTopic(string $forumname, string $tid): array
+    public function findTopic(string $forumname, string $tid): ?Topic
     {
         if (($stream = @fopen($this->file($forumname, $tid), "r")) === false) {
-            return [null, []];
+            return null;
         }
         $comments = $this->readComments($stream);
         fclose($stream);
         if ($comments === []) {
-            return [null, []];
+            return null;
         }
         usort($comments, function (Comment $a, Comment $b) {
             return $a->time() <=> $b->time();
         });
-        $first = reset($comments);
-        $last = end($comments);
-        $result = [
-            new TopicSummary($tid, $first->title() ?? "", count($comments), $last->user(), $last->time()),
-            $comments,
-        ];
-        return $result;
+        return new Topic($tid, $comments);
+    }
+
+    public function findTopicSummary(string $forumname, string $tid): ?TopicSummary
+    {
+        $topic = $this->findTopic($forumname, $tid);
+        if ($topic === null) {
+            return null;
+        }
+        return new TopicSummary($tid, $topic->title(), $topic->commentCount(), $topic->user(), $topic->time());
     }
 
     public function findComment(string $forumname, string $tid, string $cid): ?Comment
