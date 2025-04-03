@@ -25,7 +25,7 @@ use Plib\Document;
 
 final class Topic implements Document
 {
-    /** @var list<Comment> */
+    /** @var array<string,Comment> */
     private $comments;
 
     /** @return static */
@@ -40,7 +40,8 @@ final class Topic implements Document
             $line = rtrim($line);
             if (!strncmp($line, "%%", strlen("%%"))) {
                 if ($record) {
-                    $that->comments[] = self::makeComment($record, $body);
+                    $comment = self::makeComment($record, $body);
+                    $that->comments[$comment->id()] = $comment;
                 }
                 $record = [];
                 $headers = true;
@@ -59,7 +60,8 @@ final class Topic implements Document
             }
         }
         if ($record) {
-            $that->comments[] = self::makeComment($record, $body);
+            $comment = self::makeComment($record, $body);
+            $that->comments[$comment->id()] = $comment;
         }
         return $that;
     }
@@ -79,7 +81,9 @@ final class Topic implements Document
     /** @param list<Comment> $comments */
     public function __construct(array $comments)
     {
-        $this->comments = $comments;
+        foreach ($comments as $comment) {
+            $this->comments[$comment->id()] = $comment;
+        }
     }
 
     public function toString(): string
@@ -113,7 +117,7 @@ final class Topic implements Document
     /** @return list<Comment> */
     public function comments(): array
     {
-        return $this->comments;
+        return array_values($this->comments);
     }
 
     public function user(): string
