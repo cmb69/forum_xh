@@ -45,8 +45,8 @@ class RepositoryTest extends TestCase
         $sut = new Repository("vfs://root/forum/");
         $result = $sut->findForum("test");
         $this->assertEquals(new Forum([
-            new Topic("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
-            new Topic("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
+            new TopicSummary("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
+            new TopicSummary("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
         ]), $result);
     }
 
@@ -65,15 +65,15 @@ class RepositoryTest extends TestCase
             EOT
         );
         $contents = serialize(new Forum([
-            new Topic("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
-            new Topic("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
+            new TopicSummary("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
+            new TopicSummary("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
         ]));
         file_put_contents("vfs://root/forum/test/topics.dat", $contents);
         $sut = new Repository("vfs://root/forum/");
         $result = $sut->findForum("test");
         $this->assertEquals(new Forum([
-            new Topic("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
-            new Topic("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
+            new TopicSummary("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
+            new TopicSummary("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
         ]), $result);
     }
 
@@ -92,8 +92,8 @@ class RepositoryTest extends TestCase
             EOT
         );
         $contents = serialize([
-            new Topic("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
-            new Topic("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
+            new TopicSummary("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
+            new TopicSummary("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
         ]);
         file_put_contents("vfs://root/forum/test/topics.dat", $contents);
         touch(
@@ -103,8 +103,8 @@ class RepositoryTest extends TestCase
         $sut = new Repository("vfs://root/forum/");
         $result = $sut->findForum("test");
         $this->assertEquals(new Forum([
-            new Topic("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
-            new Topic("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
+            new TopicSummary("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252),
+            new TopicSummary("AHM6A83HENMP6TS0C9S6YXVE41K6YY0", "", 1, "foxy", 1680265852),
         ]), $result);
     }
 
@@ -121,7 +121,7 @@ class RepositoryTest extends TestCase
         file_put_contents("vfs://root/forum/test/DHQPWSV5E8G78TBMDHJG.txt", $this->contents());
         $sut = new Repository("vfs://root/forum/");
         [$topic, ] = $sut->findTopic("test", "DHQPWSV5E8G78TBMDHJG");
-        $this->assertEquals(new Topic("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252), $topic);
+        $this->assertEquals(new TopicSummary("DHQPWSV5E8G78TBMDHJG", "", 2, "other", 1680352252), $topic);
     }
 
     public function testFindsNullIfTopicDoesNotExist(): void

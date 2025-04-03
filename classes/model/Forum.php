@@ -23,16 +23,16 @@ namespace Forum\Model;
 
 class Forum
 {
-    /** @var list<Topic> */
+    /** @var list<TopicSummary> */
     private $topics;
 
-    /** @param list<Topic> $topics */
+    /** @param list<TopicSummary> $topics */
     public function __construct(array $topics)
     {
         $this->topics = $topics;
     }
 
-    /** @return list<Topic> */
+    /** @return list<TopicSummary> */
     public function topics(): array
     {
         return $this->topics;

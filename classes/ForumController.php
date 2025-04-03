@@ -25,7 +25,7 @@ use Forum\Model\BbCode;
 use Forum\Model\Comment;
 use Forum\Model\Forum;
 use Forum\Model\Repository;
-use Forum\Model\Topic;
+use Forum\Model\TopicSummary;
 use Plib\Codec;
 use Plib\CsrfProtector;
 use Plib\Random;
@@ -150,7 +150,7 @@ class ForumController
     /** @return list<array{tid:string,title:string,user:string,comments:int,date:string,url:string}> */
     private function topicRecords(Url $url, Forum $forum): array
     {
-        return array_map(function (Topic $topic) use ($url) {
+        return array_map(function (TopicSummary $topic) use ($url) {
             return [
                 "tid" => $topic->id(),
                 "title" => $topic->title(),
@@ -208,7 +208,7 @@ class ForumController
     {
         $tid = $this->id($request->get("forum_topic"));
         if ($tid === null) {
-            $topic = new Topic("", "", 0, "", 0);
+            $topic = new TopicSummary("", "", 0, "", 0);
         } else {
             [$topic, ] = $this->repository->findTopic($forumname, $tid);
             if ($topic === null) {
@@ -246,8 +246,12 @@ class ForumController
     }
 
     /** @param list<array{string}> $errors */
-    private function renderCommentForm(Request $request, Topic $topic, Comment $comment, array $errors = []): string
-    {
+    private function renderCommentForm(
+        Request $request,
+        TopicSummary $topic,
+        Comment $comment,
+        array $errors = []
+    ): string {
         $emotions = ['smile', 'wink', 'happy', 'grin', 'tongue', 'surprised', 'unhappy'];
         $emoticons = [];
         foreach ($emotions as $emotion) {
@@ -288,7 +292,7 @@ class ForumController
     {
         $tid = $this->id($request->get("forum_topic"));
         if ($tid === null) {
-            $topic = new Topic(Codec::encodeBase32hex($this->random->bytes(15)), "", 0, "", 0);
+            $topic = new TopicSummary(Codec::encodeBase32hex($this->random->bytes(15)), "", 0, "", 0);
         } else {
             [$topic, ] = $this->repository->findTopic($forumname, $tid);
             if ($topic === null) {

@@ -105,7 +105,7 @@ class Repository
         if (($contents = file_get_contents($cacheFile)) === false) {
             return null;
         }
-        if (($forum = unserialize($contents, ["allowed_classes" => [Forum::class, Topic::class]])) === false) {
+        if (($forum = unserialize($contents, ["allowed_classes" => [Forum::class, TopicSummary::class]])) === false) {
             return null;
         }
         assert($forum instanceof Forum);
@@ -117,7 +117,7 @@ class Repository
         return file_exists($this->file($forumname, $tid));
     }
 
-    /** @return array{Topic|null,list<Comment>} */
+    /** @return array{TopicSummary|null,list<Comment>} */
     public function findTopic(string $forumname, string $tid): array
     {
         if (($stream = @fopen($this->file($forumname, $tid), "r")) === false) {
@@ -133,7 +133,10 @@ class Repository
         });
         $first = reset($comments);
         $last = end($comments);
-        $result = [new Topic($tid, $first->title() ?? "", count($comments), $last->user(), $last->time()), $comments];
+        $result = [
+            new TopicSummary($tid, $first->title() ?? "", count($comments), $last->user(), $last->time()),
+            $comments,
+        ];
         return $result;
     }
 

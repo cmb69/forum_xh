@@ -21,7 +21,7 @@
 
 namespace Forum\Model;
 
-class Topic
+class TopicSummary
 {
     /** @var string */
     private $id;
