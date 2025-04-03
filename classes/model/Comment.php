@@ -72,11 +72,13 @@ class Comment
         return $this->message;
     }
 
-    public function with(string $title, string $message): self
+    public function setTitle(string $title): void
     {
-        $that = clone $this;
-        $that->title = $title;
-        $that->message = $message;
-        return $that;
+        $this->title = $title;
+    }
+
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
     }
 }

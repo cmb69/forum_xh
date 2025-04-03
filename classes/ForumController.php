@@ -24,7 +24,6 @@ namespace Forum;
 use Forum\Model\BbCode;
 use Forum\Model\Comment;
 use Forum\Model\Forum;
-use Forum\Model\Repository;
 use Forum\Model\Topic;
 use Forum\Model\TopicSummary;
 use Plib\Codec;
@@ -319,7 +318,8 @@ class ForumController
         $this->csrfProtector->check($request->post("forum_token"));
         $title = $request->post("forum_title") ?? "";
         $text = $request->post("forum_text") ?? "";
-        $comment = $comment->with($title, $text);
+        $comment->setTitle($title);
+        $comment->setMessage($text);
         $errors = [];
         if ($comment->title() === "") {
             $errors[] = ["error_title"];
@@ -380,7 +380,8 @@ class ForumController
         $this->csrfProtector->check($request->post("forum_token"));
         $title = $request->post("forum_title") ?? "";
         $text = $request->post("forum_text") ?? "";
-        $comment = $comment->with($title, $text);
+        $comment->setTitle($title);
+        $comment->setMessage($text);
         $errors = $comment->message() === "" ? [["error_message"]] : [];
         if ($errors) {
             $this->store->rollback($forum);
