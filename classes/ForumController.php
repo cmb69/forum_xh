@@ -25,6 +25,7 @@ use Forum\Model\BbCode;
 use Forum\Model\Comment;
 use Forum\Model\Forum;
 use Forum\Model\Repository;
+use Forum\Model\Topic;
 use Forum\Model\TopicSummary;
 use Plib\Codec;
 use Plib\CsrfProtector;
@@ -56,9 +57,6 @@ class ForumController
     /** @var Mail */
     private $mail;
 
-    /** @var Repository */
-    private $repository;
-
     /** @var DocumentStore */
     private $store;
 
@@ -73,7 +71,6 @@ class ForumController
         CsrfProtector $csrfProtector,
         View $view,
         Mail $mail,
-        Repository $repository,
         DocumentStore $store,
         Random $random
     ) {
@@ -83,7 +80,6 @@ class ForumController
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
         $this->mail = $mail;
-        $this->repository = $repository;
         $this->store = $store;
         $this->random = $random;
     }
@@ -132,10 +128,7 @@ class ForumController
         if ($tid === null) {
             return $this->respondWith($request, $this->renderTopicsView($request, $forumname));
         }
-        if ($this->repository->hasTopic($forumname, $tid)) {
-            return $this->respondWith($request, $this->renderTopicView($request, $forumname, $tid));
-        }
-        return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
+        return $this->respondWith($request, $this->renderTopicView($request, $forumname, $tid));
     }
 
     private function renderTopicsView(Request $request, string $forumname): string
@@ -171,8 +164,9 @@ class ForumController
 
     private function renderTopicView(Request $request, string $forumname, string $tid): string
     {
-        $topic = $this->repository->findTopic($forumname, $tid);
-        if ($topic === null) {
+        $topic = $this->store->retrieve($forumname . "/$tid.txt", Topic::class);
+        assert($topic instanceof Topic);
+        if ($topic->empty()) {
             return $this->view->message("fail", "error_no_topic");
         }
         $topic->sortComments();
@@ -246,7 +240,9 @@ class ForumController
         if ($topicSummary === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
         }
-        $comment = $this->repository->findComment($forumname, $tid, $cid);
+        $topic = $this->store->retrieve($forumname . "/$tid.txt", Topic::class);
+        assert($topic instanceof Topic);
+        $comment = $topic->comment($cid);
         if ($comment === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
@@ -340,7 +336,10 @@ class ForumController
             $this->store->rollback($forum);
             return $this->respondWith($request, $this->renderCommentForm($request, $topicSummary, $comment, $errors));
         }
-        if (!$this->repository->save($forumname, $topicSummary->id(), $comment)) {
+        $topic = $this->store->update($forumname . "/$tid.txt", Topic::class);
+        assert($topic instanceof Topic);
+        $topic->addComment($comment->id(), $comment);
+        if (!$this->store->commit($topic)) {
             $this->store->rollback($forum);
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
@@ -369,7 +368,9 @@ class ForumController
             $this->store->rollback($forum);
             return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
         }
-        $comment = $this->repository->findComment($forumname, $tid, $cid);
+        $topic = $this->store->update($forumname . "/$tid.txt", Topic::class);
+        assert($topic instanceof Topic);
+        $comment = $topic->comment($cid);
         if ($comment === null) {
             $this->store->rollback($forum);
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
@@ -387,7 +388,8 @@ class ForumController
             $this->store->rollback($forum);
             return $this->respondWith($request, $this->renderCommentForm($request, $topicSummary, $comment, $errors));
         }
-        if (!$this->repository->save($forumname, $tid, $comment)) {
+        $topic->addComment($comment->id(), $comment);
+        if (!$this->store->commit($topic)) {
             $this->store->rollback($forum);
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
@@ -409,19 +411,24 @@ class ForumController
         if ($tid === null || $cid === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_id_missing"));
         }
-        $comment = $this->repository->findComment($forumname, $tid, $cid);
+        $topic = $this->store->update($forumname . "/$tid.txt", Topic::class);
+        assert($topic instanceof Topic);
+        $comment = $topic->comment($cid);
         if ($comment === null) {
+            $this->store->rollback($topic);
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
         if (!$this->mayModify($request, $comment)) {
+            $this->store->rollback($topic);
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
         $this->csrfProtector->check($request->post("forum_token"));
-        if (!$this->repository->delete($forumname, $tid, $cid)) {
+        $topic->delete($cid);
+        if (!$this->store->commit($topic)) {
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
         $url = $request->url()->without("forum_action")->without("forum_comment");
-        if (!$this->repository->hasTopic($forumname, $tid)) {
+        if ($topic->empty()) {
             $url = $url->without("forum_topic");
         }
         return Response::redirect($url->absolute());

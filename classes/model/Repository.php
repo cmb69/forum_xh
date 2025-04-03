@@ -50,80 +50,6 @@ class Repository
         return $this->folder($forumname) . "$tid.txt";
     }
 
-    public function hasTopic(string $forumname, string $tid): bool
-    {
-        return file_exists($this->file($forumname, $tid));
-    }
-
-    public function findTopic(string $forumname, string $tid): ?Topic
-    {
-        if (($stream = @fopen($this->file($forumname, $tid), "r")) === false) {
-            return null;
-        }
-        $contents = stream_get_contents($stream);
-        fclose($stream);
-        return Topic::fromString((string) $contents);
-    }
-
-    public function findComment(string $forumname, string $tid, string $cid): ?Comment
-    {
-        $stream = @fopen($this->file($forumname, $tid), "r");
-        if ($stream === false) {
-            return null;
-        }
-        $comments = $this->readComments($stream);
-        fclose($stream);
-        return array_reduce($comments, function (?Comment $carry, Comment $comment) use ($cid) {
-            return $comment->id() === $cid ? $comment : $carry;
-        });
-    }
-
-    public function save(string $forumname, string $tid, Comment $comment): bool
-    {
-        $stream = @fopen($this->file($forumname, $tid), "c+");
-        if ($stream === false) {
-            return false;
-        }
-        $updated = false;
-        $comments = array_map(function (Comment $aComment) use ($comment, &$updated) {
-            if ($aComment->id() === $comment->id()) {
-                $updated = true;
-                return $comment;
-            } else {
-                return $aComment;
-            }
-        }, $this->readComments($stream));
-        if (!$updated) {
-            $comments[] = $comment;
-        }
-        rewind($stream);
-        $result = $this->writeComments($stream, $comments);
-        if ($result !== false) {
-            ftruncate($stream, $result);
-        }
-        fclose($stream);
-        return $result !== false;
-    }
-
-    public function delete(string $forumname, string $tid, string $cid): bool
-    {
-        $stream = @fopen($this->file($forumname, $tid), "c+");
-        if ($stream === false) {
-            return false;
-        }
-        $comments = $this->readComments($stream);
-        $comments = array_filter($comments, function (Comment $comment) use ($cid) {
-            return $comment->id() !== $cid;
-        });
-        rewind($stream);
-        $result = $this->writeComments($stream, $comments);
-        if ($result !== false) {
-            ftruncate($stream, $result);
-        }
-        fclose($stream);
-        return $result !== false;
-    }
-
     /** @return list<string> */
     public function findForumsToMigrate(): array
     {
@@ -189,56 +115,6 @@ class Repository
         $result = $this->writeComments($stream, $comments);
         fclose($stream);
         return $result !== false;
-    }
-
-    /**
-     * @param resource $stream
-     * @return list<Comment>
-     */
-    private function readComments($stream): array
-    {
-        $result = [];
-        $record = [];
-        $headers = true;
-        $body = null;
-        while (($line = fgets($stream)) !== false) {
-            $line = rtrim($line);
-            if (!strncmp($line, "%%", strlen("%%"))) {
-                if ($record) {
-                    $result[] = $this->makeComment($record, $body);
-                }
-                $record = [];
-                $headers = true;
-                $body = null;
-                continue;
-            }
-            if ($line === "") {
-                $headers = false;
-                continue;
-            }
-            if ($headers) {
-                $parts = explode(":", $line, 2);
-                $record[strtolower(trim($parts[0]))] = trim($parts[1]);
-            } else {
-                $body = $body === null ? $line : "$body\n$line";
-            }
-        }
-        if ($record) {
-            $result[] = $this->makeComment($record, $body);
-        }
-        return $result;
-    }
-
-    /** @param array<string,string> $record */
-    private function makeComment(array $record, ?string $body): Comment
-    {
-        return new Comment(
-            $record["id"] ?? "",
-            $record["title"] ?? null,
-            $record["user"] ?? "",
-            isset($record["date"]) ? (int) strtotime($record["date"]) : 0,
-            $body ?? ""
-        );
     }
 
     /**

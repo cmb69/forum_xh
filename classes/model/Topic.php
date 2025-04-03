@@ -32,6 +32,7 @@ final class Topic implements Document
     public static function fromString(string $contents)
     {
         $that = new static([]);
+        $that->comments = [];
         $lines = explode("\n", $contents);
         $record = [];
         $headers = true;
@@ -81,6 +82,7 @@ final class Topic implements Document
     /** @param list<Comment> $comments */
     public function __construct(array $comments)
     {
+        $this->comments = [];
         foreach ($comments as $comment) {
             $this->comments[$comment->id()] = $comment;
         }
@@ -114,10 +116,20 @@ final class Topic implements Document
         return count($this->comments);
     }
 
+    public function empty(): bool
+    {
+        return empty($this->comments);
+    }
+
     /** @return list<Comment> */
     public function comments(): array
     {
         return array_values($this->comments);
+    }
+
+    public function comment(string $id): ?Comment
+    {
+        return $this->comments[$id] ?? null;
     }
 
     public function user(): string
@@ -143,5 +155,18 @@ final class Topic implements Document
         usort($this->comments, function (Comment $a, Comment $b) {
             return $a->time() <=> $b->time();
         });
+    }
+
+    public function addComment(string $id, Comment $comment): void
+    {
+        // also used for updating
+        // assert(!isset($this->comments[$id]));
+        $this->comments[$id] = $comment;
+    }
+
+    public function delete(string $id): void
+    {
+        assert(isset($this->comments[$id]));
+        unset($this->comments[$id]);
     }
 }

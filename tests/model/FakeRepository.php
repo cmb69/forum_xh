@@ -25,14 +25,6 @@ class FakeRepository extends Repository
         return parent::save($forumname, $tid, $comment);
     }
 
-    public function delete(string $forumname, string $tid, string $cid): bool
-    {
-        if (isset($this->options["delete"]) && $this->options["delete"] === false) {
-            return false;
-        }
-        return parent::delete($forumname, $tid, $cid);
-    }
-
     public function findForumsToMigrate(): array
     {
         return $this->options["findForumsToMigrate"] ?? [];

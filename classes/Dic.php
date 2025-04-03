@@ -42,7 +42,6 @@ class Dic
             new CsrfProtector(),
             self::makeView(),
             new Mail(),
-            new Repository(self::contentFolder()),
             new DocumentStore(self::contentFolder()),
             new Random()
         );
