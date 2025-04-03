@@ -26,7 +26,7 @@ use Plib\Document;
 
 final class Forum implements Document, JsonSerializable
 {
-    /** @var list<TopicSummary> */
+    /** @var array<string,TopicSummary> */
     private $topicSummaries;
 
     /** @return ?static */
@@ -45,7 +45,7 @@ final class Forum implements Document, JsonSerializable
                 $record["user"],
                 $record["time"],
             );
-            $that->topicSummaries[] = $topicSummary;
+            $that->topicSummaries[$record["id"]] = $topicSummary;
         }
         return $that;
     }
@@ -55,7 +55,7 @@ final class Forum implements Document, JsonSerializable
         return (string) json_encode($this, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
 
-    /** @return list<TopicSummary> */
+    /** @return array<string,TopicSummary> */
     public function jsonSerialize(): array
     {
         return $this->topicSummaries;
@@ -64,22 +64,20 @@ final class Forum implements Document, JsonSerializable
     /** @param list<TopicSummary> $topicSummaries */
     public function __construct(array $topicSummaries)
     {
-        $this->topicSummaries = $topicSummaries;
+        $this->topicSummaries = [];
+        foreach ($topicSummaries as $topicSummary) {
+            $this->topicSummaries[$topicSummary->id()] = $topicSummary;
+        }
     }
 
     /** @return list<TopicSummary> */
     public function topicSummaries(): array
     {
-        return $this->topicSummaries;
+        return array_values($this->topicSummaries);
     }
 
     public function topicSummary(string $id): ?TopicSummary
     {
-        foreach ($this->topicSummaries as $topicSummary) {
-            if ($topicSummary->id() === $id) {
-                return $topicSummary;
-            }
-        }
-        return null;
+        return $this->topicSummaries[$id] ?? null;
     }
 }
