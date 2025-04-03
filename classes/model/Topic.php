@@ -21,24 +21,15 @@
 
 namespace Forum\Model;
 
-class Topic
+final class Topic
 {
-    /** @var string */
-    private $id;
-
     /** @var list<Comment> */
     private $comments;
 
     /** @param list<Comment> $comments */
-    public function __construct(string $id, array $comments)
+    public function __construct(array $comments)
     {
-        $this->id = $id;
         $this->comments = $comments;
-    }
-
-    public function id(): string
-    {
-        return $this->id;
     }
 
     public function title(): string

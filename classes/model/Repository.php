@@ -68,7 +68,7 @@ class Repository
         usort($comments, function (Comment $a, Comment $b) {
             return $a->time() <=> $b->time();
         });
-        return new Topic($tid, $comments);
+        return new Topic($comments);
     }
 
     public function findComment(string $forumname, string $tid, string $cid): ?Comment
