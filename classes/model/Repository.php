@@ -95,18 +95,10 @@ class Repository
         if (!is_readable($cacheFile)) {
             return null;
         }
-        $cacheMtime = filemtime($cacheFile);
-        $stale = array_reduce($this->findTopicNames($forumname), function (bool $carry, int $mtime) use ($cacheMtime) {
-            return $cacheMtime < $mtime ? true : $carry;
-        }, false);
-        if ($stale) {
-            return null;
-        }
         if (($contents = file_get_contents($cacheFile)) === false) {
             return null;
         }
-        $forum = Forum::fromString($contents);
-        return $forum;
+        return Forum::fromString($contents);
     }
 
     public function hasTopic(string $forumname, string $tid): bool
