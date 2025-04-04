@@ -21,7 +21,9 @@
 
 namespace Forum;
 
-use Forum\Model\Repository;
+use Forum\Model\Forum;
+use Forum\Model\Topic;
+use Plib\DocumentStore;
 use Plib\Request;
 use Plib\Response;
 use Plib\SystemChecker;
@@ -36,8 +38,8 @@ class ShowInfo
     /** @var SystemChecker */
     private $systemChecker;
 
-    /** @var Repository */
-    private $repository;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var View */
     private $view;
@@ -45,12 +47,12 @@ class ShowInfo
     public function __construct(
         string $pluginFolder,
         SystemChecker $systemChecker,
-        Repository $repository,
+        DocumentStore $store,
         View $view
     ) {
         $this->pluginFolder = $pluginFolder;
         $this->systemChecker = $systemChecker;
-        $this->repository = $repository;
+        $this->store = $store;
         $this->view = $view;
     }
 
@@ -90,7 +92,7 @@ class ShowInfo
         if ($forum === null) {
             return Response::create($this->renderInfo($request->url(), [["error_id_missing"]]));
         }
-        $result = $this->repository->migrate($forum);
+        $result = $this->migrateForum($forum);
         if (!$result) {
             return Response::create($this->renderInfo($request->url(), [["error_migration"]]));
         }
@@ -118,7 +120,7 @@ class ShowInfo
             $this->checkWritability($this->pluginFolder . "css/"),
             $this->checkWritability($this->pluginFolder . "config"),
             $this->checkWritability($this->pluginFolder . "languages/"),
-            $this->checkWritability($this->repository->folder())
+            $this->checkWritability($this->store->folder())
         );
     }
 
@@ -173,12 +175,39 @@ class ShowInfo
     /** @return list<array{name:string,url:string}> */
     private function forumRecords(Url $url): array
     {
-        return array_map(function (string $forum) use ($url) {
+        return array_map(function (string $forumname) use ($url) {
             return [
-                "name" => $forum,
-                "url" => $url->with("forum_forum", $forum)->relative(),
+                "name" => dirname($forumname),
+                "url" => $url->with("forum_forum", dirname($forumname))->relative(),
             ];
-        }, $this->repository->findForumsToMigrate());
+        }, $this->store->find('/topics\.dat$/'));
+    }
+
+    private function migrateForum(string $forumname): bool
+    {
+        $oldForum = $this->store->retrieve($forumname . "/topics.dat", Forum::class);
+        assert($oldForum instanceof Forum);
+        $newForum = $this->store->update($forumname . "/index.json", Forum::class);
+        assert($newForum instanceof Forum);
+        $newForum->copy($oldForum);
+        foreach ($newForum->topicSummaries() as $topicSummary) {
+            $tid = $topicSummary->id();
+            $oldTopic = $this->store->retrieve($forumname . "/$tid.dat", Topic::class);
+            assert($oldTopic instanceof Topic);
+            $newTopic = $this->store->update($forumname . "/$tid.txt", Topic::class);
+            assert($newTopic instanceof Topic);
+            $newTopic->copy($oldTopic);
+            if (!$this->store->commit($newTopic)) {
+                $this->store->rollback($newForum);
+                return false;
+            }
+            $this->store->delete($forumname . "/$tid.dat");
+        }
+        if (!$this->store->commit($newForum)) {
+            return false;
+        }
+        $this->store->delete($forumname . "/topics.dat");
+        return true;
     }
 
     private function id(?string $id): ?string

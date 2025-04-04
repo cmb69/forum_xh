@@ -5,21 +5,24 @@ namespace Forum;
 use ApprovalTests\Approvals;
 use Forum\Model\BbCode;
 use Forum\Model\Comment;
-use Forum\Model\FakeRepository;
+use Forum\Model\Forum;
+use Forum\Model\Topic;
+use Forum\Model\TopicSummary;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\FakeRequest;
 use Plib\Random;
 use Plib\View;
 use XH\Mail;
 
-class ForumTest extends TestCase
+class ForumControllerTest extends TestCase
 {
     private $conf;
     private $bbcode;
     private $mail;
-    private $repository;
+    private $store;
     private $random;
 
     public function setUp(): void
@@ -27,24 +30,24 @@ class ForumTest extends TestCase
         vfsStream::setup("root");
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["forum"];
         $this->bbcode = $this->createStub(BbCode::class);
-        $this->repository = new FakeRepository("vfs://root/forum/");
+        $this->store = $this->createStub(DocumentStore::class);
         $this->random = $this->createStub(Random::class);
         $this->mail = $this->createMock(Mail::class);
     }
 
-    private function sut(): Forum
+    private function sut(): ForumController
     {
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
         $view = new View("./views/", XH_includeVar("./languages/en.php", 'plugin_tx')['forum']);
-        return new Forum(
+        return new ForumController(
             $this->conf,
             "./plugins/forum/",
             $this->bbcode,
             $csrfProtector,
             $view,
             $this->mail,
-            $this->repository,
+            $this->store,
             $this->random
         );
     }
@@ -61,7 +64,7 @@ class ForumTest extends TestCase
 
     public function testRendersForumOverview(): void
     {
-        $this->repository->save("test", "0123456789abc", $this->comment());
+        $this->store->method("retrieve")->willReturn($this->forum("0123456789abc"));
         $request = new FakeRequest(["url" => "http://example.com/?Forum"]);
         $response = ($this->sut())($request, "test");
         Approvals::verifyHtml($response->output());
@@ -69,7 +72,7 @@ class ForumTest extends TestCase
 
     public function testRendersTopicOverview(): void
     {
-        $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
+        $this->store->method("retrieve")->willReturn($this->topic());
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM",
             "username" => "cmb",
@@ -80,6 +83,7 @@ class ForumTest extends TestCase
 
     public function testReportsNonExistentTopic(): void
     {
+        $this->store->method("retrieve")->willReturn(new Topic([]));
         $request = new FakeRequest(["url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM"]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">There is no such topic!</p>\n", $response->output());
@@ -87,6 +91,7 @@ class ForumTest extends TestCase
 
     public function testRendersCommentFormForNewPost(): void
     {
+        $this->store->method("retrieve")->willReturn($this->forum("123"));
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_action=create",
             "username" => "cmb",
@@ -97,7 +102,7 @@ class ForumTest extends TestCase
 
     public function testRendersCommentForm(): void
     {
-        $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
+        $this->store->method("retrieve")->willReturn($this->topic());
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_action=edit&forum_topic=AHQQ0TB341A6JX3CCM"
                 . "&forum_comment=3456789abcdef",
@@ -109,7 +114,7 @@ class ForumTest extends TestCase
 
     public function testRendersCommentFormForReply(): void
     {
-        $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
+        $this->store->method("retrieve")->willReturn($this->forum("AHQQ0TB341A6JX3CCM"));
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_action=create&forum_topic=AHQQ0TB341A6JX3CCM",
             "username" => "cmb",
@@ -146,6 +151,11 @@ class ForumTest extends TestCase
 
     public function testCreatesNewTopic(): void
     {
+        $this->store->method("update")->willReturnOnConsecutiveCalls(
+            $this->forum("123"),
+            $this->topic()
+        );
+        $this->store->expects($this->exactly(2))->method("commit")->willReturn(true);
         $this->random->method("bytes")->willReturn("123456789abcdef");
         $this->conf = ["mail_address" => "webmaster@example.com"] + $this->conf;
         $this->mail->expects($this->once())->method("setTo")->with("webmaster@example.com");
@@ -162,11 +172,6 @@ class ForumTest extends TestCase
             "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
-        $saved = $this->repository->findComment("test", "64P36D1L6ORJGEB1C9HM8PB6", "64P36D1L6ORJGEB1C9HM8PB6");
-        $this->assertEquals(
-            new Comment("64P36D1L6ORJGEB1C9HM8PB6", "A new Topic", "cmb", 1680508976, "A comment"),
-            $saved
-        );
         $this->assertEquals(
             "http://example.com/?Forum&forum_topic=64P36D1L6ORJGEB1C9HM8PB6",
             $response->location()
@@ -175,8 +180,12 @@ class ForumTest extends TestCase
 
     public function testFailsToCreateNewTopic(): void
     {
+        $this->store->method("update")->willReturnOnConsecutiveCalls(
+            $this->forum("64P36D1L6ORJGEB1C9HM8PB6"),
+            $this->topic()
+        );
+        $this->store->expects($this->once())->method("commit")->with($this->isInstanceOf(Topic::class));
         $this->random->method("bytes")->willReturn("3456789abcdef");
-        $this->repository->options(["save" => false]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_action=create",
             "post" => ["forum_title" => "A new Topic", "forum_text" => "A comment", "forum_do" => ""],
@@ -188,7 +197,11 @@ class ForumTest extends TestCase
 
     public function testUpdatesComment(): void
     {
-        $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
+        $this->store->method("update")->willReturnOnConsecutiveCalls(
+            $this->forum("AHQQ0TB341A6JX3CCM"),
+            $this->topic()
+        );
+        $this->store->expects($this->exactly(2))->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
                 . "&forum_action=edit",
@@ -196,8 +209,6 @@ class ForumTest extends TestCase
             "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
-        $saved = $this->repository->findComment("test", "AHQQ0TB341A6JX3CCM", "3456789abcdef");
-        $this->assertEquals($this->comment()->with("Topic Title", "A comment"), $saved);
         $this->assertEquals("http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM", $response->location());
     }
 
@@ -216,7 +227,10 @@ class ForumTest extends TestCase
 
     public function testReportsNonExistentCommentWhenUpdating(): void
     {
-        $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
+        $this->store->method("update")->willReturnOnConsecutiveCalls(
+            $this->forum("AHQQ0TB341A6JX3CCM"),
+            $this->topic()
+        );
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=012345678"
                 . "&forum_action=edit",
@@ -229,7 +243,11 @@ class ForumTest extends TestCase
 
     public function testReportsMissingAuthorizationForPosting(): void
     {
-        $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
+        $this->store->method("update")->willReturnOnConsecutiveCalls(
+            $this->forum("AHQQ0TB341A6JX3CCM"),
+            $this->topic()
+        );
+        $this->store->expects($this->never())->method("commit");
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
                 . "&forum_action=edit",
@@ -242,8 +260,12 @@ class ForumTest extends TestCase
 
     public function testFailsToStoreUpdate(): void
     {
-        $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
-        $this->repository->options(["save" => false]);
+        $this->store->method("update")->willReturnOnConsecutiveCalls(
+            $this->forum("AHQQ0TB341A6JX3CCM"),
+            $this->topic()
+        );
+        $this->store->expects($this->once())->method("commit")->with($this->isInstanceof(Topic::class))
+            ->willReturn(false);
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
                 . "&forum_action=edit",
@@ -256,7 +278,8 @@ class ForumTest extends TestCase
 
     public function testDeletesComment(): void
     {
-        $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
+        $this->store->method("update")->willReturn($this->topic());
+        $this->store->expects($this->once())->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
                 . "&forum_action=delete",
@@ -264,8 +287,7 @@ class ForumTest extends TestCase
             "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
-        $this->assertNull($this->repository->findComment("test", "AHQQ0TB341A6JX3CCM", "3456789abcdef"));
-        $this->assertEquals("http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM", $response->location());
+        $this->assertEquals("http://example.com/?Forum", $response->location());
     }
 
     public function testReportsMissingIdWhenDeleting(): void
@@ -280,8 +302,10 @@ class ForumTest extends TestCase
 
     public function testReportsNonExistentCommentWhenDeleting(): void
     {
+        $this->store->method("update")->willReturn($this->topic());
+        $this->store->expects($this->never())->method("commit");
         $request = new FakeRequest([
-            "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
+            "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=456789abcdef0"
                 . "&forum_action=delete",
             "post" => ["forum_do" => ""],
         ]);
@@ -291,7 +315,8 @@ class ForumTest extends TestCase
 
     public function testReportsMissingAuthorizationForDeleting(): void
     {
-        $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
+        $this->store->method("update")->willReturn($this->topic());
+        $this->store->expects($this->never())->method("commit");
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
                 . "&forum_action=delete",
@@ -304,8 +329,8 @@ class ForumTest extends TestCase
 
     public function testReportsFailureToStoreDeletion(): void
     {
-        $this->repository->save("test", "AHQQ0TB341A6JX3CCM", $this->comment());
-        $this->repository->options(["delete" => false]);
+        $this->store->method("update")->willReturn($this->topic());
+        $this->store->method("commit")->willReturn(false);
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
                 . "&forum_action=delete",
@@ -314,6 +339,16 @@ class ForumTest extends TestCase
         ]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">The changes could not be stored!</p>\n", $response->output());
+    }
+
+    private function forum(string $tid): Forum
+    {
+        return new Forum([new TopicSummary($tid, "Topic Title", 1, "cmb", 1676130605)]);
+    }
+
+    private function topic(): Topic
+    {
+        return new Topic([$this->comment()]);
     }
 
     private function comment(): Comment

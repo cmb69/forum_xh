@@ -17,7 +17,7 @@ class DicTest extends TestCase
 
     public function testMakesForum(): void
     {
-        $this->assertInstanceOf(Forum::class, Dic::makeForum());
+        $this->assertInstanceOf(ForumController::class, Dic::makeForum());
     }
 
     public function testMakesShowInfo(): void

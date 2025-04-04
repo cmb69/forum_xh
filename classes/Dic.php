@@ -22,8 +22,8 @@
 namespace Forum;
 
 use Forum\Model\BbCode;
-use Forum\Model\Repository;
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\Random;
 use Plib\SystemChecker;
 use Plib\View;
@@ -31,17 +31,17 @@ use XH\Mail;
 
 class Dic
 {
-    public static function makeForum(): Forum
+    public static function makeForum(): ForumController
     {
         global $pth, $plugin_cf;
-        return new Forum(
+        return new ForumController(
             $plugin_cf["forum"],
             $pth["folder"]["plugins"] . "forum/",
             self::makeBbCode(),
             new CsrfProtector(),
             self::makeView(),
             new Mail(),
-            new Repository(self::contentFolder()),
+            new DocumentStore(self::contentFolder()),
             new Random()
         );
     }
@@ -52,7 +52,7 @@ class Dic
         return new ShowInfo(
             $pth["folder"]["plugins"] . "forum/",
             new SystemChecker(),
-            new Repository(self::contentFolder()),
+            new DocumentStore(self::contentFolder()),
             self::makeView()
         );
     }

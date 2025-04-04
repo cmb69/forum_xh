@@ -21,13 +21,18 @@
 
 namespace Forum\Model;
 
-class Comment
+use JsonSerializable;
+
+class TopicSummary implements JsonSerializable
 {
     /** @var string */
     private $id;
 
-    /** @var string|null */
+    /** @var string */
     private $title;
+
+    /** @var int */
+    private $commentCount;
 
     /** @var string */
     private $user;
@@ -35,16 +40,25 @@ class Comment
     /** @var int */
     private $time;
 
-    /** @var string */
-    private $message;
-
-    public function __construct(string $id, ?string $title, string $user, int $time, string $message)
+    public function __construct(string $id, string $title, int $commentCount, string $user, int $time)
     {
         $this->id = $id;
         $this->title = $title;
+        $this->commentCount = $commentCount;
         $this->user = $user;
         $this->time = $time;
-        $this->message = $message;
+    }
+
+    /** @return array<string,mixed> */
+    public function jsonSerialize(): array
+    {
+        return [
+            "id" => $this->id,
+            "title" => $this->title,
+            "commentCount" => $this->commentCount,
+            "user" => $this->user,
+            "time" => $this->time,
+        ];
     }
 
     public function id(): string
@@ -52,9 +66,14 @@ class Comment
         return $this->id;
     }
 
-    public function title(): ?string
+    public function title(): string
     {
         return $this->title;
+    }
+
+    public function commentCount(): int
+    {
+        return $this->commentCount;
     }
 
     public function user(): string
@@ -65,20 +84,5 @@ class Comment
     public function time(): int
     {
         return $this->time;
-    }
-
-    public function message(): string
-    {
-        return $this->message;
-    }
-
-    public function setTitle(string $title): void
-    {
-        $this->title = $title;
-    }
-
-    public function setMessage(string $message): void
-    {
-        $this->message = $message;
     }
 }
