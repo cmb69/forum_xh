@@ -22,7 +22,7 @@
 use Forum\Dic;
 use Plib\Request;
 
-const FORUM_VERSION = "1.0beta5";
+const FORUM_VERSION = "1.0";
 
 /** @return string|never */
 function forum(string $forumname)

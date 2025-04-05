@@ -45,11 +45,11 @@
   <!-- the name of the Plugin -->
   <name type="plugin">Forum_XH</name>
   <!-- Date this xml-file was updated, yyyy.mm.dd -->
-  <date_update>2021.01.23</date_update>
+  <date_update>2025.04.05</date_update>
   <!-- version of Plugin -->
-  <version>1.0beta5</version>
+  <version>1.0</version>
   <!-- date of publication, yyyy.mm.dd -->
-  <date_version>2017.05.18</date_version>
+  <date_version>2025.04.05</date_version>
   <!-- the name of the programmer -->
   <coder>Christoph M. Becker</coder>
   <!-- Categories must be written in lower case. More than one possible, separated by comma without spaces. -->
@@ -62,10 +62,10 @@
   <url>
     <!-- URL where you can download the plugin -->
     <!-- If there no Download-URL, enter this follows! - <download_url></download_url> -->
-    <download_url>https://github.com/cmb69/forum_xh/releases/1.0beta5</download_url>
+    <download_url>https://github.com/cmb69/forum_xh/releases/1.0</download_url>
     <!-- URL of the programmer's website -->
     <!-- If there no Website, enter this follows! - <coder_url></coder_url> -->
-    <coder_url>https://3-magi.net</coder_url>
+    <coder_url>https://3-magi.net/</coder_url>
     <!-- URL where find a demo -->
     <!-- If there no Demo-Website, enter this follows! - <demo_url></demo_url> -->
     <demo_url></demo_url>
