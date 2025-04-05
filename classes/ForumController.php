@@ -326,6 +326,10 @@ class ForumController
         $comment->setTitle($title);
         $comment->setMessage($message);
         $topic = $forum->fetchTopic($baseTopic->id(), $this->store);
+        if ($topic === null) {
+            $this->store->rollback();
+            return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
+        }
         $topic->addComment($comment->id(), $comment);
         if (!$this->store->commit()) {
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
@@ -356,11 +360,11 @@ class ForumController
         }
         $forum = $this->store->update($forumname . "/index.json", Forum::class);
         assert($forum instanceof Forum);
-        if ($forum->topic($tid) === null) {
+        $topic = $forum->fetchTopic($tid, $this->store);
+        if ($topic === null) {
             $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
         }
-        $topic = $forum->fetchTopic($tid, $this->store);
         $comment = $topic->comment($cid);
         if ($comment === null) {
             $this->store->rollback();
@@ -413,6 +417,10 @@ class ForumController
         $forum = $this->store->update($forumname . "/index.json", Forum::class);
         assert($forum instanceof Forum);
         $topic = $forum->fetchTopic($tid, $this->store);
+        if ($topic === null) {
+            $this->store->rollback();
+            return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
+        }
         $comment = $topic->comment($cid);
         if ($comment === null) {
             $this->store->rollback();
