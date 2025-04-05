@@ -240,7 +240,7 @@ class ForumControllerTest extends TestCase
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=012345678"
                 . "&forum_action=edit",
-            "post" => ["forum_text" => "A comment", "forum_do" => ""],
+            "post" => ["forum_title" => "Topic Title", "forum_text" => "A comment", "forum_do" => ""],
             "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");
@@ -275,7 +275,7 @@ class ForumControllerTest extends TestCase
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
                 . "&forum_action=edit",
-            "post" => ["forum_text" => "A comment", "forum_do" => ""],
+            "post" => ["forum_title" => "Topic Title", "forum_text" => "A comment", "forum_do" => ""],
             "username" => "cmb",
         ]);
         $response = ($this->sut())($request, "test");

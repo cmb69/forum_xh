@@ -300,6 +300,11 @@ class ForumController
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
         $tid = $this->id($request->get("forum_topic"));
+        [$title, $message, $errors] = $this->validate($request);
+        if ($errors) {
+            $form = $this->renderCommentForm($request, $tid ?? "", $title, "", $message, $errors);
+            return $this->respondWith($request, $form);
+        }
         $forum = $this->store->update($forumname . "/index.json", Forum::class);
         assert($forum instanceof Forum);
         if ($tid === null) {
@@ -318,31 +323,8 @@ class ForumController
             $request->time(),
             ""
         );
-        $title = $request->post("forum_title") ?? "";
-        $text = $request->post("forum_text") ?? "";
         $comment->setTitle($title);
-        $comment->setMessage($text);
-        $errors = [];
-        if ($comment->title() === "") {
-            $errors[] = ["error_title"];
-        }
-        if ($comment->message() === "") {
-            $errors[] = ["error_message"];
-        }
-        if ($errors) {
-            $this->store->rollback();
-            return $this->respondWith(
-                $request,
-                $this->renderCommentForm(
-                    $request,
-                    $tid ?? "",
-                    $title,
-                    $comment->id(),
-                    $comment->message(),
-                    $errors
-                )
-            );
-        }
+        $comment->setMessage($message);
         $topic = $forum->fetchTopic($baseTopic->id(), $this->store);
         $topic->addComment($comment->id(), $comment);
         if (!$this->store->commit()) {
@@ -360,13 +342,17 @@ class ForumController
     private function postComment(Request $request, string $forumname): Response
     {
         if (!$this->csrfProtector->check($request->post("forum_token"))) {
-            $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
         $tid = $this->id($request->get("forum_topic"));
         $cid = $this->id($request->get("forum_comment"));
         if ($tid === null || $cid === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_id_missing"));
+        }
+        [$title, $message, $errors] = $this->validate($request);
+        if ($errors) {
+            $form = $this->renderCommentForm($request, $tid, $title, $cid, $message, $errors);
+            return $this->respondWith($request, $form);
         }
         $forum = $this->store->update($forumname . "/index.json", Forum::class);
         assert($forum instanceof Forum);
@@ -384,18 +370,8 @@ class ForumController
             $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $title = $request->post("forum_title") ?? "";
-        $text = $request->post("forum_text") ?? "";
         $comment->setTitle($title);
-        $comment->setMessage($text);
-        $errors = $comment->message() === "" ? [["error_message"]] : [];
-        if ($errors) {
-            $this->store->rollback();
-            return $this->respondWith(
-                $request,
-                $this->renderCommentForm($request, $tid, $topic->title(), $cid, $comment->message(), $errors)
-            );
-        }
+        $comment->setMessage($message);
         $topic->addComment($comment->id(), $comment);
         if (!$this->store->commit()) {
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
@@ -407,6 +383,21 @@ class ForumController
         $url = $request->url()->without("forum_comment")->with("forum_topic", $tid);
         $url = $url->without("forum_action");
         return Response::redirect($url->absolute());
+    }
+
+    /** @return array{string,string,list<array{string}>} */
+    private function validate(Request $request): array
+    {
+        $title = $request->post("forum_title") ?? "";
+        $message = $request->post("forum_text") ?? "";
+        $errors = [];
+        if ($title === "") {
+            $errors[] = ["error_title"];
+        }
+        if ($message === "") {
+            $errors[] = ["error_message"];
+        }
+        return [$title, $message, $errors];
     }
 
     private function deleteComment(Request $request, string $forumname): Response
