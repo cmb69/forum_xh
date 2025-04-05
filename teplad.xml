@@ -47,7 +47,7 @@
   <!-- Date this xml-file was updated, yyyy.mm.dd -->
   <date_update>2025.04.05</date_update>
   <!-- version of Plugin -->
-  <version>1.0</version>
+  <version>1.1-dev</version>
   <!-- date of publication, yyyy.mm.dd -->
   <date_version>2025.04.05</date_version>
   <!-- the name of the programmer -->
@@ -62,7 +62,7 @@
   <url>
     <!-- URL where you can download the plugin -->
     <!-- If there no Download-URL, enter this follows! - <download_url></download_url> -->
-    <download_url>https://github.com/cmb69/forum_xh/releases/1.0</download_url>
+    <download_url>https://github.com/cmb69/forum_xh/releases/1.1-dev</download_url>
     <!-- URL of the programmer's website -->
     <!-- If there no Website, enter this follows! - <coder_url></coder_url> -->
     <coder_url>https://3-magi.net/</coder_url>
