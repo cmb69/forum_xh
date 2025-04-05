@@ -65,6 +65,9 @@ final class Forum implements Document
                 }
             }
         }
+        uasort($that->topics, function (BaseTopic $a, BaseTopic $b) {
+            return -($a->time() <=> $b->time());
+        });
         return $that;
     }
 
