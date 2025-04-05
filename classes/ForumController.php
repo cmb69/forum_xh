@@ -207,6 +207,9 @@ class ForumController
 
     private function createComment(Request $request, string $forumname): Response
     {
+        if (!$request->username()) {
+            return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
+        }
         $tid = $this->id($request->get("forum_topic"));
         if ($tid === null) {
             $title = "";
@@ -218,9 +221,6 @@ class ForumController
                 return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
             }
             $title = $topic->title();
-        }
-        if (!$request->username()) {
-            return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
         $output = $this->renderCommentForm($request, $tid ?? "", $title, "", "");
         return $this->respondWith($request, $output);
@@ -293,6 +293,9 @@ class ForumController
 
     private function doCreateComment(Request $request, string $forumname): Response
     {
+        if (!$this->csrfProtector->check($request->post("forum_token"))) {
+            return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
+        }
         if (!$request->username()) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
@@ -315,10 +318,6 @@ class ForumController
             $request->time(),
             ""
         );
-        if (!$this->csrfProtector->check($request->post("forum_token"))) {
-            $this->store->rollback();
-            return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
-        }
         $title = $request->post("forum_title") ?? $baseTopic->title();
         $text = $request->post("forum_text") ?? "";
         $comment->setTitle($title);
@@ -360,6 +359,10 @@ class ForumController
 
     private function postComment(Request $request, string $forumname): Response
     {
+        if (!$this->csrfProtector->check($request->post("forum_token"))) {
+            $this->store->rollback();
+            return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
+        }
         $tid = $this->id($request->get("forum_topic"));
         $cid = $this->id($request->get("forum_comment"));
         if ($tid === null || $cid === null) {
@@ -378,10 +381,6 @@ class ForumController
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
         if (!$this->mayModify($request, $comment)) {
-            $this->store->rollback();
-            return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
-        }
-        if (!$this->csrfProtector->check($request->post("forum_token"))) {
             $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
@@ -412,6 +411,9 @@ class ForumController
 
     private function deleteComment(Request $request, string $forumname): Response
     {
+        if (!$this->csrfProtector->check($request->post("forum_token"))) {
+            return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
+        }
         $tid = $this->id($request->get("forum_topic"));
         $cid = $this->id($request->get("forum_comment"));
         if ($tid === null || $cid === null) {
@@ -426,10 +428,6 @@ class ForumController
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
         if (!$this->mayModify($request, $comment)) {
-            $this->store->rollback();
-            return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
-        }
-        if (!$this->csrfProtector->check($request->post("forum_token"))) {
             $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }

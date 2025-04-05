@@ -218,6 +218,7 @@ class ForumControllerTest extends TestCase
 
     public function testReportsMissingIdWhenPosting(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=0123456789abc&forum_action=edit",
             "post" => [
@@ -231,6 +232,7 @@ class ForumControllerTest extends TestCase
 
     public function testReportsNonExistentCommentWhenUpdating(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $this->store->method("update")->willReturnOnConsecutiveCalls(
             $this->forum("AHQQ0TB341A6JX3CCM"),
             $this->topic()
@@ -300,6 +302,7 @@ class ForumControllerTest extends TestCase
 
     public function testReportsMissingIdWhenDeleting(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=0123456789abc&forum_action=delete",
             "post" => ["forum_do" => ""],
@@ -310,6 +313,7 @@ class ForumControllerTest extends TestCase
 
     public function testReportsNonExistentCommentWhenDeleting(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $this->store->method("update")->willReturnMap([
             ["test/index.json", Forum::class, $this->forum("AHQQ0TB341A6JX3CCM")],
             ["test/AHQQ0TB341A6JX3CCM.txt", Topic::class, $this->topic()],
