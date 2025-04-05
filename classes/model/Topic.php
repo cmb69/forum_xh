@@ -181,6 +181,14 @@ final class Topic extends BaseTopic implements Document
         $this->comments[$id] = $comment;
     }
 
+    public function updateComment(string $id, string $title, string $message): void
+    {
+        assert(array_key_exists($id, $this->comments));
+        $comment = $this->comments[$id];
+        $comment->setTitle($title);
+        $comment->setMessage($message);
+    }
+
     public function delete(string $id): void
     {
         assert(isset($this->comments[$id]));

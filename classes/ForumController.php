@@ -369,9 +369,7 @@ class ForumController
             $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $comment->setTitle($title);
-        $comment->setMessage($message);
-        $topic->addComment($comment->id(), $comment);
+        $topic->updateComment($comment->id(), $title, $message);
         if (!$this->store->commit()) {
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
