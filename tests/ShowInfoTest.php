@@ -42,11 +42,11 @@ class ShowInfoTest extends TestCase
     {
         $this->store->method("retrieve")->willReturnOnConsecutiveCalls(
             $this->forum(),
-            new Topic([])
+            new Topic("", [])
         );
         $this->store->method("update")->willReturnOnConsecutiveCalls(
             new Forum("", []),
-            new Topic([])
+            new Topic("", [])
         );
         $this->store->method("commit")->willReturn(true);
         $request = new FakeRequest([

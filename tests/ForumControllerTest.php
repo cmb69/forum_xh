@@ -84,7 +84,7 @@ class ForumControllerTest extends TestCase
 
     public function testReportsNonExistentTopic(): void
     {
-        $this->store->method("retrieve")->willReturn(new Topic([]));
+        $this->store->method("retrieve")->willReturn(new Topic("AHQQ0TB341A6JX3CCM", []));
         $request = new FakeRequest(["url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM"]);
         $response = ($this->sut())($request, "test");
         $this->assertEquals("<p class=\"xh_fail\">There is no such topic!</p>\n", $response->output());
@@ -155,7 +155,7 @@ class ForumControllerTest extends TestCase
         $this->csrfProtector->method("check")->willReturn(true);
         $this->store->method("update")->willReturnOnConsecutiveCalls(
             $this->forum("123"),
-            $this->topic()
+            $this->topic("64P36D1L6ORJGEB1C9HM8PB6")
         );
         $this->store->expects($this->once())->method("commit")->willReturn(true);
         $this->random->method("bytes")->willReturn("123456789abcdef");
@@ -368,9 +368,9 @@ class ForumControllerTest extends TestCase
         return new Forum("test", [new BaseTopic($tid, "Topic Title", 1, "cmb", 1676130605)]);
     }
 
-    private function topic(): Topic
+    private function topic(string $tid = "AHQQ0TB341A6JX3CCM"): Topic
     {
-        return new Topic([$this->comment()]);
+        return new Topic($tid, [$this->comment()]);
     }
 
     private function comment(): Comment

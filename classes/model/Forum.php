@@ -118,16 +118,13 @@ final class Forum implements Document
         return $topic;
     }
 
-    public function openTopic(string $id): BaseTopic
+    public function openTopic(string $id, DocumentStore $store): Topic
     {
         assert(!array_key_exists($id, $this->topics));
-        return $this->topics[$id] = new BaseTopic(
-            $id,
-            "",
-            0,
-            "",
-            0
-        );
+        $topic = $store->update($this->name . "/$id.txt", Topic::class);
+        assert($topic instanceof Topic);
+        $this->topics[$id] = $topic;
+        return $topic;
     }
 
     public function addComment(string $id, Comment $comment): void

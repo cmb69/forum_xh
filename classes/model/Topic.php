@@ -34,9 +34,7 @@ final class Topic extends BaseTopic implements Document
     /** @return static */
     public static function fromString(string $contents, string $key)
     {
-        $that = new static([]);
-        $that->id = basename($key, ".txt");
-        $that->comments = [];
+        $that = new static(basename($key, ".txt"), []);
         if (strncmp($contents, "a:", 2) === 0) {
             // old serialization format
             $data = unserialize($contents);
@@ -93,8 +91,9 @@ final class Topic extends BaseTopic implements Document
     }
 
     /** @param list<Comment> $comments */
-    public function __construct(array $comments)
+    public function __construct(string $id, array $comments)
     {
+        $this->id = $id;
         $this->comments = [];
         foreach ($comments as $comment) {
             $this->comments[$comment->id()] = $comment;

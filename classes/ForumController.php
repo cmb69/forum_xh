@@ -307,15 +307,6 @@ class ForumController
         }
         $forum = $this->store->update($forumname . "/index.json", Forum::class);
         assert($forum instanceof Forum);
-        if ($tid === null) {
-            $baseTopic = $forum->openTopic(Codec::encodeBase32hex($this->random->bytes(15)));
-        } else {
-            $baseTopic = $forum->topic($tid);
-            if ($baseTopic === null) {
-                $this->store->rollback();
-                return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
-            }
-        }
         $comment = new Comment(
             Codec::encodeBase32hex($this->random->bytes(15)),
             null,
@@ -325,20 +316,24 @@ class ForumController
         );
         $comment->setTitle($title);
         $comment->setMessage($message);
-        $topic = $forum->fetchTopic($baseTopic->id(), $this->store);
-        if ($topic === null) {
-            $this->store->rollback();
-            return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
+        if ($tid === null) {
+            $topic = $forum->openTopic(Codec::encodeBase32hex($this->random->bytes(15)), $this->store);
+        } else {
+            $topic = $forum->fetchTopic($tid, $this->store);
+            if ($topic === null) {
+                $this->store->rollback();
+                return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
+            }
         }
         $topic->addComment($comment->id(), $comment);
         if (!$this->store->commit()) {
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
         if (!$request->admin() && $this->config['mail_address']) {
-            $url = $request->url()->with("forum_topic", $baseTopic->id())->absolute();
+            $url = $request->url()->with("forum_topic", $topic->id())->absolute();
             $this->mail($this->view->plain("mail_subject_new"), $comment, $url);
         }
-        $url = $request->url()->without("forum_comment")->with("forum_topic", $baseTopic->id());
+        $url = $request->url()->without("forum_comment")->with("forum_topic", $topic->id());
         $url = $url->without("forum_action");
         return Response::redirect($url->absolute());
     }
