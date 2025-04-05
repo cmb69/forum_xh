@@ -174,11 +174,11 @@ final class Topic extends BaseTopic implements Document
         });
     }
 
-    public function addComment(string $id, Comment $comment): void
+    public function addComment(string $id, string $title, string $user, int $time, string $message): Comment
     {
-        // also used for updating
-        // assert(!isset($this->comments[$id]));
-        $this->comments[$id] = $comment;
+        assert(!array_key_exists($id, $this->comments));
+        $this->comments[$id] = new Comment($id, $title, $user, $time, $message);
+        return $this->comments[$id];
     }
 
     public function updateComment(string $id, string $title, string $message): void

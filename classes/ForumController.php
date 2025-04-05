@@ -307,15 +307,6 @@ class ForumController
         }
         $forum = $this->store->update($forumname . "/index.json", Forum::class);
         assert($forum instanceof Forum);
-        $comment = new Comment(
-            Codec::encodeBase32hex($this->random->bytes(15)),
-            null,
-            $request->username(),
-            $request->time(),
-            ""
-        );
-        $comment->setTitle($title);
-        $comment->setMessage($message);
         if ($tid === null) {
             $topic = $forum->openTopic(Codec::encodeBase32hex($this->random->bytes(15)), $this->store);
         } else {
@@ -325,7 +316,8 @@ class ForumController
                 return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
             }
         }
-        $topic->addComment($comment->id(), $comment);
+        $cid = Codec::encodeBase32hex($this->random->bytes(15));
+        $comment = $topic->addComment($cid, $title, $request->username(), $request->time(), $message);
         if (!$this->store->commit()) {
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
