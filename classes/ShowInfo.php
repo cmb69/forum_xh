@@ -197,13 +197,9 @@ class ShowInfo
             $newTopic = $this->store->update($forumname . "/$tid.txt", Topic::class);
             assert($newTopic instanceof Topic);
             $newTopic->copy($oldTopic);
-            if (!$this->store->commit($newTopic)) {
-                $this->store->rollback($newForum);
-                return false;
-            }
             $this->store->delete($forumname . "/$tid.dat");
         }
-        if (!$this->store->commit($newForum)) {
+        if (!$this->store->commit()) {
             return false;
         }
         $this->store->delete($forumname . "/topics.dat");

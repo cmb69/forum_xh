@@ -19,7 +19,7 @@ class ForumTest extends TestCase
                 }
             }
             EOS;
-        $this->assertSame($contents, Forum::fromString($contents)->toString());
+        $this->assertSame($contents, Forum::fromString($contents, "")->toString());
     }
 
     public function testSurvivesMigration(): void
@@ -37,6 +37,6 @@ class ForumTest extends TestCase
                 }
             }
             EOS;
-        $this->assertSame($expected, Forum::fromString($contents)->toString());
+        $this->assertSame($expected, Forum::fromString($contents, "")->toString());
     }
 }

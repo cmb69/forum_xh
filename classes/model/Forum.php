@@ -30,7 +30,7 @@ final class Forum implements Document, JsonSerializable
     private $topicSummaries;
 
     /** @return static */
-    public static function fromString(string $contents)
+    public static function fromString(string $contents, string $key)
     {
         $that = new static([]);
         if (strncmp($contents, "a:", 2) === 0) {

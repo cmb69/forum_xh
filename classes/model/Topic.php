@@ -29,7 +29,7 @@ final class Topic implements Document
     private $comments;
 
     /** @return static */
-    public static function fromString(string $contents)
+    public static function fromString(string $contents, string $key)
     {
         $that = new static([]);
         $that->comments = [];

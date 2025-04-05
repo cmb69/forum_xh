@@ -300,7 +300,7 @@ class ForumController
         } else {
             $topicSummary = $forum->topicSummary($tid);
             if ($topicSummary === null) {
-                $this->store->rollback($forum);
+                $this->store->rollback();
                 return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
             }
         }
@@ -312,7 +312,7 @@ class ForumController
             ""
         );
         if (!$request->username()) {
-            $this->store->rollback($forum);
+            $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
         $this->csrfProtector->check($request->post("forum_token"));
@@ -328,7 +328,7 @@ class ForumController
             $errors[] = ["error_message"];
         }
         if ($errors) {
-            $this->store->rollback($forum);
+            $this->store->rollback();
             return $this->respondWith(
                 $request,
                 $this->renderCommentForm($request, $tid ?? "", $topicSummary->title(), $comment, $errors)
@@ -337,12 +337,10 @@ class ForumController
         $topic = $this->store->update($forumname . "/$tid.txt", Topic::class);
         assert($topic instanceof Topic);
         $topic->addComment($comment->id(), $comment);
-        if (!$this->store->commit($topic)) {
-            $this->store->rollback($forum);
+        if (!$this->store->commit()) {
+            $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
-        $forum->addComment($topicSummary->id(), $comment);
-        $this->store->commit($forum);
         if (!$request->admin() && $this->config['mail_address']) {
             $url = $request->url()->with("forum_topic", $topicSummary->id())->absolute();
             $this->mail($this->view->plain("mail_subject_new"), $comment, $url);
@@ -363,18 +361,18 @@ class ForumController
         assert($forum instanceof Forum);
         $topicSummary = $forum->topicSummary($tid);
         if ($topicSummary === null) {
-            $this->store->rollback($forum);
+            $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
         }
         $topic = $this->store->update($forumname . "/$tid.txt", Topic::class);
         assert($topic instanceof Topic);
         $comment = $topic->comment($cid);
         if ($comment === null) {
-            $this->store->rollback($forum);
+            $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
         if (!$this->mayModify($request, $comment)) {
-            $this->store->rollback($forum);
+            $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
         $this->csrfProtector->check($request->post("forum_token"));
@@ -384,19 +382,17 @@ class ForumController
         $comment->setMessage($text);
         $errors = $comment->message() === "" ? [["error_message"]] : [];
         if ($errors) {
-            $this->store->rollback($forum);
+            $this->store->rollback();
             return $this->respondWith(
                 $request,
                 $this->renderCommentForm($request, $tid, $topicSummary->title(), $comment, $errors)
             );
         }
         $topic->addComment($comment->id(), $comment);
-        if (!$this->store->commit($topic)) {
-            $this->store->rollback($forum);
+        if (!$this->store->commit()) {
+            $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
-        $forum->addComment($topicSummary->id(), $comment);
-        $this->store->commit($forum);
         if (!$request->admin() && $this->config['mail_address']) {
             $url = $request->url()->with("forum_topic", $tid)->absolute();
             $this->mail($this->view->plain("mail_subject_edit"), $comment, $url);
@@ -417,16 +413,16 @@ class ForumController
         assert($topic instanceof Topic);
         $comment = $topic->comment($cid);
         if ($comment === null) {
-            $this->store->rollback($topic);
+            $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
         if (!$this->mayModify($request, $comment)) {
-            $this->store->rollback($topic);
+            $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
         $this->csrfProtector->check($request->post("forum_token"));
         $topic->delete($cid);
-        if (!$this->store->commit($topic)) {
+        if (!$this->store->commit()) {
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }
         $url = $request->url()->without("forum_action")->without("forum_comment");

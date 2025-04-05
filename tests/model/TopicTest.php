@@ -23,7 +23,7 @@ class TopicTest extends TestCase
 
             A reply
             EOS;
-        $this->assertSame($contents, Topic::fromString($contents)->toString());
+        $this->assertSame($contents, Topic::fromString($contents, "")->toString());
     }
 
     public function testSurvivesMigration(): void
@@ -37,6 +37,6 @@ class TopicTest extends TestCase
 
             Ich bin neu hier!
             EOS;
-        $this->assertSame($expected, Topic::fromString($contents)->toString());
+        $this->assertSame($expected, Topic::fromString($contents, "")->toString());
     }
 }

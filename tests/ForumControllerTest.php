@@ -155,7 +155,7 @@ class ForumControllerTest extends TestCase
             $this->forum("123"),
             $this->topic()
         );
-        $this->store->expects($this->exactly(2))->method("commit")->willReturn(true);
+        $this->store->expects($this->once())->method("commit")->willReturn(true);
         $this->random->method("bytes")->willReturn("123456789abcdef");
         $this->conf = ["mail_address" => "webmaster@example.com"] + $this->conf;
         $this->mail->expects($this->once())->method("setTo")->with("webmaster@example.com");
@@ -184,7 +184,7 @@ class ForumControllerTest extends TestCase
             $this->forum("64P36D1L6ORJGEB1C9HM8PB6"),
             $this->topic()
         );
-        $this->store->expects($this->once())->method("commit")->with($this->isInstanceOf(Topic::class));
+        $this->store->expects($this->once())->method("commit");
         $this->random->method("bytes")->willReturn("3456789abcdef");
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_action=create",
@@ -201,7 +201,7 @@ class ForumControllerTest extends TestCase
             $this->forum("AHQQ0TB341A6JX3CCM"),
             $this->topic()
         );
-        $this->store->expects($this->exactly(2))->method("commit")->willReturn(true);
+        $this->store->expects($this->once())->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
                 . "&forum_action=edit",
@@ -264,8 +264,7 @@ class ForumControllerTest extends TestCase
             $this->forum("AHQQ0TB341A6JX3CCM"),
             $this->topic()
         );
-        $this->store->expects($this->once())->method("commit")->with($this->isInstanceof(Topic::class))
-            ->willReturn(false);
+        $this->store->expects($this->once())->method("commit")->willReturn(false);
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
                 . "&forum_action=edit",
