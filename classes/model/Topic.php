@@ -198,9 +198,12 @@ final class Topic extends BaseTopic implements Document
         unset($this->comments[$id]);
     }
 
-    public function copy(Topic $other): void
+    public function copy(Topic $other, string $title): void
     {
         assert(empty($this->comments));
         $this->comments = $other->comments;
+        foreach ($this->comments as $comment) {
+            $comment->setTitle($title);
+        }
     }
 }
