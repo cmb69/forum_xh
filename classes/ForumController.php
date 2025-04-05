@@ -310,7 +310,7 @@ class ForumController
         if ($tid === null) {
             $topic = $forum->openTopic(Codec::encodeBase32hex($this->random->bytes(15)), $this->store);
         } else {
-            $topic = $forum->fetchTopic($tid, $this->store);
+            $topic = $forum->updateTopic($tid, $this->store);
             if ($topic === null) {
                 $this->store->rollback();
                 return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
@@ -347,7 +347,7 @@ class ForumController
         }
         $forum = $this->store->update($forumname . "/index.json", Forum::class);
         assert($forum instanceof Forum);
-        $topic = $forum->fetchTopic($tid, $this->store);
+        $topic = $forum->updateTopic($tid, $this->store);
         if ($topic === null) {
             $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
@@ -401,7 +401,7 @@ class ForumController
         }
         $forum = $this->store->update($forumname . "/index.json", Forum::class);
         assert($forum instanceof Forum);
-        $topic = $forum->fetchTopic($tid, $this->store);
+        $topic = $forum->updateTopic($tid, $this->store);
         if ($topic === null) {
             $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));

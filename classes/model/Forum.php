@@ -110,7 +110,7 @@ final class Forum implements Document
         return $this->topics[$id] ?? null;
     }
 
-    public function fetchTopic(string $id, DocumentStore $store): ?Topic
+    public function updateTopic(string $id, DocumentStore $store): ?Topic
     {
         if (!array_key_exists($id, $this->topics)) {
             return null;
