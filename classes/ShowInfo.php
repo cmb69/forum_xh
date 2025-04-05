@@ -190,8 +190,8 @@ class ShowInfo
         $newForum = $this->store->update($forumname . "/index.json", Forum::class);
         assert($newForum instanceof Forum);
         $newForum->copy($oldForum);
-        foreach ($newForum->topicSummaries() as $topicSummary) {
-            $tid = $topicSummary->id();
+        foreach ($newForum->topics() as $baseTopic) {
+            $tid = $baseTopic->id();
             $oldTopic = $this->store->retrieve($forumname . "/$tid.dat", Topic::class);
             assert($oldTopic instanceof Topic);
             $newTopic = $this->store->update($forumname . "/$tid.txt", Topic::class);

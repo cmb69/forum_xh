@@ -4,9 +4,9 @@ namespace Forum;
 
 use PHPUnit\Framework\TestCase;
 use ApprovalTests\Approvals;
+use Forum\Model\BaseTopic;
 use Forum\Model\Forum;
 use Forum\Model\Topic;
-use Forum\Model\TopicSummary;
 use Plib\DocumentStore;
 use Plib\FakeRequest;
 use Plib\FakeSystemChecker;
@@ -45,7 +45,7 @@ class ShowInfoTest extends TestCase
             new Topic([])
         );
         $this->store->method("update")->willReturnOnConsecutiveCalls(
-            new Forum([]),
+            new Forum("", []),
             new Topic([])
         );
         $this->store->method("commit")->willReturn(true);
@@ -71,8 +71,8 @@ class ShowInfoTest extends TestCase
 
     public function testReportsMigrationFailure(): void
     {
-        $this->store->method("retrieve")->willReturn(new Forum([]));
-        $this->store->method("update")->willReturn(new Forum([]));
+        $this->store->method("retrieve")->willReturn(new Forum("old-forum", []));
+        $this->store->method("update")->willReturn(new Forum("", []));
         $this->store->method("commit")->willReturn(false);
         $this->store->method("find")->willReturn(["old-forum/topics.dat"]);
         $request = new FakeRequest([
@@ -85,6 +85,6 @@ class ShowInfoTest extends TestCase
 
     private function forum(): Forum
     {
-        return new Forum([new TopicSummary("12345", "Topic Title", 1, "cmb", 1676130605)]);
+        return new Forum("old-forum", [new BaseTopic("12345", "Topic Title", 1, "cmb", 1676130605)]);
     }
 }

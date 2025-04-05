@@ -3,11 +3,11 @@
 namespace Forum;
 
 use ApprovalTests\Approvals;
+use Forum\Model\BaseTopic;
 use Forum\Model\BbCode;
 use Forum\Model\Comment;
 use Forum\Model\Forum;
 use Forum\Model\Topic;
-use Forum\Model\TopicSummary;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Plib\CsrfProtector;
@@ -277,7 +277,10 @@ class ForumControllerTest extends TestCase
 
     public function testDeletesComment(): void
     {
-        $this->store->method("update")->willReturn($this->topic());
+        $this->store->method("update")->willReturnMap([
+            ["test/index.json", Forum::class, $this->forum("AHQQ0TB341A6JX3CCM")],
+            ["test/AHQQ0TB341A6JX3CCM.txt", Topic::class, $this->topic()],
+        ]);
         $this->store->expects($this->once())->method("commit")->willReturn(true);
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
@@ -301,7 +304,10 @@ class ForumControllerTest extends TestCase
 
     public function testReportsNonExistentCommentWhenDeleting(): void
     {
-        $this->store->method("update")->willReturn($this->topic());
+        $this->store->method("update")->willReturnMap([
+            ["test/index.json", Forum::class, $this->forum("AHQQ0TB341A6JX3CCM")],
+            ["test/AHQQ0TB341A6JX3CCM.txt", Topic::class, $this->topic()],
+        ]);
         $this->store->expects($this->never())->method("commit");
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=456789abcdef0"
@@ -314,7 +320,10 @@ class ForumControllerTest extends TestCase
 
     public function testReportsMissingAuthorizationForDeleting(): void
     {
-        $this->store->method("update")->willReturn($this->topic());
+        $this->store->method("update")->willReturnMap([
+            ["test/index.json", Forum::class, $this->forum("AHQQ0TB341A6JX3CCM")],
+            ["test/AHQQ0TB341A6JX3CCM.txt", Topic::class, $this->topic()],
+        ]);
         $this->store->expects($this->never())->method("commit");
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
@@ -328,7 +337,10 @@ class ForumControllerTest extends TestCase
 
     public function testReportsFailureToStoreDeletion(): void
     {
-        $this->store->method("update")->willReturn($this->topic());
+        $this->store->method("update")->willReturnMap([
+            ["test/index.json", Forum::class, $this->forum("AHQQ0TB341A6JX3CCM")],
+            ["test/AHQQ0TB341A6JX3CCM.txt", Topic::class, $this->topic()],
+        ]);
         $this->store->method("commit")->willReturn(false);
         $request = new FakeRequest([
             "url" => "http://example.com/?Forum&forum_topic=AHQQ0TB341A6JX3CCM&forum_comment=3456789abcdef"
@@ -342,7 +354,7 @@ class ForumControllerTest extends TestCase
 
     private function forum(string $tid): Forum
     {
-        return new Forum([new TopicSummary($tid, "Topic Title", 1, "cmb", 1676130605)]);
+        return new Forum("test", [new BaseTopic($tid, "Topic Title", 1, "cmb", 1676130605)]);
     }
 
     private function topic(): Topic

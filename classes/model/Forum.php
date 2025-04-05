@@ -21,44 +21,47 @@
 
 namespace Forum\Model;
 
-use JsonSerializable;
 use Plib\Document;
+use Plib\DocumentStore;
 
-final class Forum implements Document, JsonSerializable
+final class Forum implements Document
 {
-    /** @var array<string,TopicSummary> */
-    private $topicSummaries;
+    /** @var string */
+    private $name;
+
+    /** @var array<string,BaseTopic> */
+    private $topics;
 
     /** @return static */
     public static function fromString(string $contents, string $key)
     {
-        $that = new static([]);
+        $that = new static(dirname($key), []);
         if (strncmp($contents, "a:", 2) === 0) {
             // old serialization format
             $data = unserialize($contents);
             assert(is_array($data));
             foreach ($data as $tid => $record) {
-                $topicSummary = new TopicSummary(
+                $baseTopic = new BaseTopic(
                     $tid,
                     $record["title"],
                     $record["comments"],
                     $record["user"],
                     $record["time"],
                 );
-                $that->topicSummaries[$tid] = $topicSummary;
+                $that->topics[$tid] = $baseTopic;
             }
         } else {
             $json = json_decode($contents, true);
             if (is_array($json)) {
                 foreach ($json as $record) {
-                    $topicSummary = new TopicSummary(
+                    $baseTopic = new BaseTopic(
                         $record["id"],
                         $record["title"],
                         $record["commentCount"],
                         $record["user"],
                         $record["time"],
                     );
-                    $that->topicSummaries[$record["id"]] = $topicSummary;
+                    $that->topics[$record["id"]] = $baseTopic;
                 }
             }
         }
@@ -67,39 +70,55 @@ final class Forum implements Document, JsonSerializable
 
     public function toString(): string
     {
-        return (string) json_encode($this, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        $topicSummaries = [];
+        foreach ($this->topics as $id => $baseTopic) {
+            $topicSummaries[$id] = [
+                "id" => $id,
+                "title" => $baseTopic->title(),
+                "commentCount" => $baseTopic->commentCount(),
+                "user" => $baseTopic->user(),
+                "time" => $baseTopic->time(),
+            ];
+        }
+        return (string) json_encode(
+            $topicSummaries,
+            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
+        );
     }
 
-    /** @return array<string,TopicSummary> */
-    public function jsonSerialize(): array
+    /** @param list<BaseTopic> $topics */
+    public function __construct(string $name, array $topics)
     {
-        return $this->topicSummaries;
-    }
-
-    /** @param list<TopicSummary> $topicSummaries */
-    public function __construct(array $topicSummaries)
-    {
-        $this->topicSummaries = [];
-        foreach ($topicSummaries as $topicSummary) {
-            $this->topicSummaries[$topicSummary->id()] = $topicSummary;
+        $this->name = $name;
+        $this->topics = [];
+        foreach ($topics as $topic) {
+            $this->topics[$topic->id()] = $topic;
         }
     }
 
-    /** @return list<TopicSummary> */
-    public function topicSummaries(): array
+    /** @return list<BaseTopic> */
+    public function topics(): array
     {
-        return array_values($this->topicSummaries);
+        return array_values($this->topics);
     }
 
-    public function topicSummary(string $id): ?TopicSummary
+    public function topic(string $id): ?BaseTopic
     {
-        return $this->topicSummaries[$id] ?? null;
+        return $this->topics[$id] ?? null;
     }
 
-    public function openTopic(string $id): TopicSummary
+    public function fetchTopic(string $id, DocumentStore $store): Topic
+    {
+        $topic = $store->update($this->name . "/$id.txt", Topic::class);
+        assert($topic instanceof Topic);
+        $this->topics[$id] = $topic;
+        return $topic;
+    }
+
+    public function openTopic(string $id): BaseTopic
     {
         assert(!isset($this->topicSummaries[$id]));
-        return $this->topicSummaries[$id] = new TopicSummary(
+        return $this->topics[$id] = new BaseTopic(
             $id,
             "",
             0,
@@ -110,8 +129,8 @@ final class Forum implements Document, JsonSerializable
 
     public function addComment(string $id, Comment $comment): void
     {
-        $topicSummary = $this->topicSummaries[$id];
-        $this->topicSummaries[$id] = new TopicSummary(
+        $topicSummary = $this->topics[$id];
+        $this->topics[$id] = new BaseTopic(
             $id,
             $topicSummary->title(),
             $topicSummary->commentCount() + 1,
@@ -122,7 +141,7 @@ final class Forum implements Document, JsonSerializable
 
     public function copy(Forum $other): void
     {
-        assert(empty($this->topicSummaries));
-        $this->topicSummaries = $other->topicSummaries;
+        assert(empty($this->topics));
+        $this->topics = $other->topics;
     }
 }

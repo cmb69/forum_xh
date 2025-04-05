@@ -23,8 +23,11 @@ namespace Forum\Model;
 
 use Plib\Document;
 
-final class Topic implements Document
+final class Topic extends BaseTopic implements Document
 {
+    /** @var string */
+    private $id;
+
     /** @var array<string,Comment> */
     private $comments;
 
@@ -32,6 +35,7 @@ final class Topic implements Document
     public static function fromString(string $contents, string $key)
     {
         $that = new static([]);
+        $that->id = basename($key, ".txt");
         $that->comments = [];
         if (strncmp($contents, "a:", 2) === 0) {
             // old serialization format
@@ -109,6 +113,11 @@ final class Topic implements Document
                 . $comment->message();
         }
         return implode("\n%%\n", $records);
+    }
+
+    public function id(): string
+    {
+        return $this->id;
     }
 
     public function title(): string
