@@ -68,6 +68,20 @@ final class Forum implements Document
         return $that;
     }
 
+    public static function retrieve(string $name, DocumentStore $store): Forum
+    {
+        $forum = $store->retrieve($name . "/index.json", Forum::class);
+        assert($forum !== null);
+        return $forum;
+    }
+
+    public static function update(string $name, DocumentStore $store): Forum
+    {
+        $forum = $store->update($name . "/index.json", Forum::class);
+        assert($forum !== null);
+        return $forum;
+    }
+
     public function toString(): string
     {
         $topics = [];

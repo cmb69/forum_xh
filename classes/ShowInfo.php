@@ -185,16 +185,16 @@ class ShowInfo
 
     private function migrateForum(string $forumname): bool
     {
-        $oldForum = $this->store->retrieve($forumname . "/topics.dat", Forum::class);
+        $oldForum = Forum::retrieve($forumname, $this->store);
         assert($oldForum instanceof Forum);
-        $newForum = $this->store->update($forumname . "/index.json", Forum::class);
+        $newForum = Forum::update($forumname, $this->store);
         assert($newForum instanceof Forum);
         $newForum->copy($oldForum);
         foreach ($newForum->topics() as $baseTopic) {
             $tid = $baseTopic->id();
-            $oldTopic = $this->store->retrieve($forumname . "/$tid.dat", Topic::class);
+            $oldTopic = Topic::retrieve($forumname, $tid, $this->store);
             assert($oldTopic instanceof Topic);
-            $newTopic = $this->store->update($forumname . "/$tid.txt", Topic::class);
+            $newTopic = $newForum->updateTopic($tid, $this->store);
             assert($newTopic instanceof Topic);
             $newTopic->copy($oldTopic);
             $this->store->delete($forumname . "/$tid.dat");

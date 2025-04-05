@@ -136,8 +136,7 @@ class ForumController
         if (!is_file($js)) {
             $js = $this->pluginFolder . "forum.js";
         }
-        $forum = $this->store->retrieve($forumname . "/index.json", Forum::class);
-        assert($forum instanceof Forum);
+        $forum = Forum::retrieve($forumname, $this->store);
         return $this->view->render('topics', [
             'isUser' => $request->username(),
             'href' => $request->url()->with("forum_action", "create")->relative(),
@@ -163,8 +162,7 @@ class ForumController
 
     private function renderTopicView(Request $request, string $forumname, string $tid): string
     {
-        $topic = $this->store->retrieve($forumname . "/$tid.txt", Topic::class);
-        assert($topic instanceof Topic);
+        $topic = Topic::retrieve($forumname, $tid, $this->store);
         if ($topic->empty()) {
             return $this->view->message("fail", "error_no_topic");
         }
@@ -214,8 +212,7 @@ class ForumController
         if ($tid === null) {
             $title = "";
         } else {
-            $forum = $this->store->retrieve($forumname . "/index.json", Forum::class);
-            assert($forum instanceof Forum);
+            $forum = Forum::retrieve($forumname, $this->store);
             $topic = $forum->topic($tid);
             if ($topic === null) {
                 return $this->respondWith($request, $this->view->message("fail", "error_no_topic"));
@@ -233,8 +230,7 @@ class ForumController
         if ($tid === null || $cid === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_id_missing"));
         }
-        $topic = $this->store->retrieve($forumname . "/$tid.txt", Topic::class);
-        assert($topic instanceof Topic);
+        $topic = Topic::retrieve($forumname, $tid, $this->store);
         $comment = $topic->comment($cid);
         if ($comment === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
@@ -305,8 +301,7 @@ class ForumController
             $form = $this->renderCommentForm($request, $tid ?? "", $title, "", $message, $errors);
             return $this->respondWith($request, $form);
         }
-        $forum = $this->store->update($forumname . "/index.json", Forum::class);
-        assert($forum instanceof Forum);
+        $forum = Forum::update($forumname, $this->store);
         if ($tid === null) {
             $topic = $forum->openTopic(Codec::encodeBase32hex($this->random->bytes(15)), $this->store);
         } else {
@@ -345,8 +340,7 @@ class ForumController
             $form = $this->renderCommentForm($request, $tid, $title, $cid, $message, $errors);
             return $this->respondWith($request, $form);
         }
-        $forum = $this->store->update($forumname . "/index.json", Forum::class);
-        assert($forum instanceof Forum);
+        $forum = Forum::update($forumname, $this->store);
         $topic = $forum->updateTopic($tid, $this->store);
         if ($topic === null) {
             $this->store->rollback();
@@ -399,8 +393,7 @@ class ForumController
         if ($tid === null || $cid === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_id_missing"));
         }
-        $forum = $this->store->update($forumname . "/index.json", Forum::class);
-        assert($forum instanceof Forum);
+        $forum = Forum::update($forumname, $this->store);
         $topic = $forum->updateTopic($tid, $this->store);
         if ($topic === null) {
             $this->store->rollback();

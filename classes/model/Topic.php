@@ -22,6 +22,7 @@
 namespace Forum\Model;
 
 use Plib\Document;
+use Plib\DocumentStore;
 
 final class Topic extends BaseTopic implements Document
 {
@@ -88,6 +89,13 @@ final class Topic extends BaseTopic implements Document
             isset($record["date"]) ? (int) strtotime($record["date"]) : 0,
             $body ?? ""
         );
+    }
+
+    public static function retrieve(string $forumname, string $id, DocumentStore $store): Topic
+    {
+        $topic = $store->retrieve($forumname . "/$id.txt", Topic::class);
+        assert($topic !== null);
+        return $topic;
     }
 
     /** @param list<Comment> $comments */
