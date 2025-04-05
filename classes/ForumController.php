@@ -142,6 +142,7 @@ class ForumController
             'href' => $request->url()->with("forum_action", "create")->relative(),
             'topics' => $this->topicRecords($request->url(), $forum),
             "script" => $request->url()->path($js)->with("v", FORUM_VERSION)->relative(),
+            "level" => $this->config["heading_level"],
         ]);
     }
 
@@ -178,6 +179,7 @@ class ForumController
             'replyUrl' => $url->with("forum_action", "create")->with("forum_topic", $tid)->relative(),
             'href' => $url->without("forum_topic")->relative(),
             "script" => $this->pluginFolder . "forum.min.js",
+            "level" => $this->config["heading_level"],
         ]);
     }
 
@@ -274,6 +276,7 @@ class ForumController
             'i18n' => ["ENTER_URL" => $this->view->plain("msg_enter_url")],
             'emoticons' => $emoticons,
             "script" => $this->pluginFolder . "forum.min.js",
+            "level" => $this->config["heading_level"],
         ]);
         return $output;
     }

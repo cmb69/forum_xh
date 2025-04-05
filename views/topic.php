@@ -14,11 +14,12 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
  * @var string $replyUrl
  * @var string $href
  * @var string $script
+ * @var string $level
  */
 ?>
 <script type="module" src="<?=$this->esc($script)?>"></script>
 <div class="forum_container">
-  <h6 class="forum_heading"><?=$this->esc($title)?></h6>
+  <<?=$this->esc($level)?> class="forum_heading"><?=$this->esc($title)?></<?=$this->esc($level)?>>
   <div class="forum_topic">
 <?foreach ($topic as $comment):?>
     <div>

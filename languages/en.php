@@ -75,5 +75,5 @@ $plugin_tx['forum']['syscheck_writable']="'%s' is writable: ";
 $plugin_tx['forum']['syscheck_xhversion']="CMSimple_XH version ≥ %s: ";
 
 $plugin_tx['forum']['cf_mail_address']="The address of the receiver of notification mails. If blank, no notification mails will be sent.";
-
+$plugin_tx['forum']['cf_heading_level']="HTML element to mark up headings.";
 ?>

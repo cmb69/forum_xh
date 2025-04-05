@@ -75,5 +75,5 @@ $plugin_tx['forum']['syscheck_writable']="'%s' ist schreibbar: ";
 $plugin_tx['forum']['syscheck_xhversion']="CMSimple_XH-Version ≥ %s: ";
 
 $plugin_tx['forum']['cf_mail_address']="Die Adresse des Empfängers von Benachrichtigungsmails. Falls leer, werden keine Benachrichtigungsmails versandt.";
-
+$plugin_tx['forum']['cf_heading_level']="HTML-Element, mit dem Überschriften ausgezeichnet werden.";
 ?>
