@@ -130,18 +130,6 @@ final class Forum implements Document
         return $topic;
     }
 
-    public function addComment(string $id, Comment $comment): void
-    {
-        $topicSummary = $this->topics[$id];
-        $this->topics[$id] = new BaseTopic(
-            $id,
-            $topicSummary->title(),
-            $topicSummary->commentCount() + 1,
-            $comment->user(),
-            $comment->time()
-        );
-    }
-
     public function copy(Forum $other): void
     {
         assert(empty($this->topics));
