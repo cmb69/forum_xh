@@ -145,11 +145,11 @@ class ForumController
         ]);
     }
 
-    /** @return list<array{tid:string,title:string,user:string,comments:int,date:string,url:string}> */
+    /** @return list<object{tid:string,title:string,user:string,comments:int,date:string,url:string}> */
     private function topicRecords(Url $url, Forum $forum): array
     {
         return array_map(function (BaseTopic $topic) use ($url) {
-            return [
+            return (object) [
                 "tid" => $topic->id(),
                 "title" => $topic->title(),
                 "user" => $topic->user(),
@@ -183,7 +183,7 @@ class ForumController
 
     /**
      * @param list<Comment> $comments
-     * @return list<array{cid:string,user:string,mayDeleteComment:bool,commentDate:string,html:string,commentEditUrl:string,deleteUrl:string}>
+     * @return list<object{cid:string,user:string,mayDeleteComment:bool,commentDate:string,html:string,commentEditUrl:string,deleteUrl:string}>
      */
     private function commentRecords(Request $request, array $comments): array
     {
@@ -191,7 +191,7 @@ class ForumController
         return array_map(function (Comment $comment) use ($request, $url) {
             assert($comment->id() !== null);
             $url = $url->with("forum_comment", $comment->id());
-            return [
+            return (object) [
                 "cid" => $comment->id(),
                 "user" => $comment->user(),
                 "mayDeleteComment" => $this->mayModify($request, $comment),

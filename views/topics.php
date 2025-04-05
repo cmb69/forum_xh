@@ -8,7 +8,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
  * @var View $this
  * @var bool $isUser
  * @var string $href
- * @var list<array{tid:string,title:string,user:string,comments:int,date:string,url:string}> $topics
+ * @var list<object{tid:string,title:string,user:string,comments:int,date:string,url:string}> $topics
  * @var string $script
  */
 ?>
@@ -19,14 +19,14 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
 <?foreach ($topics as $topic):?>
   <div>
     <div class="forum_title">
-      <a href="<?=$this->esc($topic['url'])?>"><?=$this->esc($topic['title'])?></a>
+      <a href="<?=$this->esc($topic->url)?>"><?=$this->esc($topic->title)?></a>
     </div>
     <div class="forum_details">
-      <span><?=$this->plural('msg_comments', $topic['comments'])?></span>
+      <span><?=$this->plural('msg_comments', $topic->comments)?></span>
       <span class="forum_separator"><?=$this->text('lbl_separator')?></span>
-      <span><?=$this->text('msg_topic_details', $topic['user'])?></span>
+      <span><?=$this->text('msg_topic_details', $topic->user)?></span>
       <span class="forum_separator"><?=$this->text('lbl_separator')?></span>
-      <span class="forum_date"><?=$this->esc($topic['date'])?></span>
+      <span class="forum_date"><?=$this->esc($topic->date)?></span>
     </div>
   </div>
 <?endforeach?>
