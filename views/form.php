@@ -7,7 +7,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
 /**
  * @var View $this
  * @var list<array{string}> $errors
- * @var string $title_attribute
+ * @var string $title_type
  * @var string $title
  * @var string $action
  * @var string $previewUrl
@@ -30,8 +30,10 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
       <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
     <div class="forum_title">
+<?if ($title_type === "text"):?>
       <label for="forum_title"><?=$this->text('msg_title')?></label>
-      <input type="text" id="forum_title" name="forum_title" value="<?=$this->esc($title)?>" <?=$this->esc($title_attribute)?>>
+<?endif?>
+      <input type="<?=$this->esc($title_type)?>" id="forum_title" name="forum_title" value="<?=$this->esc($title)?>" required>
     </div>
     <script type="text/x-template" id="forum_toolbar">
       <div>

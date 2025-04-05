@@ -263,7 +263,7 @@ class ForumController
         $url = $request->url();
         $output = $this->view->render('form', [
             "errors" => $errors,
-            'title_attribute' => $tid === "" ? "required" : "disabled",
+            'title_type' => $tid === "" ? "text" : "hidden",
             "title" => $title,
             'action' => $url->with("forum_action", $cid !== "" ? "edit" : "create")->relative(),
             'previewUrl' => $url->with("forum_action", "preview")->relative(),
@@ -318,7 +318,7 @@ class ForumController
             $request->time(),
             ""
         );
-        $title = $request->post("forum_title") ?? $baseTopic->title();
+        $title = $request->post("forum_title") ?? "";
         $text = $request->post("forum_text") ?? "";
         $comment->setTitle($title);
         $comment->setMessage($text);
@@ -336,7 +336,7 @@ class ForumController
                 $this->renderCommentForm(
                     $request,
                     $tid ?? "",
-                    $baseTopic->title(),
+                    $title,
                     $comment->id(),
                     $comment->message(),
                     $errors
