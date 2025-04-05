@@ -132,16 +132,12 @@ class ForumController
 
     private function renderTopicsView(Request $request, string $forumname): string
     {
-        $js = $this->pluginFolder . "forum.min.js";
-        if (!is_file($js)) {
-            $js = $this->pluginFolder . "forum.js";
-        }
         $forum = Forum::retrieve($forumname, $this->store);
         return $this->view->render('topics', [
             'isUser' => $request->username(),
             'href' => $request->url()->with("forum_action", "create")->relative(),
             'topics' => $this->topicRecords($request->url(), $forum),
-            "script" => $request->url()->path($js)->with("v", FORUM_VERSION)->relative(),
+            "script" => $this->jsUrl($request),
             "level" => $this->config["heading_level"],
         ]);
     }
@@ -178,7 +174,7 @@ class ForumController
             'isUser' => $request->username(),
             'replyUrl' => $url->with("forum_action", "create")->with("forum_topic", $tid)->relative(),
             'href' => $url->without("forum_topic")->relative(),
-            "script" => $this->pluginFolder . "forum.min.js",
+            "script" => $this->jsUrl($request),
             "level" => $this->config["heading_level"],
         ]);
     }
@@ -275,10 +271,19 @@ class ForumController
             'token' => $this->csrfProtector->token(),
             'i18n' => ["ENTER_URL" => $this->view->plain("msg_enter_url")],
             'emoticons' => $emoticons,
-            "script" => $this->pluginFolder . "forum.min.js",
+            "script" => $this->jsUrl($request),
             "level" => $this->config["heading_level"],
         ]);
         return $output;
+    }
+
+    private function jsUrl(Request $request): string
+    {
+        $js = $this->pluginFolder . "forum.min.js";
+        if (!is_file($js)) {
+            $js = $this->pluginFolder . "forum.js";
+        }
+        return $request->url()->path($js)->with("v", FORUM_VERSION)->relative();
     }
 
     private function preview(Request $request): Response
