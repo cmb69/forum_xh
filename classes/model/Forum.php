@@ -70,9 +70,9 @@ final class Forum implements Document
 
     public function toString(): string
     {
-        $topicSummaries = [];
+        $topics = [];
         foreach ($this->topics as $id => $baseTopic) {
-            $topicSummaries[$id] = [
+            $topics[$id] = [
                 "id" => $id,
                 "title" => $baseTopic->title(),
                 "commentCount" => $baseTopic->commentCount(),
@@ -81,7 +81,7 @@ final class Forum implements Document
             ];
         }
         return (string) json_encode(
-            $topicSummaries,
+            $topics,
             JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
         );
     }
@@ -120,7 +120,7 @@ final class Forum implements Document
 
     public function openTopic(string $id): BaseTopic
     {
-        assert(!isset($this->topicSummaries[$id]));
+        assert(!array_key_exists($id, $this->topics));
         return $this->topics[$id] = new BaseTopic(
             $id,
             "",
