@@ -1,9 +1,13 @@
 <?php
 
-use Forum\Model\Repository;
-use Forum\Model\Comment;
+use Forum\Model\Forum;
+use Plib\DocumentStore;
 
-require_once "./classes/model/Repository.php";
+require_once "../plib/classes/Document.php";
+require_once "../plib/classes/DocumentStore.php";
+require_once "./classes/model/Forum.php";
+require_once "./classes/model/BaseTopic.php";
+require_once "./classes/model/Topic.php";
 require_once "./classes/model/Comment.php";
 
 if ($argc !== 4) {
@@ -11,11 +15,12 @@ if ($argc !== 4) {
     exit(1);
 }
 
-$forum = $argv[1];
+$forumname = $argv[1];
 $topicCount = (int) $argv[2];
 $commentCount = (int) $argv[3];
 
-$repository = new Repository("../../content/forum/");
+$store = new DocumentStore("../../content/forum/");
+$forum = Forum::update($forumname, $store);
 
 $users = ["cmb", "frase", "lck", "olape"];
 $message = <<<'EOS'
@@ -30,6 +35,7 @@ $message = str_replace("\n", " ", $message);
 
 for ($i = 0; $i < $topicCount; $i++) {
     $tid = uniqid();
+    $topic = $forum->openTopic($tid, $store);
     $timestamps = array_map(function () {
         return mt_rand(strtotime("2022-01-01"), strtotime("2022-12-31"));
     }, range(0, $commentCount - 1));
@@ -37,17 +43,17 @@ for ($i = 0; $i < $topicCount; $i++) {
         return $a <=> $b;
     });
     for ($j = 0; $j < $commentCount; $j++) {
-        $comment = new Comment(
+        $comment = $topic->addComment(
             uniqid(),
             "Test $i",
             $users[mt_rand(0, count($users) - 1)],
             $timestamps[$j],
             $message
         );
-        if (!$repository->save($forum, $tid, $comment)) {
-            echo "Failed to generated requested data!\n";
-            exit(1);
-        }
         echo ".";
     }
+}
+if (!$store->commit()) {
+    echo "Failed to generated requested data!\n";
+    exit(1);
 }
