@@ -315,7 +315,10 @@ class ForumController
             $request->time(),
             ""
         );
-        $this->csrfProtector->check($request->post("forum_token"));
+        if (!$this->csrfProtector->check($request->post("forum_token"))) {
+            $this->store->rollback();
+            return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
+        }
         $title = $request->post("forum_title") ?? $baseTopic->title();
         $text = $request->post("forum_text") ?? "";
         $comment->setTitle($title);
@@ -378,7 +381,10 @@ class ForumController
             $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $this->csrfProtector->check($request->post("forum_token"));
+        if (!$this->csrfProtector->check($request->post("forum_token"))) {
+            $this->store->rollback();
+            return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
+        }
         $title = $request->post("forum_title") ?? "";
         $text = $request->post("forum_text") ?? "";
         $comment->setTitle($title);
@@ -423,7 +429,10 @@ class ForumController
             $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $this->csrfProtector->check($request->post("forum_token"));
+        if (!$this->csrfProtector->check($request->post("forum_token"))) {
+            $this->store->rollback();
+            return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
+        }
         $topic->delete($cid);
         if (!$this->store->commit()) {
             return $this->respondWith($request, $this->view->message("fail", "error_store"));

@@ -21,6 +21,7 @@ class ForumControllerTest extends TestCase
 {
     private $conf;
     private $bbcode;
+    private $csrfProtector;
     private $mail;
     private $store;
     private $random;
@@ -30,6 +31,8 @@ class ForumControllerTest extends TestCase
         vfsStream::setup("root");
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["forum"];
         $this->bbcode = $this->createStub(BbCode::class);
+        $this->csrfProtector = $this->createStub(CsrfProtector::class);
+        $this->csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
         $this->store = $this->createStub(DocumentStore::class);
         $this->random = $this->createStub(Random::class);
         $this->mail = $this->createMock(Mail::class);
@@ -37,14 +40,12 @@ class ForumControllerTest extends TestCase
 
     private function sut(): ForumController
     {
-        $csrfProtector = $this->createStub(CsrfProtector::class);
-        $csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
         $view = new View("./views/", XH_includeVar("./languages/en.php", 'plugin_tx')['forum']);
         return new ForumController(
             $this->conf,
             "./plugins/forum/",
             $this->bbcode,
-            $csrfProtector,
+            $this->csrfProtector,
             $view,
             $this->mail,
             $this->store,
@@ -151,6 +152,7 @@ class ForumControllerTest extends TestCase
 
     public function testCreatesNewTopic(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $this->store->method("update")->willReturnOnConsecutiveCalls(
             $this->forum("123"),
             $this->topic()
@@ -180,6 +182,7 @@ class ForumControllerTest extends TestCase
 
     public function testFailsToCreateNewTopic(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $this->store->method("update")->willReturnOnConsecutiveCalls(
             $this->forum("64P36D1L6ORJGEB1C9HM8PB6"),
             $this->topic()
@@ -197,6 +200,7 @@ class ForumControllerTest extends TestCase
 
     public function testUpdatesComment(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $this->store->method("update")->willReturnOnConsecutiveCalls(
             $this->forum("AHQQ0TB341A6JX3CCM"),
             $this->topic()
@@ -260,6 +264,7 @@ class ForumControllerTest extends TestCase
 
     public function testFailsToStoreUpdate(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $this->store->method("update")->willReturnOnConsecutiveCalls(
             $this->forum("AHQQ0TB341A6JX3CCM"),
             $this->topic()
@@ -277,6 +282,7 @@ class ForumControllerTest extends TestCase
 
     public function testDeletesComment(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $this->store->method("update")->willReturnMap([
             ["test/index.json", Forum::class, $this->forum("AHQQ0TB341A6JX3CCM")],
             ["test/AHQQ0TB341A6JX3CCM.txt", Topic::class, $this->topic()],
@@ -337,6 +343,7 @@ class ForumControllerTest extends TestCase
 
     public function testReportsFailureToStoreDeletion(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $this->store->method("update")->willReturnMap([
             ["test/index.json", Forum::class, $this->forum("AHQQ0TB341A6JX3CCM")],
             ["test/AHQQ0TB341A6JX3CCM.txt", Topic::class, $this->topic()],
