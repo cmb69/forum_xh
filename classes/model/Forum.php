@@ -71,13 +71,16 @@ final class Forum implements Document
     public function toString(): string
     {
         $topics = [];
-        foreach ($this->topics as $id => $baseTopic) {
+        foreach ($this->topics as $id => $topic) {
+            if ($topic->empty()) {
+                continue;
+            }
             $topics[$id] = [
                 "id" => $id,
-                "title" => $baseTopic->title(),
-                "commentCount" => $baseTopic->commentCount(),
-                "user" => $baseTopic->user(),
-                "time" => $baseTopic->time(),
+                "title" => $topic->title(),
+                "commentCount" => $topic->commentCount(),
+                "user" => $topic->user(),
+                "time" => $topic->time(),
             ];
         }
         return (string) json_encode(

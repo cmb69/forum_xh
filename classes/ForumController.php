@@ -415,7 +415,7 @@ class ForumController
             $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $topic->delete($cid);
+        $topic->deleteComment($cid);
         if (!$this->store->commit()) {
             return $this->respondWith($request, $this->view->message("fail", "error_store"));
         }

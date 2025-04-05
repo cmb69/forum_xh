@@ -133,11 +133,6 @@ final class Topic extends BaseTopic implements Document
         return count($this->comments);
     }
 
-    public function empty(): bool
-    {
-        return empty($this->comments);
-    }
-
     /** @return list<Comment> */
     public function comments(): array
     {
@@ -189,9 +184,9 @@ final class Topic extends BaseTopic implements Document
         $comment->setMessage($message);
     }
 
-    public function delete(string $id): void
+    public function deleteComment(string $id): void
     {
-        assert(isset($this->comments[$id]));
+        assert(array_key_exists($id, $this->comments));
         unset($this->comments[$id]);
     }
 

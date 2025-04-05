@@ -62,6 +62,11 @@ class BaseTopic
         return $this->commentCount;
     }
 
+    public function empty(): bool
+    {
+        return $this->commentCount() === 0;
+    }
+
     public function user(): string
     {
         return $this->user;
