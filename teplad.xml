@@ -45,7 +45,7 @@
   <!-- the name of the Plugin -->
   <name type="plugin">Forum_XH</name>
   <!-- Date this xml-file was updated, yyyy.mm.dd -->
-  <date_update>2025.04.05</date_update>
+  <date_update>2025.04.10</date_update>
   <!-- version of Plugin -->
   <version>1.1-dev</version>
   <!-- date of publication, yyyy.mm.dd -->
@@ -71,10 +71,10 @@
     <demo_url></demo_url>
   </url>
   <!-- compatibility with versions of XH, i.e. 1.6, 1.6.7 - 1.7.2, ≥ 1.7, ... -->
-  <compatibility>≥ 1.6.3</compatibility>
+  <compatibility>≥ 1.7.0</compatibility>
   <!-- minimum version of PHP that is required, i.e. 5.3, 5.6, 7, ≥ 5.6, ... -->
   <!-- If there no specification, e.g. for templates, enter this follows! - <php_ver></php_ver> -->
-  <php_ver>≥ 5.4.0</php_ver>
+  <php_ver>≥ 7.1.0</php_ver>
   <!-- the License for the Plugin, GPLv3, AGPL, LGPL, GPLv2 ... -->
   <license>GPLv3</license>
   <!-- Description in English is mandatory -->
